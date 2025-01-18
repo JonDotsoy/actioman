@@ -1,0 +1,50 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`actionsToJson should export actions to JSON 1`] = `
+{
+  "hi": {
+    "description": "Say hello",
+    "input": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "name",
+      ],
+      "type": "object",
+    },
+    "output": {
+      "type": "string",
+    },
+  },
+}
+`;
+
+exports[`importActionsFromJson should import actions from JSON 1`] = `
+"import { z } from "zod";
+
+"
+`;
+
+exports[`importActionsFromJson  1`] = `
+"import { z } from "zod";
+
+export const hi = {
+  description: "Say hello",
+  target: "http://localhost:9080/__actions/hi"
+  input: z.object({ "name": z.string() }),
+  output: z.string(),
+} as const;
+
+export const foo = {
+  description: undefined,
+  target: "http://localhost:9080/__actions/foo"
+  input: null,
+  output: null,
+} as const;
+
+"
+`;
