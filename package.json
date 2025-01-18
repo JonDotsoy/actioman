@@ -1,0 +1,38 @@
+{
+  "name": "actioman",
+  "description": "Share functions with other js clients. Call backend functions with type-safety.",
+  "version": "0.0.2",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "fmt": "prettier -w ."
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "artur": "^1.2.1",
+    "expect-type": "^1.1.0",
+    "prettier": "^3.4.2",
+    "zod": "^3.24.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@jondotsoy/flags": "^2.3.0",
+    "@jondotsoy/utils-js": "^0.5.2",
+    "json-schema-to-zod": "^2.6.0",
+    "zod-to-json-schema": "^3.24.1"
+  },
+  "keywords": [],
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jondotsoy/actioman.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jondotsoy/actioman/issues"
+  }
+}
