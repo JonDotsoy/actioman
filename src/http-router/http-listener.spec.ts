@@ -34,7 +34,7 @@ describe("HTTPLister", () => {
     const app = express();
     const port = 30_161;
 
-    const httpRouter = HTTPRouter.fromModule({ hi: () => 'ok' });
+    const httpRouter = HTTPRouter.fromModule({ hi: () => "ok" });
 
     app.use("/", async (req, res, next) => {
       const ok = await httpRouter.router.requestListener(req, res);
@@ -43,8 +43,7 @@ describe("HTTPLister", () => {
 
     const server = app.listen(port);
     cleanupTasks.add(
-      () =>
-        new Promise<true>((resolve) => server.close(() => resolve(true)))
+      () => new Promise<true>((resolve) => server.close(() => resolve(true))),
     );
   });
 
@@ -54,7 +53,7 @@ describe("HTTPLister", () => {
       const app = express();
       const port = 30_161;
 
-      const httpRouter = HTTPRouter.fromModule({ hi: () => 'ok' });
+      const httpRouter = HTTPRouter.fromModule({ hi: () => "ok" });
 
       app.use("/", async (req, res, next) => {
         const ok = await httpRouter.router.requestListener(req, res);
@@ -62,11 +61,13 @@ describe("HTTPLister", () => {
       });
 
       const server = app.listen(port);
-      cleanupTasks.add(() => new Promise<true>((resolve) => server.close(() => resolve(true))));
-    })
+      cleanupTasks.add(
+        () => new Promise<true>((resolve) => server.close(() => resolve(true))),
+      );
+    });
 
     it("should return 200 for /__actions", async () => {
-      const res = await fetch("http://localhost:30161/__actions")
+      const res = await fetch("http://localhost:30161/__actions");
       expect(res.status).toEqual(200);
       expect(await res.text()).toMatchSnapshot();
     });
@@ -75,7 +76,9 @@ describe("HTTPLister", () => {
      * @todo pending error `TypeError: Can only call ReadableStreamDefaultController.close on instances of ReadableStreamDefaultController`
      */
     it.skip("should return 200 for /__actions/hi", async () => {
-      const res = await fetch("http://localhost:30161/__actions/hi", { method: 'POST' })
+      const res = await fetch("http://localhost:30161/__actions/hi", {
+        method: "POST",
+      });
       expect(res.status).toEqual(200);
       expect(await res.text()).toMatchSnapshot();
     });

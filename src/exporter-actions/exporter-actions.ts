@@ -4,6 +4,10 @@ import type { ActionsDefinitionsJsonDTO } from "./dtos/actions-definitions-json.
 import { get } from "@jondotsoy/utils-js/get";
 import jsonSchemaToZod from "json-schema-to-zod";
 
+export class ActionsDocument {
+  static async fromHTTPServer(url: URL) {}
+}
+
 export const actionsToJson = (actions: Actions): ActionsDefinitionsJsonDTO => {
   return Object.fromEntries(
     Array.from(

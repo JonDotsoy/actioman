@@ -1,8 +1,15 @@
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect, afterEach } from "bun:test";
 import { Actions, defineAction } from "../actions/actions";
 import { z } from "zod";
-import { actionsToJson, importActionsFromJson } from "./exporter-actions";
+import {
+  ActionsDocument,
+  actionsToJson,
+  importActionsFromJson,
+} from "./exporter-actions";
 import type { ActionsDefinitionsJsonDTO } from "./dtos/actions-definitions-json.dto";
+import { HTTPLister } from "../http-router/http-listener";
+
+const cleanupTasks = new Set<() => any>();
 
 describe("actionsToJson", () => {
   it("should export actions to JSON", () => {
@@ -22,10 +29,15 @@ describe("actionsToJson", () => {
 });
 
 describe("importActionsFromJson", () => {
+  afterEach(async () => {
+    for (const cleanupTask of cleanupTasks) await cleanupTask();
+  });
+
   it("should import actions from JSON", () => {
     expect(importActionsFromJson({}, "http://localhost")).toMatchSnapshot();
   });
-  it("", () => {
+
+  it("should import actions from JSON with different types", () => {
     expect(
       importActionsFromJson(
         {
@@ -53,5 +65,13 @@ describe("importActionsFromJson", () => {
         "http://localhost:9080",
       ),
     ).toMatchSnapshot();
+  });
+
+  it("", async () => {
+    const httpLister = HTTPLister.fromModule({ hi: () => "ok" });
+    cleanupTasks.add(() => httpLister.close());
+    const url = await httpLister.listen();
+
+    const actionsDocument = await ActionsDocument.fromHTTPServer(url);
   });
 });
