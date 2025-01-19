@@ -4,8 +4,69 @@ import type { ActionsDefinitionsJsonDTO } from "./dtos/actions-definitions-json.
 import { get } from "@jondotsoy/utils-js/get";
 import jsonSchemaToZod from "json-schema-to-zod";
 
+const templateAction = (
+  actionNameSrc: string,
+  descriptionSrc: string,
+  inputSrc: string,
+  outputSrc: string,
+) => `    ${actionNameSrc}: {
+      description: ${descriptionSrc},
+      input: ${inputSrc},
+      output: ${outputSrc},
+    },`
+
+const template = (
+  targetUrlSrc: string,
+  actionsSrc: string,
+) => `import { z } from "zod";
+import { ActionsTarget } from "actioman/actions-target";
+
+const createActionsTarget = () =>
+  new ActionsTarget(${targetUrlSrc}, {
+${actionsSrc}
+  });
+
+export default createActionsTarget;
+`
+
 export class ActionsDocument {
-  static async fromHTTPServer(url: URL) {}
+  constructor(
+    readonly targetUrl: URL,
+    readonly actionsJson: any,
+  ) { }
+
+  toString() {
+    const toJsonZod = (value: Record<any, any> | undefined) => {
+      if (value) return jsonSchemaToZod(value)
+      return 'undefined'
+    };
+
+    const actionsSrc = Array.from(
+      Object.entries(this.actionsJson),
+      ([name, actionDescription]) =>
+        templateAction(
+          JSON.stringify(name),
+          JSON.stringify(get.string(actionDescription, "description")),
+          toJsonZod(get.record(actionDescription, "input")),
+          toJsonZod(get.record(actionDescription, "output")),
+        )
+    ).join('\n')
+
+    const targetUrlSrc = JSON.stringify(this.targetUrl.toString());
+
+    return template(
+      targetUrlSrc,
+      actionsSrc,
+    );
+  }
+
+  static async fromHTTPServer(url: URL) {
+    const targetUrl = new URL("./__actions", url);
+    const res = await fetch(targetUrl);
+    const b = await res.json();
+    const actionsJson = b.actions;
+    return new ActionsDocument(targetUrl, actionsJson);
+  }
 }
 
 export const actionsToJson = (actions: Actions): ActionsDefinitionsJsonDTO => {
@@ -62,7 +123,7 @@ export const importActionsFromJson = (
             "" +
             `export const ${nameId} = {\n` +
             `  description: ${JSON.stringify(description)},\n` +
-            `  target: ${JSON.stringify(new URL(`__actions/${name}`, target).toString())}\n` +
+            `  target: ${JSON.stringify(new URL(`./__actions/${name}`, target).toString())}\n` +
             `  input: ${inputZodSrc},\n` +
             `  output: ${outputZodSrc},\n` +
             `} as const;\n` +

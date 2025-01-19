@@ -28,6 +28,10 @@ describe("actionsToJson", () => {
   });
 });
 
+afterEach(async () => {
+  for (const cleanupTask of cleanupTasks) await cleanupTask();
+});
+
 describe("importActionsFromJson", () => {
   afterEach(async () => {
     for (const cleanupTask of cleanupTasks) await cleanupTask();
@@ -66,12 +70,29 @@ describe("importActionsFromJson", () => {
       ),
     ).toMatchSnapshot();
   });
+});
 
-  it("", async () => {
-    const httpLister = HTTPLister.fromModule({ hi: () => "ok" });
-    cleanupTasks.add(() => httpLister.close());
-    const url = await httpLister.listen();
-
-    const actionsDocument = await ActionsDocument.fromHTTPServer(url);
+it("should create ActionsDocument from HTTP server", async () => {
+  const httpLister = HTTPLister.fromModule({
+    hi: {
+      input: z.object({
+        name: z.string().optional(),
+        metadata: z.record(z.string()),
+      }),
+      handler: () => "ok",
+    },
+    foo: {
+      description: 'foo',
+      input: z.string(),
+      output: z.object({
+        name: z.string(),
+      }),
+      handler: () => "ok",
+    },
   });
+  cleanupTasks.add(() => httpLister.close());
+  const url = await httpLister.listen();
+
+  const actionsDocument = await ActionsDocument.fromHTTPServer(url);
+  expect(actionsDocument.toString()).toMatchSnapshot();
 });

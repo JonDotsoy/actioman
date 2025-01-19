@@ -48,3 +48,25 @@ export const foo = {
 
 "
 `;
+
+exports[`should create ActionsDocument from HTTP server 1`] = `
+"import { z } from "zod";
+import { ActionsTarget } from "actioman/actions-target";
+
+const createActionsTarget = () =>
+  new ActionsTarget("http://localhost:30321/__actions", {
+    "hi": {
+      description: undefined,
+      input: z.object({ "name": z.string().optional(), "metadata": z.record(z.string()) }).strict(),
+      output: undefined,
+    },
+    "foo": {
+      description: "foo",
+      input: z.string(),
+      output: z.object({ "name": z.string() }).strict(),
+    },
+  });
+
+export default createActionsTarget;
+"
+`;
