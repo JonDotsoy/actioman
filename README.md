@@ -42,6 +42,35 @@ app.use("/", async (req, res, next) => {
 const server = app.listen(port);
 ```
 
+## Compile actions documents from a URL
+
+```ts
+const actionsDocument = await ActionsDocument.fromHTTPServer(new URL("http://sample.com/"));
+
+fs.writeFile("sample-actions.js", actionsDocument.toString())
+```
+
+```js
+import { z } from "zod";
+import { ActionsTarget } from "actioman/actions-target";
+
+const createActionsTarget = () =>
+  new ActionsTarget("http://localhost:30321/__actions", {
+    "hi": {
+      description: undefined,
+      input: z.object({ "name": z.string().optional(), "metadata": z.record(z.string()) }).strict(),
+      output: undefined,
+    },
+    "foo": {
+      description: "foo",
+      input: z.string(),
+      output: z.object({ "name": z.string() }).strict(),
+    },
+  });
+
+export default createActionsTarget;
+```
+
 call `actioman <file.ts>` to deploy an http server.
 
 ```shell
