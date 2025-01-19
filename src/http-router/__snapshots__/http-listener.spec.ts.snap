@@ -1,0 +1,3 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HTTPLister integration tests should return 200 for /__actions 1`] = `"{"actions":{"hi":{"description":null,"input":null,"output":null}}}"`;
