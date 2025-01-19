@@ -29,7 +29,7 @@ exports[`importActionsFromJson should import actions from JSON 1`] = `
 "
 `;
 
-exports[`importActionsFromJson  1`] = `
+exports[`importActionsFromJson should import actions from JSON with different types 1`] = `
 "import { z } from "zod";
 
 export const hi = {
