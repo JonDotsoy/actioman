@@ -16,6 +16,32 @@ export const myAction = defineAction({
 });
 ```
 
+## Setup a http listener
+
+```ts
+import { HTTPListener } from "actioman/http-listener";
+
+const httpListener = HTTPListener.fromModule(await import("./actions.js"));
+
+await httpListener.listen();
+```
+
+### Using custom router with express
+
+```ts
+const app = express();
+const port = 3000;
+
+const httpRouter = HTTPRouter.fromModule(await import("./actions.js"));
+
+app.use("/", async (req, res, next) => {
+  const ok = await httpRouter.router.requestListener(req, res);
+  if (!ok) next();
+});
+
+const server = app.listen(port);
+```
+
 call `actioman <file.ts>` to deploy an http server.
 
 ```shell
