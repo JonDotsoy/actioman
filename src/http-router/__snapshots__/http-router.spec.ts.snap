@@ -1,0 +1,28 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HTTPRouter should handle actions with zod validation 1`] = `
+{
+  "actions": {
+    "foo": {
+      "description": null,
+      "input": null,
+      "output": null,
+    },
+    "taz": {
+      "description": null,
+      "input": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+      "output": null,
+    },
+  },
+}
+`;
+
+exports[`HTTPRouter should handle actions without zod validation 1`] = `"ok"`;

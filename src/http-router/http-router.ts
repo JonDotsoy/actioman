@@ -3,6 +3,7 @@ import { Actions, defineAction, type Action } from "../actions/actions";
 import { z } from "zod";
 import { get } from "@jondotsoy/utils-js/get";
 import zodToJsonSchema from "zod-to-json-schema";
+import { actionsToJson } from "../exporter-actions/exporter-actions";
 
 const result = async <T>(fn: () => Promise<T>) => {
   try {
@@ -19,28 +20,23 @@ const isZodType = (value: any): value is z.ZodType =>
 
 export class HTTPRouter {
   router = new Router({
-    errorHandling: 'pass',
+    errorHandling: "pass",
     middlewares: [
-      fetch => async req => {
-        const res = await fetch(req)
-        res?.headers.set('X-Powered-By', 'Actioman');
-        res?.headers.set('X-Actioman-Version', 'v1.0.0');
+      (fetch) => async (req) => {
+        const res = await fetch(req);
+        res?.headers.set("X-Powered-By", "Actioman");
+        res?.headers.set("X-Actioman-Version", "v1.0.0");
         return res;
-      }
-    ]
+      },
+    ],
   });
   constructor(actions: Actions) {
+    const actionsJson = actionsToJson(actions);
+
     this.router.use("GET", `/__actions`, {
-      fetch: () => Response.json({
-        actions: Object.fromEntries(Array.from(Object.entries(Actions.describe(actions)),
-          ([name, describe]) => [name, {
-            description: describe.description,
-            input: isZodType(describe.input) ? zodToJsonSchema(describe.input, { target: undefined }) : undefined,
-            output: isZodType(describe.output) ? zodToJsonSchema(describe.output, { target: undefined }) : undefined,
-          }]
-        ))
-      })
+      fetch: () => Response.json({ actions: actionsJson }),
     });
+
     for (const [name, describe] of Object.entries(Actions.describe(actions))) {
       this.router.use("POST", `/__actions/${name}`, {
         fetch: async (req) => {
@@ -60,7 +56,7 @@ export class HTTPRouter {
 
   static fromModule(module: unknown) {
     const actions = Actions.fromModule(module);
-    if (!actions) return null;
+    if (!actions) throw new Error(`No actions found in ${module}`);
     return new HTTPRouter(actions);
   }
 }
