@@ -34,5 +34,9 @@
   },
   "bugs": {
     "url": "https://github.com/jondotsoy/actioman/issues"
+  },
+  "optionalDependencies": {
+    "@types/express": "^5.0.0",
+    "express": "^4.21.2"
   }
 }
