@@ -83,4 +83,14 @@ describe("HTTPLister", () => {
       expect(await res.text()).toMatchSnapshot();
     });
   });
+
+  it("should create a server with actions", async () => {
+    const httpLister = HTTPLister.fromModule({
+      biz: () => true,
+      foo: () => true,
+      taz: () => true,
+    });
+    cleanupTasks.add(() => httpLister.close());
+    await httpLister.listen();
+  });
 });
