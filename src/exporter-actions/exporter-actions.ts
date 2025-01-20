@@ -13,7 +13,7 @@ const templateAction = (
       description: ${descriptionSrc},
       input: ${inputSrc},
       output: ${outputSrc},
-    },`
+    },`;
 
 const template = (
   targetUrlSrc: string,
@@ -27,18 +27,18 @@ ${actionsSrc}
   });
 
 export default createActionsTarget;
-`
+`;
 
 export class ActionsDocument {
   constructor(
     readonly targetUrl: URL,
     readonly actionsJson: any,
-  ) { }
+  ) {}
 
   toString() {
     const toJsonZod = (value: Record<any, any> | undefined) => {
-      if (value) return jsonSchemaToZod(value)
-      return 'undefined'
+      if (value) return jsonSchemaToZod(value);
+      return "undefined";
     };
 
     const actionsSrc = Array.from(
@@ -49,15 +49,12 @@ export class ActionsDocument {
           JSON.stringify(get.string(actionDescription, "description")),
           toJsonZod(get.record(actionDescription, "input")),
           toJsonZod(get.record(actionDescription, "output")),
-        )
-    ).join('\n')
+        ),
+    ).join("\n");
 
     const targetUrlSrc = JSON.stringify(this.targetUrl.toString());
 
-    return template(
-      targetUrlSrc,
-      actionsSrc,
-    );
+    return template(targetUrlSrc, actionsSrc);
   }
 
   static async fromHTTPServer(url: URL) {
