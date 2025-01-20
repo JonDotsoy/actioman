@@ -29,7 +29,7 @@ describe("HTTPLister", () => {
     expect(res.status).toEqual(200);
   });
 
-  it("", async () => {
+  it("should start a server", async () => {
     const { default: express } = await import("express");
     const app = express();
     const port = 30_161;
