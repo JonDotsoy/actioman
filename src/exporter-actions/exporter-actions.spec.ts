@@ -82,7 +82,7 @@ it("should create ActionsDocument from HTTP server", async () => {
       handler: () => "ok",
     },
     foo: {
-      description: 'foo',
+      description: "foo",
       input: z.string(),
       output: z.object({
         name: z.string(),
