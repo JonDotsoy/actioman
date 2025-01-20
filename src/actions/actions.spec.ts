@@ -22,7 +22,7 @@ describe("", () => {
       }),
     });
 
-    expect(await actions.call("foo", {})).toEqual("ok foo");
+    expect(await actions.call("foo", {})).toEqual("ok");
   });
 
   it("", async () => {

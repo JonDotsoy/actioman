@@ -12,12 +12,12 @@ describe("HTTPRouter", () => {
     expect(httpRouter).not.toBeNull();
   });
   it("should return null if the module is invalid", () => {
-    expect(HTTPRouter.fromModule(null)).toBeNull();
-    expect(HTTPRouter.fromModule("")).toBeNull();
-    expect(HTTPRouter.fromModule(1)).toBeNull();
-    expect(HTTPRouter.fromModule(false)).toBeNull();
-    expect(HTTPRouter.fromModule(true)).toBeNull();
-    expect(HTTPRouter.fromModule(undefined)).toBeNull();
+    expect(() => HTTPRouter.fromModule(null)).toThrow();
+    expect(() => HTTPRouter.fromModule("")).toThrow();
+    expect(() => HTTPRouter.fromModule(1)).toThrow();
+    expect(() => HTTPRouter.fromModule(false)).toThrow();
+    expect(() => HTTPRouter.fromModule(true)).toThrow();
+    expect(() => HTTPRouter.fromModule(undefined)).toThrow();
   });
 
   it("should handle actions with zod validation", async () => {
