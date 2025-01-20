@@ -2,6 +2,10 @@ import * as http from "http";
 import { HTTPRouter } from "./http-router";
 import net from "net";
 
+type ListenOptions = {
+  silent: boolean
+}
+
 const sanatizeHostname = (hostname: string) => {
   switch (hostname) {
     case "::1":
@@ -44,7 +48,7 @@ const findNextPort = async () => {
 export class HTTPLister {
   server: http.Server;
 
-  constructor(httpRouter: HTTPRouter) {
+  constructor(readonly httpRouter: HTTPRouter) {
     this.server = http.createServer(async (req, res) => {
       try {
         if (!(await httpRouter.router.requestListener(req, res))) {
@@ -69,7 +73,14 @@ export class HTTPLister {
     });
   }
 
-  async listen(port?: number, hostname?: string) {
+  async listen(port?: number, hostname?: string, options?: ListenOptions) {
+    const silent = options?.silent ?? HTTPLister.defaultOptions.silent;
+
+    const log = (message: string) => {
+      if (silent) return;
+      console.log(message);
+    }
+
     const portToListen = port ?? (await findNextPort());
     const hostnameToListen = hostname ?? "localhost";
 
@@ -90,7 +101,14 @@ export class HTTPLister {
       });
     });
 
-    console.log(`Listening on ${url.toString()}`);
+    if (!silent) {
+      for (const route of this.httpRouter.router.routes) {
+        const method = route.method;
+        const urlPattern = route.urlPattern;
+        log(`Route ${method} ${urlPattern.pathname}`);
+      }
+    }
+    log(`Listening on ${url.toString()}`);
 
     return url;
   }
@@ -100,4 +118,8 @@ export class HTTPLister {
     if (!httpRouter) throw new Error("No actions found");
     return new HTTPLister(httpRouter);
   }
+
+  static defaultOptions = {
+    silent: false,
+  };
 }
