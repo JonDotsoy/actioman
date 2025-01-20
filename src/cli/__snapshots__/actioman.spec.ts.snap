@@ -31,6 +31,11 @@ exports[`serves actions: body response 1`] = `
         "type": "string",
       },
     },
+    "hi": {
+      "description": null,
+      "input": null,
+      "output": null,
+    },
   },
 }
 `;
