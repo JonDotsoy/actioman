@@ -2,17 +2,29 @@
 
 Share functions with other js clients. Call backend functions with type-safety.
 
-- validate json input using zod validation
+- validate json input/output using zod validation
 
 ## Basic usage
 
 Define a server schema with all functions. This file is called by `actioman`.
 
 ```ts
+// ./actions.js
 import { defineAction } from "actioman";
+import { z } from "zod";
 
-export const myAction = defineAction({
-  /* ... */
+export const hi = defineAction({
+  input: z
+    .object({ name: z.string().optional(), metadata: z.record(z.string()) })
+    .strict(),
+  handler: async ({ name }) => `Hello ${name}`,
+});
+
+export const foo = defineAction({
+  description: "foo",
+  input: z.string(),
+  output: z.object({ name: z.string() }).strict(),
+  handler: async (input) => ({ name: input }),
 });
 ```
 
@@ -45,26 +57,31 @@ const server = app.listen(port);
 ## Compile actions documents from a URL
 
 ```ts
-const actionsDocument = await ActionsDocument.fromHTTPServer(new URL("http://sample.com/"));
+const actionsDocument = await ActionsDocument.fromHTTPServer(
+  new URL("http://sample.com/"),
+);
 
-fs.writeFile("sample-actions.js", actionsDocument.toString())
+fs.writeFile("sample-actions.js", actionsDocument.toString());
 ```
 
 ```js
+// sample-actions.js
 import { z } from "zod";
 import { ActionsTarget } from "actioman/actions-target";
 
 const createActionsTarget = () =>
   new ActionsTarget("http://localhost:30321/__actions", {
-    "hi": {
+    hi: {
       description: undefined,
-      input: z.object({ "name": z.string().optional(), "metadata": z.record(z.string()) }).strict(),
+      input: z
+        .object({ name: z.string().optional(), metadata: z.record(z.string()) })
+        .strict(),
       output: undefined,
     },
-    "foo": {
+    foo: {
       description: "foo",
       input: z.string(),
-      output: z.object({ "name": z.string() }).strict(),
+      output: z.object({ name: z.string() }).strict(),
     },
   });
 
