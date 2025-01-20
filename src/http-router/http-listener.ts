@@ -3,8 +3,8 @@ import { HTTPRouter } from "./http-router";
 import net from "net";
 
 type ListenOptions = {
-  silent: boolean
-}
+  silent: boolean;
+};
 
 const sanatizeHostname = (hostname: string) => {
   switch (hostname) {
@@ -79,7 +79,7 @@ export class HTTPLister {
     const log = (message: string) => {
       if (silent) return;
       console.log(message);
-    }
+    };
 
     const portToListen = port ?? (await findNextPort());
     const hostnameToListen = hostname ?? "localhost";
