@@ -1,14 +1,15 @@
 {
   "name": "actioman",
   "description": "Share functions with other js clients. Call backend functions with type-safety.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "license": "MIT",
   "files": [
     "lib"
   ],
   "scripts": {
-    "fmt": "prettier -w ."
+    "fmt": "prettier -w .",
+    "prepublish": "make build"
   },
   "devDependencies": {
     "@types/bun": "latest",
