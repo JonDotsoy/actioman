@@ -8,7 +8,7 @@ import {
   rule,
   type Rule,
 } from "@jondotsoy/flags";
-import { $ } from "bun";
+import { $ } from "../../shell/shell";
 
 export const add = async (args: string[]) => {
   type Options = {
@@ -34,5 +34,5 @@ export const add = async (args: string[]) => {
   if (!actionsTargetName) return console.log("Missing argument <Actions Name>");
   if (!actionsTargetURL) return console.log("Missing argument <URL>");
 
-  await $` ${new TextEncoder().encode(`console.log(require.resolve("actioman"))`)}`;
+  // await $` ${new TextEncoder().encode(`console.log(require.resolve("actioman"))`)}`;
 };

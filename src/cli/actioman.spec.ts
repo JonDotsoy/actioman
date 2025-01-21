@@ -1,5 +1,8 @@
 import * as bun from "bun";
-import { afterEach, expect, it } from "bun:test";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "bun:test";
+import { HTTPLister } from "../http-router/http-listener";
+import { defineAction } from "../actions/actions";
+import { z } from "zod";
 
 const withFn = <T>(
   test: T,
@@ -12,6 +15,12 @@ const withFn = <T>(
 
 const cleanupTasks: (() => Promise<any>)[] = [];
 
+/**
+ * Prepare workspace
+ *
+ * @param workspaceName
+ * @returns
+ */
 const workspace = async (workspaceName: string) => {
   const $ = bun.$;
   await $`mkdir -p .tmp/workspaces/`;
@@ -22,27 +31,32 @@ const workspace = async (workspaceName: string) => {
     if [ -f .tmp/_caches/${workspaceName}.tar.gz ]
     then
       mkdir -p .tmp/workspaces/${workspaceName}/
-      tar xf .tmp/_caches/${workspaceName}.tar.gz --directory=.tmp/workspaces/${workspaceName}/ 
+      tar xf .tmp/_caches/${workspaceName}.tar.gz --directory=.tmp/workspaces/${workspaceName}/ || true
     fi
   `;
   await $`mkdir -p .tmp/workspaces/${workspaceName}/_bin/`;
   await $`mkdir -p .tmp/workspaces/${workspaceName}/_work/`;
 
-  const $bin = new $.Shell()
+  const $cache = new $.Shell().cwd(`.tmp/_caches/`).env(process.env);
+
+  await $cache`
+    if [ ! -f actioman.tgz ]
+    then
+      packfilename=$(realpath ../../$(cd ../.. && npm pack --json | jq '.[0].filename' -r))
+      cp $packfilename actioman.tgz
+    fi
+  `;
+
+  const actiomanPackfile = (await $cache`realpath actioman.tgz`.text()).trim();
+
+  const _$bin = new $.Shell()
     .cwd(`.tmp/workspaces/${workspaceName}/_bin/`)
     .env(process.env);
-  await $bin`
-    echo "#!$(which bun)" > actioman
-    echo "await import(\"${new URL("./actioman.ts", import.meta.url).pathname}\");" >> actioman
-    chmod +x actioman
-  `;
-  const actioman = (await $bin`echo $PWD/actioman`.text()).trim();
 
   const $work = new $.Shell()
     .cwd(`.tmp/workspaces/${workspaceName}/_work/`)
     .env(process.env);
 
-  await $work`npm pkg set config.offline=true,name=work,private=true`;
   await $work`
     if [ ! -f package.json ]
     then
@@ -50,7 +64,12 @@ const workspace = async (workspaceName: string) => {
     fi
   `;
 
-  await $work`npm add actioman`;
+  await $work`
+    if [ ! -d node_modules/actioman ]
+    then
+      npm add ${actiomanPackfile}
+    fi
+  `;
 
   // Cache save
   await $`tar czf .tmp/_caches/${workspaceName}.tar.gz --directory=.tmp/workspaces/${workspaceName}/ .`;
@@ -62,7 +81,7 @@ const workspace = async (workspaceName: string) => {
       const listeningReadyPromiseResolvers = Promise.withResolvers<URL>();
       const abortController = new AbortController();
       const subprocess = bun.spawn({
-        cmd: [actioman, ...args],
+        cmd: ["npx", "actioman", ...args],
         cwd: `.tmp/workspaces/${workspaceName}/_work/`,
         signal: abortController.signal,
         stdout: "pipe",
@@ -101,6 +120,7 @@ const workspace = async (workspaceName: string) => {
 
 const sample = `
 import { z } from "zod"
+
 export const hello = {
   description: 'foo',
   input: z.object({
@@ -136,16 +156,24 @@ it("serves actions", async () => {
   expect(await res.json()).toMatchSnapshot("body response");
 });
 
-it.skip("", async () => {
-  const { $, actioman } = await workspace("foo");
+describe("", () => {
+  let $: bun.Shell | null = null;
+  beforeAll(async () => {
+    const w = await workspace("foo");
+    $ = w.$;
+  });
 
-  const b = new TextEncoder().encode(sample);
+  it.only("", async () => {
+    const httpLister = HTTPLister.fromModule({
+      hi: defineAction({
+        input: z.object({ name: z.string() }),
+        output: z.string(),
+        handler: async ({ name }) => `Hello, ${name}!`,
+      }),
+    });
 
-  await $`cat < ${b} | cat > actions.ts`;
+    const service = await httpLister.listen();
 
-  const { listeningReady } = actioman("serve", "actions.ts");
-
-  expect(
-    await actioman("add", "foo", `${await listeningReady}`).exited,
-  ).toEqual(0);
+    const sub = await $!`npx actioman add foo ${service.toString()}`;
+  });
 });

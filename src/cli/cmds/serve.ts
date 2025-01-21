@@ -9,8 +9,8 @@ import {
   rule,
   type Rule,
 } from "@jondotsoy/flags";
-import { Actions, defineAction } from "../../actions/actions";
-import { HTTPRouter } from "../../http-router/http-router";
+import { Actions, defineAction } from "../../actions/actions.js";
+import { HTTPRouter } from "../../http-router/http-router.js";
 import * as net from "net";
 import * as os from "os";
 import fs from "fs/promises";
