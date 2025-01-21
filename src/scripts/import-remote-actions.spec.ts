@@ -5,7 +5,7 @@ import { HTTPLister } from "../http-router/http-listener";
 import { defineAction } from "../actions/actions";
 import { set, z } from "zod";
 
-describe.only("import-remote-actions", () => {
+describe("import-remote-actions", () => {
   const cleanupTasks = new Set<() => any>();
 
   afterEach(async () => {
@@ -25,7 +25,7 @@ describe.only("import-remote-actions", () => {
     `.cwd(new URL("./", import.meta.url).pathname);
   });
 
-  it("", async () => {
+  it("imports remote actions", async () => {
     const httpLister = HTTPLister.fromModule({
       hi: defineAction({
         input: z.object({ name: z.string() }),
