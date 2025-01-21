@@ -8,8 +8,8 @@ import {
   rule,
   type Rule,
 } from "@jondotsoy/flags";
-import { serve } from "./serve";
-import { add } from "./add";
+import { serve } from "./serve.js";
+import { add } from "./add.js";
 
 export const main = async (args: string[]) => {
   type Options = {
