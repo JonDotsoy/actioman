@@ -17,7 +17,7 @@ export const defineAction = <I = any, R = any>(
 ): Action<I, R> => action;
 
 export class Actions<ActionsDefinitions extends Record<string, Action> = any> {
-  constructor(private definition: ActionsDefinitions) { }
+  constructor(private definition: ActionsDefinitions) {}
 
   call = async <NameActionDefinition extends keyof ActionsDefinitions>(
     name: NameActionDefinition,
@@ -46,17 +46,19 @@ export class Actions<ActionsDefinitions extends Record<string, Action> = any> {
 
     for (const [moduleName, handler] of Object.entries(module)) {
       const definition =
-        typeof handler === "function" ? defineAction({ handler }) :
-          typeof handler === 'object' && handler !== null && 'handler' in handler && typeof handler.handler === 'function' ?
-            defineAction({ handler: handler.handler, ...handler })
-            : null
-        ;
-
+        typeof handler === "function"
+          ? defineAction({ handler })
+          : typeof handler === "object" &&
+              handler !== null &&
+              "handler" in handler &&
+              typeof handler.handler === "function"
+            ? defineAction({ handler: handler.handler, ...handler })
+            : null;
       if (definition) {
         actionDefinitions[moduleName] = definition;
       }
     }
 
-    return new Actions(actionDefinitions)
+    return new Actions(actionDefinitions);
   }
 }
