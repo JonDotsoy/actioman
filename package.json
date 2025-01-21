@@ -11,6 +11,7 @@
     "fmt": "prettier -w .",
     "prepublish": "make build"
   },
+  "bin": "./lib/esm/cli/actioman.js",
   "devDependencies": {
     "@types/bun": "latest",
     "artur": "^1.2.1",
@@ -23,6 +24,7 @@
   },
   "dependencies": {
     "@jondotsoy/flags": "^2.3.0",
+    "@jondotsoy/splitg": "^0.6.0",
     "@jondotsoy/utils-js": "^0.5.2",
     "json-schema-to-zod": "^2.6.0",
     "zod-to-json-schema": "^3.24.1"
