@@ -11,6 +11,31 @@ import {
 } from "@jondotsoy/flags";
 import { Actions, defineAction } from "../../actions/actions";
 import { HTTPRouter } from "../../http-router/http-router";
+import * as net from "net";
+import * as os from "os";
+import fs from "fs/promises";
+
+const nextPort = async () => {
+  let porposalPort = 30320;
+  while (true) {
+    porposalPort++;
+    const port = await new Promise<number | null>((resolve) => {
+      const connectiong = net.connect({
+        host: "localhost",
+        port: porposalPort,
+      });
+
+      connectiong.addListener("connect", () => {
+        resolve(null);
+        connectiong.destroy();
+      });
+      connectiong.addListener("error", (err) => {
+        if ("code" in err && err.code === "ECONNREFUSED") resolve(porposalPort);
+      });
+    });
+    if (typeof port === "number") return port;
+  }
+};
 
 export const serve = async (args: string[]) => {
   type Options = {
@@ -38,7 +63,7 @@ export const serve = async (args: string[]) => {
   const options = flags(args, {}, rules);
 
   const actionFile = options.actionFile;
-  const port = options.port ?? 3000;
+  const port = options.port ?? (await nextPort());
   const host = options.host ?? "localhost";
 
   const help = () =>
@@ -62,7 +87,6 @@ export const serve = async (args: string[]) => {
     });
 
     console.log(`Listening on ${server.url}`);
-    globalThis.postMessage("ok")
 
     return;
   }

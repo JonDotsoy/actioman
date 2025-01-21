@@ -2,9 +2,9 @@
 
 exports[`serves actions: headers response 1`] = `
 {
-  "content-length": "185",
+  "content-length": "238",
   "content-type": "application/json;charset=utf-8",
-  "date": "Sat, 18 Jan 2025 02:53:44 GMT",
+  "date": null,
   "x-actioman-version": "v1.0.0",
   "x-powered-by": "Actioman",
 }
