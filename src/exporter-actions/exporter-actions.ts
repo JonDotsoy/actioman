@@ -1,6 +1,6 @@
-import { Actions } from "../actions/actions";
+import { Actions } from "../actions/actions.js";
 import zodToJsonSchema from "zod-to-json-schema";
-import type { ActionsDefinitionsJsonDTO } from "./dtos/actions-definitions-json.dto";
+import type { ActionsDefinitionsJsonDTO } from "./dtos/actions-definitions-json.dto.js";
 import { get } from "@jondotsoy/utils-js/get";
 import jsonSchemaToZod from "json-schema-to-zod";
 
@@ -18,13 +18,14 @@ const templateAction = (
 const template = (
   targetUrlSrc: string,
   actionsSrc: string,
+  actionsTargetModuleLocation: string,
 ) => `import { z } from "zod";
-import { ActionsTarget } from "actioman/actions-target";
+import { ActionsTarget } from "${actionsTargetModuleLocation}";
 
 const createActionsTarget = () =>
   new ActionsTarget(${targetUrlSrc}, {
 ${actionsSrc}
-  });
+  }).compile();
 
 export default createActionsTarget;
 `;
@@ -33,6 +34,7 @@ export class ActionsDocument {
   constructor(
     readonly targetUrl: URL,
     readonly actionsJson: any,
+    readonly actionsTargetModuleLocation: string = "../../actions-target/actions-target.js",
   ) {}
 
   toString() {
@@ -54,15 +56,19 @@ export class ActionsDocument {
 
     const targetUrlSrc = JSON.stringify(this.targetUrl.toString());
 
-    return template(targetUrlSrc, actionsSrc);
+    return template(targetUrlSrc, actionsSrc, this.actionsTargetModuleLocation);
   }
 
-  static async fromHTTPServer(url: URL) {
+  static async fromHTTPServer(url: URL, actionsTargetModuleLocation?: string) {
     const targetUrl = new URL("./__actions", url);
     const res = await fetch(targetUrl);
     const b = await res.json();
     const actionsJson = b.actions;
-    return new ActionsDocument(targetUrl, actionsJson);
+    return new ActionsDocument(
+      targetUrl,
+      actionsJson,
+      actionsTargetModuleLocation,
+    );
   }
 }
 
