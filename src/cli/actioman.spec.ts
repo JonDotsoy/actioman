@@ -158,6 +158,7 @@ it("serves actions", async () => {
 
 describe("", () => {
   let $: bun.Shell | null = null;
+
   beforeAll(async () => {
     const w = await workspace("foo");
     $ = w.$;
