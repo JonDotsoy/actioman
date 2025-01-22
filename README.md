@@ -56,6 +56,10 @@ const server = app.listen(port);
 
 ## Compile actions documents from a URL
 
+```shell
+npx actioman add foo http://example.com
+```
+
 ```ts
 const actionsDocument = await ActionsDocument.fromHTTPServer(
   new URL("http://sample.com/"),
@@ -88,23 +92,10 @@ const createActionsTarget = () =>
 export default createActionsTarget;
 ```
 
-call `actioman <file.ts>` to deploy an http server.
-
-```shell
-$ npx actioman <file.ts>
-# actions listen on http://localhost:3000
-```
-
-On your client you can call `actioman import ` to add new source.
-
-```shell
-$ npx actioman add foo http://localhost:3000
-```
-
-On your javascript function call `actioman` module and invoke the `myAction` function.
+## Load actions
 
 ```ts
-import { foo } from "actioman";
+import { actions } from "actioman";
 
-const { error, data } = await foo.myAction();
+await actions.foo().hi({ name: "John" });
 ```
