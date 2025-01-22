@@ -1,4 +1,5 @@
 import type { z } from "zod";
+export * as actions from "../share-actions/share-actions.js";
 
 type InferZodType<T> = T extends z.ZodType ? z.infer<T> : any;
 type ParameterTypeInferer<T> = T extends (i: infer R) => any ? R : any;
