@@ -167,3 +167,12 @@ export const $ = (
     output: "codeStatus",
   });
 };
+
+$.cwd =
+  (cwd: string) =>
+  (arr: TemplateStringsArray, ...args: string[]) =>
+    $(arr, ...args).cwd(cwd);
+$.env =
+  (env: Record<string, string>) =>
+  (arr: TemplateStringsArray, ...args: string[]) =>
+    $(arr, ...args).env(env);
