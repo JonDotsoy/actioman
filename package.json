@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "fmt": "prettier -w .",
-    "prepublish": "make build"
+    "prepack": "make clean build"
   },
   "bin": "./lib/esm/cli/actioman.js",
   "devDependencies": {
@@ -22,9 +22,13 @@
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
+  "exports": {
+    ".": {
+      "import": "./lib/esm/actions/actions.js"
+    }
+  },
   "dependencies": {
     "@jondotsoy/flags": "^2.3.0",
-    "@jondotsoy/splitg": "^0.6.0",
     "@jondotsoy/utils-js": "^0.5.2",
     "json-schema-to-zod": "^2.6.0",
     "zod-to-json-schema": "^3.24.1"
