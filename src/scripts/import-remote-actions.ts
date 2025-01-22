@@ -1,5 +1,6 @@
-import { ActionsDocument } from "../exporter-actions/exporter-actions";
+import { ActionsDocument } from "../exporter-actions/exporter-actions.js";
 import * as fs from "fs/promises";
+import { existsSync } from "fs";
 import * as path from "path";
 
 function* listNodeModulesPaths(cwd: URL): Generator<URL> {
@@ -19,10 +20,10 @@ function* listActiomanNodeModulesPaths(cwd: URL): Generator<URL> {
 async function* findNodeModulesPaths(cwd: URL): AsyncGenerator<URL> {
   for (const proposalNodeModules of listActiomanNodeModulesPaths(cwd)) {
     try {
-      if (await fs.exists(proposalNodeModules)) {
+      if (await existsSync(proposalNodeModules)) {
         yield proposalNodeModules;
       }
-    } catch {}
+    } catch (ex) {}
   }
 }
 
@@ -73,7 +74,7 @@ export const importRemoteActions = async (
 
   await fs.appendFile(
     shareActionsFileModule,
-    `export { default as ${actionsName} } from './${actionsName}.js';\n`,
+    `export { default as ${actionsName} } from './remote_actions/${actionsName}.js';\n`,
   );
   console.log(`imported "${name}" from ${url}`);
 };
