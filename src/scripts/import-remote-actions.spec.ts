@@ -1,9 +1,17 @@
-import { afterEach, beforeAll, beforeEach, describe, it } from "bun:test";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from "bun:test";
 import { $ } from "../shell/shell";
 import { importRemoteActions } from "./import-remote-actions";
 import { HTTPLister } from "../http-router/http-listener";
 import { defineAction } from "../actions/actions";
 import { set, z } from "zod";
+import * as fs from "fs/promises";
 
 describe("import-remote-actions", () => {
   const cleanupTasks = new Set<() => any>();
@@ -41,5 +49,24 @@ describe("import-remote-actions", () => {
       "1.- my actions 1",
       new URL("./__tests__/tmp/", import.meta.url).pathname,
     );
+
+    expect(
+      await fs.readFile(
+        new URL(
+          "./__tests__/tmp/node_modules/actioman/lib/esm/share-actions/remote_actions/_1MyActions1.js",
+          import.meta.url,
+        ),
+        "utf-8",
+      ),
+    ).toMatchSnapshot("file content");
+    expect(
+      await fs.readFile(
+        new URL(
+          "./__tests__/tmp/node_modules/actioman/lib/esm/share-actions/share-actions.js",
+          import.meta.url,
+        ),
+        "utf-8",
+      ),
+    ).toMatchSnapshot("file content");
   });
 });
