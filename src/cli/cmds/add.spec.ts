@@ -5,21 +5,7 @@ import { defineAction } from "../../actions/actions";
 import { z } from "zod";
 import { $ } from "../../shell/shell.js";
 import * as fs from "fs/promises";
-
-class CleanupTasks {
-  tasks = new Set<() => any>();
-
-  add(task: () => any) {
-    this.tasks.add(task);
-  }
-
-  async cleanup() {
-    for (const task of this.tasks) await task();
-    this.tasks.clear();
-  }
-}
-
-const cleanupTasks = new CleanupTasks();
+import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 
 beforeEach(async () => {
   await $`
@@ -71,11 +57,10 @@ describe("add", () => {
     `;
   });
 
-  afterEach(async () => {
-    await cleanupTasks.cleanup();
-  });
-
   it("should add remote actions and use them", async () => {
+    await using cleanupTasks = new CleanupTasks();
+    cleanupTasks.add(() => httpLocation.close());
+
     const httpLocation = HTTPLister.fromModule({
       hi: defineAction({
         input: z.object({ name: z.string() }),
@@ -83,7 +68,6 @@ describe("add", () => {
         handler: async ({ name }) => `hello ${name}!`,
       }),
     });
-    cleanupTasks.add(() => httpLocation.close());
     const serviceUrl = await httpLocation.listen();
 
     await $work`npx actioman add foo ${serviceUrl.toString()}`;
