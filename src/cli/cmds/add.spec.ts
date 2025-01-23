@@ -71,6 +71,7 @@ describe("add", () => {
     const serviceUrl = await httpLocation.listen();
 
     await $work`npx actioman add foo ${serviceUrl.toString()}`;
+    await $work`npx actioman add taz ${serviceUrl.toString()}`;
 
     await $work`
       touch app.js
