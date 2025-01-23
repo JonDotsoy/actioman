@@ -75,7 +75,7 @@ describe("add", () => {
     await cleanupTasks.cleanup();
   });
 
-  it.only("", async () => {
+  it("should add remote actions and use them", async () => {
     const httpLocation = HTTPLister.fromModule({
       hi: defineAction({
         input: z.object({ name: z.string() }),

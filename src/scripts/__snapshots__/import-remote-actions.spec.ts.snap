@@ -5,7 +5,7 @@ exports[`import-remote-actions imports remote actions: file content 1`] = `
 import { ActionsTarget } from "../../actions-target/actions-target.js";
 
 const createActionsTarget = () =>
-  new ActionsTarget("http://localhost:57611/__actions", {
+  new ActionsTarget("http://localhost:43551/__actions", {
     "hi": {
       description: undefined,
       input: z.object({ "name": z.string() }).strict(),
@@ -19,6 +19,6 @@ export default createActionsTarget;
 
 exports[`import-remote-actions imports remote actions: file content 2`] = `
 "export const shareActions = {};
-export { default as _1MyActions1 } from './_1MyActions1.js';
+export { default as _1MyActions1 } from './remote_actions/_1MyActions1.js';
 "
 `;

@@ -42,7 +42,7 @@ describe("import-remote-actions", () => {
     });
     cleanupTasks.add(() => httpLister.close());
 
-    const server = await httpLister.listen(0);
+    const server = await httpLister.listen(43551);
 
     await importRemoteActions(
       server,

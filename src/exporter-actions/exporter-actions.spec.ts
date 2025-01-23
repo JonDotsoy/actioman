@@ -91,7 +91,7 @@ it("should create ActionsDocument from HTTP server", async () => {
     },
   });
   cleanupTasks.add(() => httpLister.close());
-  const url = await httpLister.listen();
+  const url = await httpLister.listen(43112);
 
   const actionsDocument = await ActionsDocument.fromHTTPServer(url);
   expect(actionsDocument.toString()).toMatchSnapshot();

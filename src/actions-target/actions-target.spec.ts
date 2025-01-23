@@ -11,7 +11,7 @@ afterEach(async () => {
   cleanupTasks.clear();
 });
 
-it("", async () => {
+it("should call actions", async () => {
   const handler = mock((...args: any[]) => ({ ok: true }));
 
   const server = Bun.serve({
@@ -41,7 +41,7 @@ it("", async () => {
   expect(handler).nthCalledWith(1, { name: "jhon", metadata: {} });
 });
 
-it("", async () => {
+it("should throw error if input is invalid", async () => {
   const handler = mock((...args: any[]) => ({ ok: true }));
 
   const server = Bun.serve({
@@ -68,5 +68,4 @@ it("", async () => {
   await expect(
     actionsTarget.hi({ name: "jhon" } as any),
   ).rejects.toThrowError();
-  await actionsTarget.hi({ name: "jhon" } as any);
 });
