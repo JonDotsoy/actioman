@@ -2,53 +2,7 @@ import { ActionsDocument } from "../exporter-actions/exporter-actions.js";
 import * as fs from "fs/promises";
 import { existsSync } from "fs";
 import * as path from "path";
-
-type JsonDBRecord = {
-  key: string[];
-  value: any;
-};
-
-class JsonDB {
-  private constructor(
-    readonly location: URL,
-    private body: Array<JsonDBRecord>,
-  ) {}
-  async read() {
-    if (!existsSync(this.location)) return;
-    const payload = await fs.readFile(this.location, "utf-8");
-    this.body = payload.split("\n").map((e) => JSON.parse(e));
-  }
-  async save() {
-    await fs.writeFile(
-      this.location,
-      this.body.map((e) => JSON.stringify(e)).join("\n"),
-    );
-  }
-  set(key: string[], value: any) {
-    const v: null | JsonDBRecord = this.get(key);
-    if (v) v.value = value;
-    else this.body.push({ key, value });
-  }
-  get(key: string[]) {
-    return (
-      this.body.find((e) => JSON.stringify(e.key) === JSON.stringify(key)) ??
-      null
-    );
-  }
-  has(key: string[]) {
-    return this.get(key) !== null;
-  }
-  delete(key: string[]) {
-    this.body = this.body.filter(
-      (e) => JSON.stringify(e.key) !== JSON.stringify(key),
-    );
-  }
-  static async open(location: URL) {
-    const jsonDB = new JsonDB(location, []);
-    await jsonDB.read();
-    return jsonDB;
-  }
-}
+import { ActionmanLockFile } from "../actioman-lock-file/actioman-lock-file.js";
 
 function* listNodeModulesPaths(cwd: URL): Generator<URL> {
   const proposalNodeModules = new URL("./node_modules/", cwd);
@@ -102,10 +56,12 @@ export const importRemoteActions = async (
 ) => {
   const cwdUrl = new URL(cwd, "file://");
 
-  const actiomanLockFileLocation = new URL("./.actioman.lock", cwdUrl);
+  const actiomanLockFileLocation = new URL("./.actioman.lock.json", cwdUrl);
   const shareActionsFileModule = await findShareActionsFileModule(cwdUrl);
 
-  const actiomanLockFile = await JsonDB.open(actiomanLockFileLocation);
+  const actiomanLockFile = await ActionmanLockFile.open(
+    actiomanLockFileLocation,
+  );
 
   const actionsName = normalizeName(name);
   const actionsDocumentTargetURL = new URL(
@@ -120,15 +76,7 @@ export const importRemoteActions = async (
     `Wrote "${name}" to ${path.relative(cwd, actionsDocumentTargetURL.pathname)}`,
   );
 
-  actiomanLockFile.set(
-    [`remotes`, `${actionsName}`, `createdAt`],
-    `${new Date().toUTCString()}`,
-  );
-  actiomanLockFile.set([`remotes`, `${actionsName}`, `url`], `${url}`);
-  actiomanLockFile.set(
-    [`remotes`, `${actionsName}`, `actionsJson`],
-    actionsDocument.actionsJson,
-  );
+  actiomanLockFile.addRemote(actionsName, url, actionsDocument.actionsJson);
 
   await fs.appendFile(
     shareActionsFileModule,
