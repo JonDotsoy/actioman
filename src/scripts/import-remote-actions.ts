@@ -4,38 +4,49 @@ import { existsSync } from "fs";
 import * as path from "path";
 
 type JsonDBRecord = {
-  key: string[],
-  value: any,
-}
+  key: string[];
+  value: any;
+};
 
 class JsonDB {
-  private constructor(readonly location: URL, private body: Array<JsonDBRecord>) { }
+  private constructor(
+    readonly location: URL,
+    private body: Array<JsonDBRecord>,
+  ) {}
   async read() {
     if (!existsSync(this.location)) return;
-    const payload = await fs.readFile(this.location, "utf-8")
-    this.body = payload.split('\n').map(e => JSON.parse(e));
+    const payload = await fs.readFile(this.location, "utf-8");
+    this.body = payload.split("\n").map((e) => JSON.parse(e));
   }
   async save() {
-    await fs.writeFile(this.location, this.body.map(e => JSON.stringify(e)).join('\n'));
+    await fs.writeFile(
+      this.location,
+      this.body.map((e) => JSON.stringify(e)).join("\n"),
+    );
   }
   set(key: string[], value: any) {
-    const v: null | JsonDBRecord = this.get(key)
+    const v: null | JsonDBRecord = this.get(key);
     if (v) v.value = value;
-    else this.body.push({ key, value })
+    else this.body.push({ key, value });
   }
   get(key: string[]) {
-    return this.body.find(e => JSON.stringify(e.key) === JSON.stringify(key)) ?? null;
+    return (
+      this.body.find((e) => JSON.stringify(e.key) === JSON.stringify(key)) ??
+      null
+    );
   }
   has(key: string[]) {
     return this.get(key) !== null;
   }
   delete(key: string[]) {
-    this.body = this.body.filter(e => JSON.stringify(e.key) !== JSON.stringify(key));
+    this.body = this.body.filter(
+      (e) => JSON.stringify(e.key) !== JSON.stringify(key),
+    );
   }
   static async open(location: URL) {
     const jsonDB = new JsonDB(location, []);
     await jsonDB.read();
-    return jsonDB
+    return jsonDB;
   }
 }
 
@@ -91,7 +102,10 @@ export const importRemoteActions = async (
 ) => {
   const cwdUrl = new URL(cwd, "file://");
 
+  const actiomanLockFileLocation = new URL("./.actioman.lock", cwdUrl);
   const shareActionsFileModule = await findShareActionsFileModule(cwdUrl);
+
+  const actiomanLockFile = await JsonDB.open(actiomanLockFileLocation);
 
   const actionsName = normalizeName(name);
   const actionsDocumentTargetURL = new URL(
@@ -100,17 +114,26 @@ export const importRemoteActions = async (
   );
   await fs.mkdir(new URL("./", actionsDocumentTargetURL), { recursive: true });
 
-  await fs.writeFile(
-    actionsDocumentTargetURL,
-    (await ActionsDocument.fromHTTPServer(new URL(url))).toString(),
-  );
+  const actionsDocument = await ActionsDocument.fromHTTPServer(new URL(url));
+  await fs.writeFile(actionsDocumentTargetURL, actionsDocument.toString());
   console.log(
     `Wrote "${name}" to ${path.relative(cwd, actionsDocumentTargetURL.pathname)}`,
+  );
+
+  actiomanLockFile.set(
+    [`remotes`, `${actionsName}`, `createdAt`],
+    `${new Date().toUTCString()}`,
+  );
+  actiomanLockFile.set([`remotes`, `${actionsName}`, `url`], `${url}`);
+  actiomanLockFile.set(
+    [`remotes`, `${actionsName}`, `actionsJson`],
+    actionsDocument.actionsJson,
   );
 
   await fs.appendFile(
     shareActionsFileModule,
     `export { default as ${actionsName} } from './remote_actions/${actionsName}.js';\n`,
   );
+  await actiomanLockFile.save();
   console.log(`imported "${name}" from ${url}`);
 };
