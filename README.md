@@ -4,9 +4,21 @@ Share functions with other js clients. Call backend functions with type-safety.
 
 - validate json input/output using zod validation
 
-## Basic usage
+## Usage
 
-Define a server schema with all functions. This file is called by `actioman`.
+Install the `actioman` module with npm.
+
+```shell
+npm add actioman
+```
+
+Edit `packaage.json > prepare` script.
+
+```shell
+npm pkg set scripts.prepare="actioman install"
+```
+
+Define some actions on a javascript file.
 
 ```ts
 // ./actions.js
