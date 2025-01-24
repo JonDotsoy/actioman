@@ -1,8 +1,7 @@
 import { Router } from "artur";
-import { Actions, defineAction, type Action } from "../actions/actions.js";
+import { Actions } from "../actions/actions.js";
 import { z } from "zod";
 import { get } from "@jondotsoy/utils-js/get";
-import zodToJsonSchema from "zod-to-json-schema";
 import { actionsToJson } from "../exporter-actions/exporter-actions.js";
 
 const result = async <T>(fn: () => Promise<T>) => {
