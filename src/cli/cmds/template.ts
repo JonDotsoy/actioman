@@ -16,5 +16,9 @@ export const template = async (args: string[]) => {
   ];
   const options = flags(args, {}, rules);
 
-  if (options.help) return makeHelpMessage("actioman", rules);
+  const help = () => console.log(makeHelpMessage("actioman template", rules));
+
+  if (options.help) return help();
+
+  return help();
 };
