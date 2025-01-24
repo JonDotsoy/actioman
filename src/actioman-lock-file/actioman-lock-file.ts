@@ -2,24 +2,58 @@ import * as fs from "fs/promises";
 import { existsSync } from "fs";
 import { ActionmanLockDocument } from "../actioman-lock-document/actioman-lock-document.js";
 
+type Remote = {
+  actionsKey: string;
+  actionsName: string;
+  url: URL;
+  actionsJson: string;
+};
+
 export class ActionmanLockFile {
   private constructor(
     readonly location: URL,
     readonly document: ActionmanLockDocument,
   ) {}
 
-  async addRemote(actionsName: string, url: URL, actionsJson: string) {
+  *eachRemote(): Generator<Remote> {
+    const remoteNames = new Set<string>();
+    for (const key of this.document.keys()) {
+      if (key.at(0) !== "remotes") continue;
+      const actionsKey = key.at(1);
+      if (actionsKey === undefined) continue;
+      remoteNames.add(actionsKey);
+    }
+
+    for (const actionsKey of remoteNames) {
+      yield {
+        actionsKey: actionsKey,
+        actionsName: this.document.get([`remotes`, `${actionsKey}`, `name`])!
+          .value,
+        url: new URL(
+          this.document.get([`remotes`, `${actionsKey}`, `url`])!.value,
+        ),
+        actionsJson: JSON.parse(
+          this.document.get([`remotes`, `${actionsKey}`, `actionsJson`])!.value,
+        ),
+      } as any;
+    }
+  }
+
+  async addRemote(remote: Remote) {
+    const { actionsKey, actionsName, url, actionsJson } = remote;
+
+    this.document.set([`remotes`, `${actionsKey}`, `name`], actionsName);
     this.document.set(
-      [`remotes`, `${actionsName}`, `createdAt`],
+      [`remotes`, `${actionsKey}`, `createdAt`],
       `${new Date().toUTCString()}`,
     );
-    this.document.set([`remotes`, `${actionsName}`, `url`], `${url}`);
+    this.document.set([`remotes`, `${actionsKey}`, `url`], `${url}`);
     this.document.set(
-      [`remotes`, `${actionsName}`, `actionsJson`],
+      [`remotes`, `${actionsKey}`, `actionsJson`],
       JSON.stringify(actionsJson),
     );
     this.document.set(
-      [`remotes`, `${actionsName}`, `hash`],
+      [`remotes`, `${actionsKey}`, `hash`],
       `0x${Array.from(
         new Uint8Array(
           await crypto.subtle.digest(
