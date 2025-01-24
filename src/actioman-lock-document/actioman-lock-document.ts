@@ -2,6 +2,9 @@ import type { JsonDBRecord } from "./dtos/json-db-record";
 
 export class ActionmanLockDocument {
   constructor(private recordsList: JsonDBRecord[] = []) {}
+  keys() {
+    return this.recordsList.map((e) => e.key);
+  }
   set(key: string[], value: any) {
     const v: null | JsonDBRecord = this.get(key);
     if (v) v.value = value;
