@@ -72,10 +72,7 @@ describe("HTTPLister", () => {
       expect(await res.text()).toMatchSnapshot();
     });
 
-    /**
-     * @todo pending error `TypeError: Can only call ReadableStreamDefaultController.close on instances of ReadableStreamDefaultController`
-     */
-    it.skip("should return 200 for /__actions/hi", async () => {
+    it("should return 200 for /__actions/hi", async () => {
       const res = await fetch("http://localhost:30161/__actions/hi", {
         method: "POST",
       });
