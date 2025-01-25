@@ -21,42 +21,42 @@ export class PrepareWorkspace {
     await $`
       set -e
       current_hash=""
-      mkdir -p /tmp/caches/
-      if [ -f "/tmp/caches/${TMP_FILE_NAME}.hash" ]
+      mkdir -p /tmp/__tests/caches/
+      if [ -f "/tmp/__tests/caches/${TMP_FILE_NAME}.hash" ]
       then
-        current_hash=$(cat /tmp/caches/${TMP_FILE_NAME}.hash)
+        current_hash=$(cat /tmp/__tests/caches/${TMP_FILE_NAME}.hash)
       fi
       hash=$(find src/ -type f -not -name  "*.spec.*" | sort  | xargs -I {} cat {} | shasum | awk '{{print $1}}')
-      echo $hash > /tmp/caches/${TMP_FILE_NAME}.hash
+      echo $hash > /tmp/__tests/caches/${TMP_FILE_NAME}.hash
       if [ "$current_hash" = "$hash" ]
       then
-        rm -f  /tmp/caches/${TMP_FILE_NAME}_actioman_module.changed
+        rm -f  /tmp/__tests/caches/${TMP_FILE_NAME}_actioman_module.changed
         exit 0
       fi
       npm pack
       tarfile=$(realpath $(cat package.json | jq -r '"" + .name + "-" + .version + ".tgz"'))
       echo tarfile=$tarfile
-      mv $tarfile /tmp/caches/${TMP_FILE_NAME}_actioman_module.tgz
-      echo "true" > /tmp/caches/${TMP_FILE_NAME}_actioman_module.changed
+      mv $tarfile /tmp/__tests/caches/${TMP_FILE_NAME}_actioman_module.tgz
+      echo "true" > /tmp/__tests/caches/${TMP_FILE_NAME}_actioman_module.changed
     `;
 
     await $work`
       set -e
       mkdir -p /tmp/caches
-      if [ -f /tmp/caches/${TMP_FILE_NAME}.tgz ]
+      if [ -f /tmp/__tests/caches/${TMP_FILE_NAME}.tgz ]
       then
-        tar -xzf /tmp/caches/${TMP_FILE_NAME}.tgz
+        tar -xzf /tmp/__tests/caches/${TMP_FILE_NAME}.tgz || true
       fi
       if [ ! -f "package.json" ]
       then
         npm init -y
         npm pkg set "type=module"
       fi
-      if [ -f /tmp/caches/${TMP_FILE_NAME}_actioman_module.changed ]
+      if [ -f /tmp/__tests/caches/${TMP_FILE_NAME}_actioman_module.changed ]
       then
-        npm add /tmp/caches/${TMP_FILE_NAME}_actioman_module.tgz
+        npm add /tmp/__tests/caches/${TMP_FILE_NAME}_actioman_module.tgz
       fi
-      tar -czf /tmp/caches/${TMP_FILE_NAME}.tgz .
+      tar -czf /tmp/__tests/caches/${TMP_FILE_NAME}.tgz . || true
     `;
 
     return {
