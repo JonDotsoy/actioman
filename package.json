@@ -14,6 +14,7 @@
   "bin": "./lib/esm/cli/actioman.js",
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/escodegen": "^0.0.10",
     "expect-type": "^1.1.0",
     "prettier": "^3.4.2"
   },
@@ -29,6 +30,7 @@
     "@jondotsoy/flags": "^2.3.0",
     "@jondotsoy/utils-js": "^0.6.0",
     "artur": "^1.2.3",
+    "escodegen": "^2.1.0",
     "json-schema-to-zod": "^2.6.0",
     "zod": "^3.24.1",
     "zod-to-json-schema": "^3.24.1"
