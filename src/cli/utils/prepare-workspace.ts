@@ -21,6 +21,7 @@ export class PrepareWorkspace {
     await $`
       set -e
       current_hash=""
+      mkdir -p /tmp/caches/
       if [ -f "/tmp/caches/${TMP_FILE_NAME}.hash" ]
       then
         current_hash=$(cat /tmp/caches/${TMP_FILE_NAME}.hash)
