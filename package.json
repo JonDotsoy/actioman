@@ -28,7 +28,7 @@
   "dependencies": {
     "@jondotsoy/flags": "^2.3.0",
     "@jondotsoy/utils-js": "^0.6.0",
-    "artur": "^1.2.2",
+    "artur": "^1.2.3",
     "json-schema-to-zod": "^2.6.0",
     "zod": "^3.24.1",
     "zod-to-json-schema": "^3.24.1"
