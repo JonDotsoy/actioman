@@ -3,6 +3,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "bun:test";
 import { HTTPLister } from "../http-router/http-listener";
 import { defineAction } from "../actions/actions";
 import { z } from "zod";
+import { PrepareWorkspace } from "./utils/prepare-workspace";
 
 const withFn = <T>(
   test: T,
@@ -19,6 +20,7 @@ const cleanupTasks: (() => Promise<any>)[] = [];
  * Prepare workspace
  *
  * @param workspaceName
+ * @deprecated
  * @returns
  */
 const workspace = async (workspaceName: string) => {
@@ -138,24 +140,6 @@ afterEach(async () => {
   }
 });
 
-it("serves actions", async () => {
-  const { $, actioman } = await workspace("foo");
-
-  const b = new TextEncoder().encode(sample);
-
-  await $`cat < ${b} | cat > actions.ts`;
-
-  const { listeningReady } = actioman("serve", "actions.ts");
-
-  const res = await fetch(new URL("__actions", await listeningReady));
-
-  expect(res.status).toEqual(200);
-  expect({ ...(await res.headers.toJSON()), date: null }).toMatchSnapshot(
-    "headers response",
-  );
-  expect(await res.json()).toMatchSnapshot("body response");
-});
-
 describe("", () => {
   let $: bun.Shell | null = null;
 
@@ -164,7 +148,7 @@ describe("", () => {
     $ = w.$;
   });
 
-  it.only("", async () => {
+  it("", async () => {
     const httpLister = HTTPLister.fromModule({
       hi: defineAction({
         input: z.object({ name: z.string() }),

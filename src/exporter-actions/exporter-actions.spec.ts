@@ -8,8 +8,7 @@ import {
 } from "./exporter-actions";
 import type { ActionsDefinitionsJsonDTO } from "./dtos/actions-definitions-json.dto";
 import { HTTPLister } from "../http-router/http-listener";
-
-const cleanupTasks = new Set<() => any>();
+import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 
 describe("actionsToJson", () => {
   it("should export actions to JSON", () => {
@@ -28,15 +27,7 @@ describe("actionsToJson", () => {
   });
 });
 
-afterEach(async () => {
-  for (const cleanupTask of cleanupTasks) await cleanupTask();
-});
-
 describe("importActionsFromJson", () => {
-  afterEach(async () => {
-    for (const cleanupTask of cleanupTasks) await cleanupTask();
-  });
-
   it("should import actions from JSON", () => {
     expect(importActionsFromJson({}, "http://localhost")).toMatchSnapshot();
   });
@@ -73,6 +64,9 @@ describe("importActionsFromJson", () => {
 });
 
 it("should create ActionsDocument from HTTP server", async () => {
+  await using cleanupTasks = new CleanupTasks();
+  cleanupTasks.add(() => httpLister.close());
+
   const httpLister = HTTPLister.fromModule({
     hi: {
       input: z.object({
@@ -90,9 +84,12 @@ it("should create ActionsDocument from HTTP server", async () => {
       handler: () => "ok",
     },
   });
-  cleanupTasks.add(() => httpLister.close());
   const url = await httpLister.listen(43112);
 
-  const actionsDocument = await ActionsDocument.fromHTTPServer(url);
+  const actionsDocument = await ActionsDocument.fromHTTPServer(
+    url,
+    "file:///app/",
+    "file:///app/node_modules/actions-target/actions-target.js",
+  );
   expect(actionsDocument.toString()).toMatchSnapshot();
 });

@@ -10,7 +10,7 @@ describe("add", async () => {
   it(
     "should add remote actions and use them",
     async () => {
-      const { $work } = await PrepareWorkspace.setup(import.meta.url);
+      const { $ } = await PrepareWorkspace.setup();
       await using cleanupTasks = new CleanupTasks();
       cleanupTasks.add(() => httpLocation.close());
 
@@ -23,14 +23,14 @@ describe("add", async () => {
       });
       const serviceUrl = await httpLocation.listen();
 
-      await $work`npx actioman add foo ${serviceUrl.toString()}`;
-      await $work`npx actioman add taz ${serviceUrl.toString()}`;
+      await $`npx actioman add foo ${serviceUrl.toString()}`;
+      await $`npx actioman add taz ${serviceUrl.toString()}`;
 
-      await $work`
-      touch app.js
-    `;
+      await $`
+        touch app.js
+      `;
 
-      const appScript = (await $work`realpath app.js`.text()).trim();
+      const appScript = (await $`realpath app.js`.text()).trim();
 
       fs.writeFile(
         appScript,
@@ -42,7 +42,7 @@ describe("add", async () => {
           `\n`,
       );
 
-      await $work`node app.js`;
+      await $`node app.js`;
     },
     { timeout: 60_000 },
   );

@@ -9,7 +9,7 @@ describe("install", async () => {
   it(
     "should install without errors",
     async () => {
-      const { $work } = await PrepareWorkspace.setup(import.meta.url);
+      const { $: $work } = await PrepareWorkspace.setup();
       await $work`
       npx actioman install
     `;
@@ -22,7 +22,7 @@ describe("install", async () => {
   it(
     "should install remote actions and use them",
     async () => {
-      const { $work } = await PrepareWorkspace.setup(import.meta.url);
+      const { $: $work } = await PrepareWorkspace.setup();
       await using cleanupTasks = new CleanupTasks();
       cleanupTasks.add(() => httpLocation.close());
 
