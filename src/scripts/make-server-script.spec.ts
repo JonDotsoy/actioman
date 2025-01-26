@@ -5,7 +5,7 @@ import { PrepareWorkspace } from "../cli/utils/prepare-workspace.js";
 
 describe("", () => {
   it.skip("", async () => {
-    const {} = await PrepareWorkspace.setup()
+    const {} = await PrepareWorkspace.setup();
 
     await makeServerScript("");
   });
