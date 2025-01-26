@@ -208,7 +208,7 @@ const getProgramAST = (params: getProgramASTParams) => ({
 });
 
 type Params = {
-  cwd: string;
+  fileLocation: string;
   actionTargetModuleLocation: string;
   actionsDocument: ActionsDocument;
 };
@@ -220,7 +220,7 @@ export const actionDocumentTemplate = (params: Params) => {
   };
 
   const ast = getProgramAST({
-    actionModulePath: `./${path.relative(new URL(params.cwd, "file://").pathname, new URL(params.actionTargetModuleLocation, "file://").pathname)}`,
+    actionModulePath: `./${path.relative(new URL("./", new URL(params.fileLocation, "file://")).pathname, new URL(params.actionTargetModuleLocation, "file://").pathname)}`,
     actionTargetUrl: params.actionsDocument.targetUrl.toString(),
     actionDefinitions: Object.fromEntries(
       Array.from(
