@@ -16,6 +16,7 @@ export class ShellConstructor<T> {
   private cwdOptions?: string;
   private abortController: AbortController;
   private envOptions: Record<string, string> | undefined;
+  private appendEnvsOptions: Record<string, string> = {};
   private shouldThrow = false;
   private status: "pending" | "running" | "fulfilled" | "rejected" = "pending";
   private _promise = Promise.withResolvers<any>();
@@ -59,6 +60,14 @@ export class ShellConstructor<T> {
     return this;
   }
 
+  appendEnvs(env: Record<string, string>) {
+    this.appendEnvsOptions = {
+      ...this.appendEnvsOptions,
+      ...env,
+    };
+    return this;
+  }
+
   env(newEnv: Record<string, string>) {
     this.envOptions = newEnv;
     return this;
@@ -69,8 +78,8 @@ export class ShellConstructor<T> {
     return this;
   }
 
-  quiet() {
-    this.silent = true;
+  quiet(silent: boolean = true) {
+    this.silent = silent;
     return this;
   }
 
@@ -84,7 +93,10 @@ export class ShellConstructor<T> {
   async run() {
     const cmd = this.cmd;
     const cwd = this.cwdOptions;
-    const env = this.envOptions ?? process.env;
+    const env = {
+      ...(this.envOptions ?? process.env),
+      ...this.appendEnvsOptions,
+    };
     const abortController = this.abortController;
     const throws = this.shouldThrow;
     const output = this.output;
