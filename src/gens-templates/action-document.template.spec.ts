@@ -8,7 +8,7 @@ describe("actionDocumentTemplate", () => {
   it("should generate the actions target code", () => {
     expect(
       actionDocumentTemplate({
-        cwd: "file:///app/my_app/my_actions/",
+        fileLocation: "file:///app/my_app/my_actions/",
         actionTargetModuleLocation:
           "file:///app/my_app/node_modules/actioman/lib/esm/actions-target/actions-target.js",
         actionsDocument: new ActionsDocument(new URL("http://localhost"), {
