@@ -1,20 +1,16 @@
 // Bun Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`import-remote-actions imports remote actions: file content 1`] = `
-"import { z } from "zod";
-import { ActionsTarget } from "../../actions-target/actions-target.js";
-
-const createActionsTarget = () =>
-  new ActionsTarget("http://localhost:43551/__actions", {
-    "hi": {
-      description: undefined,
-      input: z.object({ "name": z.string() }).strict(),
-      output: undefined,
-    },
-  }).compile();
-
-export default createActionsTarget;
-"
+"import { z } from 'zod';
+import { ActionsTarget } from './../../actions-target/actions-target.js';
+const createActionsTarget = () => new ActionsTarget('http://localhost:43551/__actions', {
+    hi: {
+        description: undefined,
+        input: z.object({ "name": z.string() }).strict(),
+        output: undefined
+    }
+}).compile();
+export default createActionsTarget;"
 `;
 
 exports[`import-remote-actions imports remote actions: file content 2`] = `
