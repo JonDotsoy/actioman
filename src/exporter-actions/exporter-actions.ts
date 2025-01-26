@@ -3,7 +3,9 @@ import zodToJsonSchema from "zod-to-json-schema";
 import type { ActionsDefinitionsJsonDTO } from "./dtos/actions-definitions-json.dto.js";
 import { get } from "@jondotsoy/utils-js/get";
 import jsonSchemaToZod from "json-schema-to-zod";
+import { actionDocumentTemplate } from "../gens-templates/action-document.template.js";
 
+/** @deprecated by {@link actionDocumentTemplate} */
 const templateAction = (
   actionNameSrc: string,
   descriptionSrc: string,
@@ -15,6 +17,7 @@ const templateAction = (
       output: ${outputSrc},
     },`;
 
+/** @deprecated by {@link actionDocumentTemplate} */
 const template = (
   targetUrlSrc: string,
   actionsSrc: string,
@@ -30,14 +33,24 @@ ${actionsSrc}
 export default createActionsTarget;
 `;
 
+type ToStringOptions = {
+  fileLocation?: string;
+  actionTargetModuleLocation?: string;
+};
+
 export class ActionsDocument {
   constructor(
     readonly targetUrl: URL,
     readonly actionsJson: any,
+    readonly fileLocation?: string,
     readonly actionsTargetModuleLocation: string = "../../actions-target/actions-target.js",
   ) {}
 
-  toString() {
+  toString(options?: ToStringOptions) {
+    const fileLocation =
+      options?.fileLocation ?? this.fileLocation ?? process.cwd();
+    const actionTargetModuleLocation =
+      options?.actionTargetModuleLocation ?? this.actionsTargetModuleLocation;
     const toJsonZod = (value: Record<any, any> | undefined) => {
       if (value) return jsonSchemaToZod(value);
       return "undefined";
@@ -56,10 +69,19 @@ export class ActionsDocument {
 
     const targetUrlSrc = JSON.stringify(this.targetUrl.toString());
 
-    return template(targetUrlSrc, actionsSrc, this.actionsTargetModuleLocation);
+    return actionDocumentTemplate({
+      fileLocation: fileLocation,
+      actionTargetModuleLocation,
+      actionsDocument: this,
+    });
+    // return template(targetUrlSrc, actionsSrc, this.actionsTargetModuleLocation);
   }
 
-  static async fromHTTPServer(url: URL, actionsTargetModuleLocation?: string) {
+  static async fromHTTPServer(
+    url: URL,
+    cwd?: string,
+    actionsTargetModuleLocation?: string,
+  ) {
     const targetUrl = new URL("./__actions", url);
     const res = await fetch(targetUrl);
     const b = await res.json();
@@ -67,6 +89,7 @@ export class ActionsDocument {
     return new ActionsDocument(
       targetUrl,
       actionsJson,
+      cwd,
       actionsTargetModuleLocation,
     );
   }
@@ -92,6 +115,7 @@ export const actionsToJson = (actions: Actions): ActionsDefinitionsJsonDTO => {
   );
 };
 
+/** @deprecated by {@link ActionsDocument} */
 export const importActionsFromJson = (
   json: any,
   target: string,
