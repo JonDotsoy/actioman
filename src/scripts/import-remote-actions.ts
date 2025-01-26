@@ -8,7 +8,17 @@ import { findShareActionsFileModule } from "./find-share-actions-file-module.js"
 import { findActionTargetFileModule } from "./findActionTargetFileModule.js";
 import { normalizeName } from "./normalizeName.js";
 import { getActionsDocumentTargetURL } from "./getActionsDocumentTargetURL.js";
+import { shareActionsTemplate } from "../gens-templates/share-actions-document.template.js";
 
+/**
+ * Imports a remote action into the local project.  The action is fetched from a remote HTTP server,
+ * saved to the local file system, and registered in the `share-actions` module.  The action's
+ * metadata is also added to the actioman lock file.
+ *
+ * @param name
+ * @param cwdUrl
+ * @param actionsDocument
+ */
 export const importRemoteAction = async (
   name: string,
   cwdUrl: URL,
@@ -17,8 +27,21 @@ export const importRemoteAction = async (
   const actionsName = normalizeName(name);
 
   const actiomanLockFileLocation = getActiomanLockFileLocation(cwdUrl);
-  const shareActionsFileModule = await findShareActionsFileModule(cwdUrl);
-  const actionTargetModuleLocation = await findActionTargetFileModule(cwdUrl);
+  const actiomanShareActionsFileModule =
+    await findShareActionsFileModule(cwdUrl);
+  const metadataActionsImportedJSONFile = new URL(
+    `./.actions-imported.json`,
+    actiomanShareActionsFileModule,
+  );
+  const actiomanActionTargetModuleLocation =
+    await findActionTargetFileModule(cwdUrl);
+
+  const metadataActionsImported: {
+    imported?: Record<string, { name: string; path: string }>;
+  } = existsSync(metadataActionsImportedJSONFile)
+    ? JSON.parse(await fs.readFile(metadataActionsImportedJSONFile, "utf-8"))
+    : {};
+  const metadataActionsImportedRecords = metadataActionsImported.imported ?? {};
 
   const actiomanLockFile = await ActionmanLockFile.open(
     actiomanLockFileLocation,
@@ -26,7 +49,7 @@ export const importRemoteAction = async (
 
   const actionsDocumentTargetURL = getActionsDocumentTargetURL(
     actionsName,
-    shareActionsFileModule,
+    actiomanShareActionsFileModule,
   );
 
   if (!existsSync(actionsDocumentTargetURL))
@@ -38,16 +61,37 @@ export const importRemoteAction = async (
     actionsDocumentTargetURL,
     actionsDocument.toString({
       fileLocation: actionsDocumentTargetURL.pathname,
-      actionTargetModuleLocation: actionTargetModuleLocation.pathname,
+      actionTargetModuleLocation: actiomanActionTargetModuleLocation.pathname,
     }),
   );
   console.log(
     `Wrote "${name}" to ${path.relative(cwdUrl.pathname, actionsDocumentTargetURL.pathname)}`,
   );
 
-  await fs.appendFile(
-    shareActionsFileModule,
-    `export { default as ${actionsName} } from './remote_actions/${actionsName}.js';\n`,
+  metadataActionsImportedRecords[name] = {
+    name: actionsName,
+    path: actionsDocumentTargetURL.toString(),
+  };
+
+  await fs.writeFile(
+    actiomanShareActionsFileModule,
+    shareActionsTemplate({
+      fileLocation: actiomanShareActionsFileModule.toString(),
+      importActionModules: Object.values(metadataActionsImportedRecords).map(
+        (e) => ({
+          name: e.name,
+          location: e.path,
+        }),
+      ),
+    }),
+  );
+
+  metadataActionsImported.imported = metadataActionsImportedRecords;
+
+  await fs.writeFile(
+    metadataActionsImportedJSONFile,
+    JSON.stringify(metadataActionsImported, null, 2),
+    "utf-8",
   );
 
   return { actiomanLockFile, actionsName };
