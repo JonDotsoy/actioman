@@ -5,6 +5,7 @@ import * as path from "path";
 import { ActionmanLockFile } from "../actioman-lock-file/actioman-lock-file.js";
 import { getActiomanLockFileLocation } from "../actioman-lock-file-location/actioman-lock-file-location.js";
 import { findShareActionsFileModule } from "./find-share-actions-file-module.js";
+import { findActionTargetFileModule } from "./findActionTargetFileModule.js";
 import { normalizeName } from "./normalizeName.js";
 import { getActionsDocumentTargetURL } from "./getActionsDocumentTargetURL.js";
 
@@ -17,6 +18,7 @@ export const importRemoteAction = async (
 
   const actiomanLockFileLocation = getActiomanLockFileLocation(cwdUrl);
   const shareActionsFileModule = await findShareActionsFileModule(cwdUrl);
+  const actionTargetModuleLocation = await findActionTargetFileModule(cwdUrl);
 
   const actiomanLockFile = await ActionmanLockFile.open(
     actiomanLockFileLocation,
@@ -32,7 +34,13 @@ export const importRemoteAction = async (
       recursive: true,
     });
 
-  await fs.writeFile(actionsDocumentTargetURL, actionsDocument.toString());
+  await fs.writeFile(
+    actionsDocumentTargetURL,
+    actionsDocument.toString({
+      fileLocation: actionsDocumentTargetURL.pathname,
+      actionTargetModuleLocation: actionTargetModuleLocation.pathname,
+    }),
+  );
   console.log(
     `Wrote "${name}" to ${path.relative(cwdUrl.pathname, actionsDocumentTargetURL.pathname)}`,
   );
@@ -50,7 +58,11 @@ export const importRemoteActions = async (
   name: string,
   cwd: string,
 ) => {
-  const actionsDocument = await ActionsDocument.fromHTTPServer(new URL(url));
+  const actionsDocument = await ActionsDocument.fromHTTPServer(
+    new URL(url),
+    cwd,
+    undefined,
+  );
 
   const cwdUrl = new URL(cwd, "file://");
 
