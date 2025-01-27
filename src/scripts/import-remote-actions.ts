@@ -24,11 +24,17 @@ export const importRemoteAction = async (
   cwdUrl: URL,
   actionsDocument: ActionsDocument,
 ) => {
+  const makeDTSPath = (url: URL) =>
+    new URL(`./${path.basename(url.pathname, ".js")}.d.ts`, url);
+
   const actionsName = normalizeName(name);
 
   const actiomanLockFileLocation = getActiomanLockFileLocation(cwdUrl);
   const actiomanShareActionsFileModule =
     await findShareActionsFileModule(cwdUrl);
+  const actiomanShareActionsDFileModule = makeDTSPath(
+    actiomanShareActionsFileModule,
+  );
   const metadataActionsImportedJSONFile = new URL(
     `./.actions-imported.json`,
     actiomanShareActionsFileModule,
@@ -51,19 +57,21 @@ export const importRemoteAction = async (
     actionsName,
     actiomanShareActionsFileModule,
   );
+  const actionsDocumentTargetDTSURL = makeDTSPath(actionsDocumentTargetURL);
 
   if (!existsSync(actionsDocumentTargetURL))
     await fs.mkdir(new URL("./", actionsDocumentTargetURL), {
       recursive: true,
     });
 
-  await fs.writeFile(
-    actionsDocumentTargetURL,
-    actionsDocument.toString({
-      fileLocation: actionsDocumentTargetURL.pathname,
-      actionTargetModuleLocation: actiomanActionTargetModuleLocation.pathname,
-    }),
-  );
+  const srca = actionsDocument.toString({
+    fileLocation: actionsDocumentTargetURL.pathname,
+    actionTargetModuleLocation: actiomanActionTargetModuleLocation.pathname,
+  });
+
+  await fs.writeFile(actionsDocumentTargetURL, srca);
+  await fs.writeFile(actionsDocumentTargetDTSURL, srca);
+
   console.log(
     `Wrote "${name}" to ${path.relative(cwdUrl.pathname, actionsDocumentTargetURL.pathname)}`,
   );
@@ -73,18 +81,18 @@ export const importRemoteAction = async (
     path: actionsDocumentTargetURL.toString(),
   };
 
-  await fs.writeFile(
-    actiomanShareActionsFileModule,
-    shareActionsTemplate({
-      fileLocation: actiomanShareActionsFileModule.toString(),
-      importActionModules: Object.values(metadataActionsImportedRecords).map(
-        (e) => ({
-          name: e.name,
-          location: e.path,
-        }),
-      ),
-    }),
-  );
+  const src = shareActionsTemplate({
+    fileLocation: actiomanShareActionsFileModule.toString(),
+    importActionModules: Object.values(metadataActionsImportedRecords).map(
+      (e) => ({
+        name: e.name,
+        location: e.path,
+      }),
+    ),
+  });
+
+  await fs.writeFile(actiomanShareActionsFileModule, src);
+  await fs.writeFile(actiomanShareActionsDFileModule, src);
 
   metadataActionsImported.imported = metadataActionsImportedRecords;
 
