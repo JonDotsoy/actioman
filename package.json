@@ -23,7 +23,8 @@
   },
   "exports": {
     ".": {
-      "import": "./lib/esm/actions/actions.js"
+      "import": "./lib/esm/actions/actions.js",
+      "types": "./lib/esm/actions/actions.d.ts"
     }
   },
   "dependencies": {
