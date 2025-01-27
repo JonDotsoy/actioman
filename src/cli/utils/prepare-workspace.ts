@@ -5,7 +5,7 @@ import { $ } from "../../shell/shell.js";
 
 type setupOptions = {
   name?: string;
-  showLogs?: boolean;
+  verbose?: boolean;
 };
 
 const sha256 = async (body: string) => {
@@ -133,7 +133,7 @@ export class PrepareWorkspace {
   }
 
   async setup(options: setupOptions = {}) {
-    const showLogs = options.showLogs ?? false;
+    const showLogs = options.verbose ?? false;
     const workspaceName = options.name ?? "default";
     this.workspaceDir = new URL(`${workspaceName}/`, this.workspacesDir);
     await fs.mkdir(this.cacheDir, { recursive: true });
