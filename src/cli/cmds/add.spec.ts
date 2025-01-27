@@ -1,4 +1,4 @@
-import { describe, it } from "bun:test";
+import { describe, expect, it, mock } from "bun:test";
 import { HTTPLister } from "../../http-router/http-listener.js";
 import { defineAction } from "../../actions/actions";
 import { z } from "zod";
@@ -14,12 +14,16 @@ describe("add", async () => {
       await using cleanupTasks = new CleanupTasks();
       cleanupTasks.add(() => httpLocation.close());
 
+      const fn = mock((d: string) => d);
+
       const httpLocation = HTTPLister.fromModule({
         hi: defineAction({
           input: z.object({ name: z.string() }),
           output: z.string(),
-          handler: async ({ name }) => `hello ${name}!`,
+          handler: async ({ name }) => fn(`hello ${name}!`),
         }),
+        sum: ({ a, b }: { a: number; b: number }) => 3,
+        add: ({ a, b }: { a: number; b: number }) => 3,
       });
       const serviceUrl = await httpLocation.listen();
 
@@ -38,11 +42,16 @@ describe("add", async () => {
           `import { actions } from "actioman";\n` +
           `\n` +
           `await actions.foo().hi({name: "juan"});\n` +
+          `await actions.foo().hi({name: "carl"});\n` +
           `\n` +
           `\n`,
       );
 
       await $`node app.js`;
+
+      expect(fn).toHaveBeenCalledWith("hello juan!");
+      expect(fn).toHaveBeenCalledWith("hello carl!");
+      expect(fn).toHaveBeenCalledTimes(2);
     },
     { timeout: 60_000 },
   );
