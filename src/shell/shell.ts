@@ -88,7 +88,14 @@ export class ShellConstructor<T> {
     return this.quiet() as any;
   }
 
-  background() {}
+  background() {
+    return {
+      exited: this.then(),
+      close: () => {
+        this.abortController.abort();
+      },
+    };
+  }
 
   async run() {
     const cmd = this.cmd;
