@@ -1,41 +1,31 @@
-import escodegen from "escodegen";
+import * as fs from "fs/promises";
+import { httpListenActionTemplate } from "../gens-templates/http-listen-action.template.js";
+import { findHTTPListenerFileModule } from "./findHTTPListenerFileModule.js";
+import { makebootstrapHTTPListenerFileModule } from "./makebootstrapHTTPListenerFileModule.js";
 
-export const makeServerScript = async (cwd: string) => {
-  const source = escodegen.generate({
-    type: "Program",
-    body: [
-      {
-        type: "ImportDeclaration",
-        specifiers: [
-          {
-            type: "ImportSpecifier",
-            start: 9,
-            end: 12,
-            imported: {
-              type: "Identifier",
-              start: 9,
-              end: 12,
-              name: "asd",
-            },
-            local: {
-              type: "Identifier",
-              start: 9,
-              end: 12,
-              name: "asd",
-            },
-          },
-        ],
-        source: {
-          type: "Literal",
-          start: 20,
-          end: 25,
-          value: "asd",
-          raw: '"asd"',
-        },
+export const makeServerScript = async (cwd: string, actionsPath: string) => {
+  const httpListenerLocation = await findHTTPListenerFileModule(
+    new URL(cwd, "file://"),
+  );
+  const bootstrapLocation = await makebootstrapHTTPListenerFileModule(
+    new URL(cwd, "file://"),
+  );
+
+  await fs.mkdir(new URL("./", bootstrapLocation), { recursive: true });
+
+  await fs.writeFile(
+    bootstrapLocation,
+    httpListenActionTemplate({
+      target: bootstrapLocation.pathname,
+      actionFileLocation: actionsPath,
+      modules: {
+        httpListenerModuleLocation: httpListenerLocation.pathname,
       },
-    ],
-    sourceType: "module",
-  });
+    }),
+  );
 
-  console.log(source);
+  return {
+    bootstrapLocation: bootstrapLocation.toString(),
+    httpListenerLocation: httpListenerLocation.toString(),
+  };
 };
