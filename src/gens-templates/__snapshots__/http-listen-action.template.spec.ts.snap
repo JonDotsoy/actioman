@@ -1,0 +1,11 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`httpListenActionTemplate generates bootstrap script 1`] = `
+"import { HTTPLister } from './../mode_modules/actioman/lib/esm/http-router/http-listener.js';
+const bootstrap = async () => {
+    const httpLister = await HTTPLister.fromModule(await import('./../actios-1/actions.js'));
+    const url = await httpLister.listen();
+    console.log(\`Server running at \${ url.toString() }\`);
+};
+bootstrap().catch(console.error);"
+`;
