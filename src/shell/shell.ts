@@ -1,6 +1,6 @@
 import { spawn } from "child_process";
 
-type ShellConstructorOutput = "codeStatus" | "text";
+type ShellConstructorOutput = "codeStatus" | "text" | "pipe";
 
 type ShellConstructorOptions = {
   cmd: string;
@@ -31,7 +31,8 @@ export class ShellConstructor<T> {
   private stdoutWritable = new WritableStream<Uint8Array>({
     write: (chunk) => {
       if (!this.silent) process.stdout.write(chunk);
-      if (this.output === "text") this.stdoutReadableController?.enqueue(chunk);
+      if (this.output === "text" || this.output === "pipe")
+        this.stdoutReadableController?.enqueue(chunk);
     },
     close: () => {
       this.stdoutReadableController?.close();
@@ -89,10 +90,17 @@ export class ShellConstructor<T> {
   }
 
   background() {
+    this.output = "pipe";
+
+    let closed = false;
     return {
       exited: this.then(),
+      stdout: this.stdoutReadable,
+      stderr: this.stderrWritable,
       close: () => {
+        if (closed) return;
         this.abortController.abort();
+        closed = true;
       },
     };
   }
@@ -132,6 +140,7 @@ export class ShellConstructor<T> {
     });
 
     const formatOutput = async (exitCode: number) => {
+      if (output === "pipe") return exitCode;
       if (output === "codeStatus") return exitCode;
       if (output === "text") {
         const text: number[] = [];
