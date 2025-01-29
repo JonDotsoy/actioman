@@ -1,5 +1,5 @@
 import * as http from "http";
-import { HTTPRouter } from "./http-router";
+import { HTTPRouter } from "./http-router.js";
 import net from "net";
 
 type ListenOptions = {

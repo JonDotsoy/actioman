@@ -1,4 +1,4 @@
-import { findActiomanNodeModulesPaths } from "./findNodeModulesPaths";
+import { findActiomanNodeModulesPaths } from "./findNodeModulesPaths.js";
 
 export async function makebootstrapHTTPListenerFileModule(cwd: URL) {
   const actiomanNodeModulePath: URL | null =
