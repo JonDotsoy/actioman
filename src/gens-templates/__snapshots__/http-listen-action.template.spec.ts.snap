@@ -2,9 +2,11 @@
 
 exports[`httpListenActionTemplate generates bootstrap script 1`] = `
 "import { HTTPLister } from './../mode_modules/actioman/lib/esm/http-router/http-listener.js';
+const PORT = process.env.PORT;
+const HOST = process.env.HOST;
 const bootstrap = async () => {
     const httpLister = await HTTPLister.fromModule(await import('./../actios-1/actions.js'));
-    const url = await httpLister.listen();
+    const url = await httpLister.listen(PORT, HOST);
     console.log(\`Server running at \${ url.toString() }\`);
 };
 bootstrap().catch(console.error);"

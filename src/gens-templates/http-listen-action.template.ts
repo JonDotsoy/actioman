@@ -29,6 +29,74 @@ const getProgramAST = (props: ProgramASTProps) => ({
         value: props.httpListenerModuleLocation,
       },
     },
+
+    {
+      type: "VariableDeclaration",
+      declarations: [
+        {
+          type: "VariableDeclarator",
+          id: {
+            type: "Identifier",
+            name: "PORT",
+          },
+          init: {
+            type: "MemberExpression",
+            computed: false,
+            object: {
+              type: "MemberExpression",
+              computed: false,
+              object: {
+                type: "Identifier",
+                name: "process",
+              },
+              property: {
+                type: "Identifier",
+                name: "env",
+              },
+            },
+            property: {
+              type: "Identifier",
+              name: "PORT",
+            },
+          },
+        },
+      ],
+      kind: "const",
+    },
+    {
+      type: "VariableDeclaration",
+      declarations: [
+        {
+          type: "VariableDeclarator",
+          id: {
+            type: "Identifier",
+            name: "HOST",
+          },
+          init: {
+            type: "MemberExpression",
+            computed: false,
+            object: {
+              type: "MemberExpression",
+              computed: false,
+              object: {
+                type: "Identifier",
+                name: "process",
+              },
+              property: {
+                type: "Identifier",
+                name: "env",
+              },
+            },
+            property: {
+              type: "Identifier",
+              name: "HOST",
+            },
+          },
+        },
+      ],
+      kind: "const",
+    },
+
     {
       type: "VariableDeclaration",
       declarations: [
@@ -119,7 +187,10 @@ const getProgramAST = (props: ProgramASTProps) => ({
                               name: "listen",
                             },
                           },
-                          arguments: [],
+                          arguments: [
+                            { type: "Identifier", name: "PORT" },
+                            { type: "Identifier", name: "HOST" },
+                          ],
                         },
                       },
                     },
