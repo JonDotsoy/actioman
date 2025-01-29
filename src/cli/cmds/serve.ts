@@ -88,6 +88,8 @@ export const serve = async (args: string[]) => {
   `
     .appendEnvs({
       BOOTSTRAP_SCRIPT: new URL(bootstrapLocation).pathname,
+      PORT: port.toString(),
+      HOST: host,
     })
     .cwd(cwd.pathname);
 };
