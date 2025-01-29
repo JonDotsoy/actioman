@@ -11,6 +11,9 @@ import {
 } from "@jondotsoy/flags";
 import { HTTPRouter } from "../../http-router/http-router.js";
 import * as net from "net";
+import { makeServerScript } from "../../scripts/make-server-script.js";
+import { getCWD } from "../utils/get-cwd.js";
+import { $ } from "../../shell/shell.js";
 
 const nextPort = async () => {
   let porposalPort = 30320;
@@ -40,8 +43,12 @@ export const serve = async (args: string[]) => {
     actionFile: string;
     port: number;
     host: string;
+    cwd: string;
   };
   const rules: Rule<Options>[] = [
+    rule(flag("--cwd"), isStringAt("cwd"), {
+      description: "Current working directory",
+    }),
     rule(flag("-p", "--port"), isNumberAt("port"), {
       description: "Port to listen on",
     }),
@@ -62,32 +69,25 @@ export const serve = async (args: string[]) => {
   const actionFile = options.actionFile;
   const port = options.port ?? (await nextPort());
   const host = options.host ?? "localhost";
+  const cwd = getCWD(options.cwd);
 
   const help = () =>
     console.log(makeHelpMessage("actioman serve <action file>", rules));
 
-  if (actionFile) {
-    console.log(`Loading ${actionFile} module...`);
-    const module = await import(
-      new URL(actionFile, new URL(`${process.cwd()}/`, "file:")).pathname
-    );
-
-    const router = HTTPRouter.fromModule(module)?.router;
-
-    if (!router) return console.log(`No actions found in ${actionFile}`);
-
-    const server = Bun.serve({
-      port,
-      hostname: host,
-      fetch: async (req) =>
-        (await router.fetch(req)) ?? new Response(null, { status: 404 }),
-    });
-
-    console.log(`Listening on ${server.url}`);
-
-    return;
-  }
-
   if (options.help) return help();
-  help();
+
+  if (!actionFile) return console.log("Missing argument <action file>");
+
+  const { bootstrapLocation } = await makeServerScript(
+    cwd.pathname,
+    new URL(actionFile, cwd).pathname,
+  );
+
+  await $`
+    node $BOOTSTRAP_SCRIPT
+  `
+    .appendEnvs({
+      BOOTSTRAP_SCRIPT: new URL(bootstrapLocation).pathname,
+    })
+    .cwd(cwd.pathname);
 };
