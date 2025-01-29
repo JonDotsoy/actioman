@@ -18,3 +18,6 @@ jobs:
           # cache: npm
       - run: bun install
       - run: bun test
+      - uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          lcov-file: ./coverage/lcov.info
