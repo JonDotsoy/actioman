@@ -1,7 +1,7 @@
 {
   "name": "actioman",
   "description": "Share functions with other js clients. Call backend functions with type-safety.",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "type": "module",
   "license": "MIT",
   "files": [
