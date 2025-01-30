@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push: {}
+
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.1.43
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23.6.0
+          # cache: npm
+      - run: bun install
+      - run: bun test
+      - run: bunx lcov-summary coverage/lcov.info >> "$GITHUB_STEP_SUMMARY"

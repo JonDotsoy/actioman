@@ -1,0 +1,65 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ActionmanLockDocument toJSONL 1`] = `
+"{"key":["wrapp","foo","ok"],"value":true}
+{"key":["wrapp","foo","age"],"value":"Thu, 23 Jan 2025 18:16:04 GMT"}
+{"key":["wrapps","foo","ok"],"value":true}"
+`;
+
+exports[`ActionmanLockDocument fromJSONL 1`] = `
+ActionmanLockDocument {
+  "recordsList": [
+    {
+      "key": [
+        "wrapp",
+        "foo",
+        "ok",
+      ],
+      "value": true,
+    },
+    {
+      "key": [
+        "wrapp",
+        "foo",
+        "age",
+      ],
+      "value": "Thu, 23 Jan 2025 18:16:04 GMT",
+    },
+    {
+      "key": [
+        "wrapps",
+        "foo",
+        "ok",
+      ],
+      "value": true,
+    },
+  ],
+}
+`;
+
+exports[`ActionmanLockDocument toJSON 1`] = `""{\\n  \\"wrapp\\": {\\n    \\"foo\\": {\\n      \\"ok\\": true,\\n      \\"age\\": \\"Thu, 23 Jan 2025 18:16:04 GMT\\"\\n    }\\n  },\\n  \\"wrapps\\": {\\n    \\"foo\\": {\\n      \\"ok\\": true\\n    }\\n  }\\n}""`;
+
+exports[`ActionmanLockDocument fromJSON 1`] = `
+ActionmanLockDocument {
+  "recordsList": [
+    {
+      "key": [],
+      "value": 
+"{
+  "wrapp": {
+    "foo": {
+      "ok": 4,
+      "age": "Thu, 23 Jan 2025 18:16:04 GMT"
+    }
+  },
+  "wrapps": {
+    "foo": {
+      "ok": true
+    }
+  }
+}"
+,
+    },
+  ],
+}
+`;

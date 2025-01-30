@@ -1,0 +1,41 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`serves actions: headers response 1`] = `
+{
+  "content-length": "238",
+  "content-type": "application/json;charset=utf-8",
+  "date": null,
+  "x-actioman-version": "v1.0.0",
+  "x-powered-by": "Actioman",
+}
+`;
+
+exports[`serves actions: body response 1`] = `
+{
+  "actions": {
+    "hello": {
+      "description": "foo",
+      "input": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "name",
+        ],
+        "type": "object",
+      },
+      "output": {
+        "type": "string",
+      },
+    },
+    "hi": {
+      "description": null,
+      "input": null,
+      "output": null,
+    },
+  },
+}
+`;

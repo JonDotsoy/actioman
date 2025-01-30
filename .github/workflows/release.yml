@@ -1,0 +1,13 @@
+name: Release
+
+on:
+  push: {}
+
+jobs:
+  release:
+    uses: jondotsoy/jondotsoy/.github/workflows/bun-release-package.yml@v1
+    permissions:
+      contents: write
+      pull-requests: write
+    secrets: 
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
