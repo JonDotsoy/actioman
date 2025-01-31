@@ -237,5 +237,5 @@ export const actionDocumentTemplate = (params: Params) => {
     ),
   });
 
-  return escodegen.generate(ast);
+  return `// @ts-nocheck\n${escodegen.generate(ast)}`;
 };

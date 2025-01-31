@@ -330,5 +330,5 @@ export const httpListenActionTemplate = (props: Props) => {
     actionFileLocation: relative(actionFileLocation),
   });
 
-  return escodegen.generate(ast);
+  return `// @ts-nocheck\n${escodegen.generate(ast)}`;
 };

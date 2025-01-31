@@ -1,7 +1,8 @@
 // Bun Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`makeServerScript generates bootstrap script 1`] = `
-"import { HTTPLister } from './../lib/esm/http-router/http-listener.js';
+"// @ts-nocheck
+import { HTTPLister } from './../lib/esm/http-router/http-listener.js';
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
 const bootstrap = async () => {
