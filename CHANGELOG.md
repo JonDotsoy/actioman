@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.1.0...actioman-v0.2.0) (2025-01-31)
+
+
+### Features
+
+* Add `// [@ts-nocheck](https://github.com/ts-nocheck)` to generated code ([3e8f38e](https://github.com/JonDotsoy/actioman/commit/3e8f38e2fd72d00b290c402699793b4a6b2bd866))
+
 ## [0.1.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.0.8...actioman-v0.1.0) (2025-01-30)
 
 
