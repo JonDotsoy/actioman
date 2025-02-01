@@ -1,0 +1,43 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Configs loads YAML configs 1`] = `
+{
+  "hello": true,
+}
+`;
+
+exports[`Configs loads JSON configs 1`] = `
+{
+  "hello": true,
+}
+`;
+
+exports[`Configs loads TOML configs 1`] = `
+{
+  "hello": true,
+}
+`;
+
+exports[`Configs loads JS configs 1`] = `
+{
+  "hello": true,
+}
+`;
+
+exports[`Configs loads TS configs 1`] = `
+{
+  "hello": true,
+}
+`;
+
+exports[`Configs loads MJS configs 1`] = `
+{
+  "hello": true,
+}
+`;
+
+exports[`Configs loads configs from the first file found 1`] = `
+{
+  "hello": true,
+}
+`;
