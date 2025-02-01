@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.2.0...actioman-v0.3.0) (2025-02-01)
+
+
+### Features
+
+* Add Configs class to manage application settings ([0d8a184](https://github.com/JonDotsoy/actioman/commit/0d8a1842ed85baafe7b9e98039b7653919ca41d3))
+* Add Configs module import to bootstrap script ([f5f7573](https://github.com/JonDotsoy/actioman/commit/f5f7573591a7cb13f61f9af93bdcd5964196ccb7))
+* add function to find configs factory file module ([e6fcd08](https://github.com/JonDotsoy/actioman/commit/e6fcd08337225036d40bc92f5451f63f4b218099))
+* add module loaders for various file formats ([c72cf24](https://github.com/JonDotsoy/actioman/commit/c72cf243fbc66cf9f4ffa88814f39ea3f927bfe3))
+* **configs/modules/factory:** Add support for multiple config file formats ([ef20fbb](https://github.com/JonDotsoy/actioman/commit/ef20fbb19bd651da16e81b1b1107d85ed869ba06))
+* **http-listen-action:** Add configs factory and workspace location ([66d86c8](https://github.com/JonDotsoy/actioman/commit/66d86c87a98ce963608228b721acb01a44f9d982))
+* **http-listen-action:** add configs to HTTPLister ([983073f](https://github.com/JonDotsoy/actioman/commit/983073fd1570b8ce0005e2b95840aa06d5b61a2e))
+* **server-script:** Add configs factory module to server script ([1822dd7](https://github.com/JonDotsoy/actioman/commit/1822dd7eb8ff0b89a174e810d640bb37e4813902))
+
 ## [0.2.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.1.0...actioman-v0.2.0) (2025-01-31)
 
 
