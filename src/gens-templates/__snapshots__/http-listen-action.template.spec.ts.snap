@@ -3,11 +3,12 @@
 exports[`httpListenActionTemplate generates bootstrap script 1`] = `
 "// @ts-nocheck
 import { HTTPLister } from './../mode_modules/actioman/lib/esm/http-router/http-listener.js';
-import { factory } from './../undefined';
+import { factory } from './../mode_modules/actioman/lib/esm/configs/configs-factory.js';
+import { Configs } from './../mode_modules/actioman/lib/esm/configs/configs.js';
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
 const bootstrap = async () => {
-    const configs = Configs.fromModule(await factory.findOn(new URL('./../undefined/', import.meta.url).toString(), 'configs'));
+    const configs = Configs.fromModule(await factory.findOn(new URL('./../', import.meta.url).toString(), 'configs'));
     const httpLister = await HTTPLister.fromModule(await import('./../actios-1/actions.js'), configs);
     const url = await httpLister.listen(PORT, HOST);
     console.log(\`Server running at \${ url.toString() }\`);
