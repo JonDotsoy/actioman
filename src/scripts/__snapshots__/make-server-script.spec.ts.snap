@@ -3,10 +3,13 @@
 exports[`makeServerScript generates bootstrap script 1`] = `
 "// @ts-nocheck
 import { HTTPLister } from './../lib/esm/http-router/http-listener.js';
+import { factory } from './../lib/esm/configs/modules/factory.js';
+import { Configs } from './../lib/esm/configs/configs.js';
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
 const bootstrap = async () => {
-    const httpLister = await HTTPLister.fromModule(await import('./../../../actions.js'));
+    const configs = Configs.fromModule(await factory.findOn(new URL('./../../../', import.meta.url).toString(), 'configs'));
+    const httpLister = await HTTPLister.fromModule(await import('./../../../actions.js'), configs);
     const url = await httpLister.listen(PORT, HOST);
     console.log(\`Server running at \${ url.toString() }\`);
 };

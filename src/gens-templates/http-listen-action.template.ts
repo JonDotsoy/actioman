@@ -3,7 +3,10 @@ import * as path from "path";
 
 type ProgramASTProps = {
   httpListenerModuleLocation: string;
+  configsModuleLocation: string;
+  configsFactoryModuleLocation: string;
   actionFileLocation: string;
+  workspaceLocation: string;
 };
 
 const getProgramAST = (props: ProgramASTProps) => ({
@@ -27,6 +30,46 @@ const getProgramAST = (props: ProgramASTProps) => ({
       source: {
         type: "Literal",
         value: props.httpListenerModuleLocation,
+      },
+    },
+    {
+      type: "ImportDeclaration",
+      specifiers: [
+        {
+          type: "ImportSpecifier",
+          local: {
+            type: "Identifier",
+            name: "factory",
+          },
+          imported: {
+            type: "Identifier",
+            name: "factory",
+          },
+        },
+      ],
+      source: {
+        type: "Literal",
+        value: props.configsFactoryModuleLocation,
+      },
+    },
+    {
+      type: "ImportDeclaration",
+      specifiers: [
+        {
+          type: "ImportSpecifier",
+          local: {
+            type: "Identifier",
+            name: "Configs",
+          },
+          imported: {
+            type: "Identifier",
+            name: "Configs",
+          },
+        },
+      ],
+      source: {
+        type: "Literal",
+        value: props.configsModuleLocation,
       },
     },
 
@@ -120,6 +163,106 @@ const getProgramAST = (props: ProgramASTProps) => ({
                       type: "VariableDeclarator",
                       id: {
                         type: "Identifier",
+                        name: "configs",
+                      },
+                      init: {
+                        type: "CallExpression",
+                        callee: {
+                          type: "MemberExpression",
+                          computed: false,
+                          object: {
+                            type: "Identifier",
+                            name: "Configs",
+                          },
+                          property: {
+                            type: "Identifier",
+                            name: "fromModule",
+                          },
+                        },
+                        arguments: [
+                          {
+                            type: "AwaitExpression",
+                            argument: {
+                              type: "CallExpression",
+                              callee: {
+                                type: "MemberExpression",
+                                computed: false,
+                                object: {
+                                  type: "Identifier",
+                                  name: "factory",
+                                },
+                                property: {
+                                  type: "Identifier",
+                                  name: "findOn",
+                                },
+                              },
+                              arguments: [
+                                {
+                                  type: "CallExpression",
+                                  callee: {
+                                    type: "MemberExpression",
+                                    computed: false,
+                                    object: {
+                                      type: "NewExpression",
+                                      callee: {
+                                        type: "Identifier",
+                                        name: "URL",
+                                      },
+                                      arguments: [
+                                        {
+                                          type: "Literal",
+                                          value: props.workspaceLocation,
+                                        },
+                                        {
+                                          type: "MemberExpression",
+                                          computed: false,
+                                          object: {
+                                            type: "MemberExpression",
+                                            computed: false,
+                                            object: {
+                                              type: "Identifier",
+                                              name: "import",
+                                            },
+                                            property: {
+                                              type: "Identifier",
+                                              name: "meta",
+                                            },
+                                          },
+                                          property: {
+                                            type: "Identifier",
+                                            name: "url",
+                                          },
+                                        },
+                                      ],
+                                    },
+                                    property: {
+                                      type: "Identifier",
+                                      name: "toString",
+                                    },
+                                  },
+                                  arguments: [],
+                                },
+                                {
+                                  type: "Literal",
+                                  value: "configs",
+                                  raw: '"configs"',
+                                },
+                              ],
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                  kind: "const",
+                },
+                {
+                  type: "VariableDeclaration",
+                  declarations: [
+                    {
+                      type: "VariableDeclarator",
+                      id: {
+                        type: "Identifier",
                         name: "httpLister",
                       },
                       init: {
@@ -154,6 +297,10 @@ const getProgramAST = (props: ProgramASTProps) => ({
                                   },
                                 ],
                               },
+                            },
+                            {
+                              type: "Identifier",
+                              name: "configs",
                             },
                           ],
                         },
@@ -307,8 +454,11 @@ const getProgramAST = (props: ProgramASTProps) => ({
 type Props = {
   target: string;
   actionFileLocation: string;
+  workspaceLocation: string;
   modules: {
     httpListenerModuleLocation: string;
+    configsModuleLocation: string;
+    configsFactoryModuleLocation: string;
   };
 };
 
@@ -317,8 +467,15 @@ export const httpListenActionTemplate = (props: Props) => {
   const filename = resolvePath(props.target);
   const dirname = new URL("./", filename);
   const actionFileLocation = resolvePath(props.actionFileLocation);
+  const workspaceLocation = resolvePath(props.workspaceLocation);
   const httpListenerModuleLocation = resolvePath(
     props.modules.httpListenerModuleLocation,
+  );
+  const configsModuleLocation = resolvePath(
+    props.modules.configsModuleLocation,
+  );
+  const configsFactoryModuleLocation = resolvePath(
+    props.modules.configsFactoryModuleLocation,
   );
 
   const relative = (path2: URL) => {
@@ -327,7 +484,10 @@ export const httpListenActionTemplate = (props: Props) => {
 
   const ast = getProgramAST({
     httpListenerModuleLocation: relative(httpListenerModuleLocation),
+    configsModuleLocation: relative(configsModuleLocation),
+    configsFactoryModuleLocation: relative(configsFactoryModuleLocation),
     actionFileLocation: relative(actionFileLocation),
+    workspaceLocation: `${relative(workspaceLocation)}/`,
   });
 
   return `// @ts-nocheck\n${escodegen.generate(ast)}`;
