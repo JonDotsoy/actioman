@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "fmt": "prettier -w .",
+    "lint": "prettier -c .",
     "prepack": "make clean build"
   },
   "bin": "./lib/esm/cli/actioman.js",
