@@ -3,6 +3,7 @@ import * as path from "path";
 
 type ProgramASTProps = {
   httpListenerModuleLocation: string;
+  configsModuleLocation: string;
   configsFactoryModuleLocation: string;
   actionFileLocation: string;
   workspaceLocation: string;
@@ -49,6 +50,26 @@ const getProgramAST = (props: ProgramASTProps) => ({
       source: {
         type: "Literal",
         value: props.configsFactoryModuleLocation,
+      },
+    },
+    {
+      type: "ImportDeclaration",
+      specifiers: [
+        {
+          type: "ImportSpecifier",
+          local: {
+            type: "Identifier",
+            name: "Configs",
+          },
+          imported: {
+            type: "Identifier",
+            name: "Configs",
+          },
+        },
+      ],
+      source: {
+        type: "Literal",
+        value: props.configsModuleLocation,
       },
     },
 
@@ -436,6 +457,7 @@ type Props = {
   workspaceLocation: string;
   modules: {
     httpListenerModuleLocation: string;
+    configsModuleLocation: string;
     configsFactoryModuleLocation: string;
   };
 };
@@ -449,6 +471,9 @@ export const httpListenActionTemplate = (props: Props) => {
   const httpListenerModuleLocation = resolvePath(
     props.modules.httpListenerModuleLocation,
   );
+  const configsModuleLocation = resolvePath(
+    props.modules.configsModuleLocation,
+  );
   const configsFactoryModuleLocation = resolvePath(
     props.modules.configsFactoryModuleLocation,
   );
@@ -459,6 +484,7 @@ export const httpListenActionTemplate = (props: Props) => {
 
   const ast = getProgramAST({
     httpListenerModuleLocation: relative(httpListenerModuleLocation),
+    configsModuleLocation: relative(configsModuleLocation),
     configsFactoryModuleLocation: relative(configsFactoryModuleLocation),
     actionFileLocation: relative(actionFileLocation),
     workspaceLocation: `${relative(workspaceLocation)}/`,

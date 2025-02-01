@@ -3,6 +3,7 @@ import { httpListenActionTemplate } from "../gens-templates/http-listen-action.t
 import { findHTTPListenerFileModule } from "./findHTTPListenerFileModule.js";
 import { makebootstrapHTTPListenerFileModule } from "./makebootstrapHTTPListenerFileModule.js";
 import { findConfigsFactoryFileModule } from "./findConfigsFactoryFileModule.js";
+import { findConfigsFileModule } from "./findConfigsFileModule.js";
 
 export const makeServerScript = async (cwd: string, actionsPath: string) => {
   const httpListenerLocation = await findHTTPListenerFileModule(
@@ -11,6 +12,7 @@ export const makeServerScript = async (cwd: string, actionsPath: string) => {
   const configsFactoryLocation = await findConfigsFactoryFileModule(
     new URL(cwd, "file://"),
   );
+  const configsLocation = await findConfigsFileModule(new URL(cwd, "file://"));
   const bootstrapLocation = await makebootstrapHTTPListenerFileModule(
     new URL(cwd, "file://"),
   );
@@ -25,6 +27,7 @@ export const makeServerScript = async (cwd: string, actionsPath: string) => {
       workspaceLocation: cwd,
       modules: {
         httpListenerModuleLocation: httpListenerLocation.pathname,
+        configsModuleLocation: configsLocation.pathname,
         configsFactoryModuleLocation: configsFactoryLocation.pathname,
       },
     }),
