@@ -17,5 +17,6 @@ jobs:
           node-version: 23.6.0
           # cache: npm
       - run: bun install
+      - run: bun lint
       - run: bun test
       - run: bunx lcov-summary coverage/lcov.info >> "$GITHUB_STEP_SUMMARY"

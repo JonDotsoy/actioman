@@ -9,5 +9,5 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    secrets: 
+    secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
