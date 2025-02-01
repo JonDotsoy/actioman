@@ -1,17 +1,12 @@
-import { afterEach, describe, expect, it, mock } from "bun:test";
+import { expect, it, mock } from "bun:test";
 import { ActionsTarget } from "./actions-target";
 import { z } from "zod";
+import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 
 let port = 6767;
 
-const cleanupTasks = new Set<() => any>();
-
-afterEach(async () => {
-  for (const cleanupTask of cleanupTasks) await cleanupTask();
-  cleanupTasks.clear();
-});
-
 it("should call actions", async () => {
+  await using cleanupTasks = new CleanupTasks();
   const handler = mock((...args: any[]) => ({ ok: true }));
 
   const server = Bun.serve({
@@ -42,6 +37,7 @@ it("should call actions", async () => {
 });
 
 it("should throw error if input is invalid", async () => {
+  await using cleanupTasks = new CleanupTasks();
   const handler = mock((...args: any[]) => ({ ok: true }));
 
   const server = Bun.serve({
