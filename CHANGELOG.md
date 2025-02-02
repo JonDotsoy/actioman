@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.3.0...actioman-v0.4.0) (2025-02-02)
+
+
+### Features
+
+* **actions:** add configs to Actions.fromModule ([bb2b8bc](https://github.com/JonDotsoy/actioman/commit/bb2b8bc31979ea132d6e9c24e2f3210b1593607d))
+* **auth:** Implement JWT-based authentication ([b361302](https://github.com/JonDotsoy/actioman/commit/b361302cebe75080e8cd6022a10cd574c3075bc3))
+* **configs:** add integration module and configs class ([d84d68d](https://github.com/JonDotsoy/actioman/commit/d84d68df1692b3dbceb05e1bd19df579353aeda7))
+* **http-router:** add optional configs to HTTPLister.fromModule ([6b20c38](https://github.com/JonDotsoy/actioman/commit/6b20c381cfcccc70462dbeaf4a871d09b81ff192))
+* **http-router:** add support for custom configs ([5de5bfd](https://github.com/JonDotsoy/actioman/commit/5de5bfd57a3639c6e3f0a1e2e0b903921d8c2110))
+* **shell:** Add process ID to background shell and ability to kill it ([7d76d09](https://github.com/JonDotsoy/actioman/commit/7d76d0930a17fa3b1bfe21e2c9feecd7e28a65b6))
+
 ## [0.3.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.2.0...actioman-v0.3.0) (2025-02-01)
 
 
