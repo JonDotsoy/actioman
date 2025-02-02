@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import { spawn, spawnSync } from "child_process";
 
 type ShellConstructorOutput = "codeStatus" | "text" | "pipe";
 
@@ -43,6 +43,7 @@ export class ShellConstructor<T> {
       if (!this.silent) process.stderr.write(chunk);
     },
   });
+  runned = Promise.withResolvers<{ pid: number | undefined }>();
 
   constructor(options: ShellConstructorOptions) {
     this.abortController = new AbortController();
@@ -91,15 +92,21 @@ export class ShellConstructor<T> {
 
   background() {
     this.output = "pipe";
+    const pid = this.runned.promise.then((r) => r.pid);
 
     let closed = false;
     return {
+      pid,
       exited: this.then(),
       stdout: this.stdoutReadable,
       stderr: this.stderrWritable,
-      close: () => {
+      close: async () => {
         if (closed) return;
         this.abortController.abort();
+        const p = await pid;
+        try {
+          spawnSync(`kill ${p}`);
+        } catch {}
         closed = true;
       },
     };

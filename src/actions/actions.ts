@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import type { Configs, ConfigsModule } from "../configs/configs.js";
 export * as actions from "../share-actions/share-actions.js";
 
 type InferZodType<T> = T extends z.ZodType ? z.infer<T> : any;
@@ -37,7 +38,7 @@ export class Actions<ActionsDefinitions extends Record<string, Action> = any> {
     return actions.definition;
   }
 
-  static fromModule(module: unknown) {
+  static fromModule(module: unknown, configs?: ConfigsModule) {
     const isRecord =
       typeof module === "object" && module !== null && !Array.isArray(module);
 

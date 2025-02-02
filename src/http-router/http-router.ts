@@ -3,6 +3,7 @@ import { Actions } from "../actions/actions.js";
 import { z } from "zod";
 import { get } from "@jondotsoy/utils-js/get";
 import { actionsToJson } from "../exporter-actions/exporter-actions.js";
+import { Configs, type ConfigsModule } from "../configs/configs.js";
 
 const result = async <T>(fn: () => Promise<T>) => {
   try {
@@ -18,19 +19,26 @@ const isZodType = (value: any): value is z.ZodType =>
   value instanceof z.ZodType;
 
 export class HTTPRouter {
-  router = new Router({
-    errorHandling: "pass",
-    middlewares: [
-      (fetch) => async (req) => {
-        const res = await fetch(req);
-        res?.headers.set("X-Powered-By", "Actioman");
-        res?.headers.set("X-Actioman-Version", "v1.0.0");
-        return res;
-      },
-    ],
-  });
-  constructor(actions: Actions) {
+  router: Router<"pass">;
+
+  constructor(
+    actions: Actions,
+    readonly configs?: Configs,
+  ) {
     const actionsJson = actionsToJson(actions);
+
+    this.router = new Router({
+      errorHandling: "pass",
+      middlewares: [
+        ...(configs?.getHTTPListenerMiddlewares() ?? []),
+        (fetch) => async (req) => {
+          const res = await fetch(req);
+          res?.headers.set("X-Powered-By", "Actioman");
+          res?.headers.set("X-Actioman-Version", "v1.0.0");
+          return res;
+        },
+      ],
+    });
 
     this.router.use("GET", `/__actions`, {
       fetch: () => Response.json({ actions: actionsJson }),
@@ -53,9 +61,9 @@ export class HTTPRouter {
     }
   }
 
-  static fromModule(module: unknown) {
-    const actions = Actions.fromModule(module);
+  static fromModule(module: unknown, configs?: ConfigsModule) {
+    const actions = Actions.fromModule(module, configs);
     if (!actions) throw new Error(`No actions found in ${module}`);
-    return new HTTPRouter(actions);
+    return new HTTPRouter(actions, Configs.fromModule(configs));
   }
 }
