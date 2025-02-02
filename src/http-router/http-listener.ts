@@ -1,6 +1,7 @@
 import * as http from "http";
 import { HTTPRouter } from "./http-router.js";
 import net from "net";
+import type { ConfigsModule } from "../configs/configs.js";
 
 type ListenOptions = {
   silent: boolean;
@@ -113,8 +114,8 @@ export class HTTPLister {
     return url;
   }
 
-  static fromModule(module: unknown) {
-    const httpRouter = HTTPRouter.fromModule(module);
+  static fromModule(module: unknown, configs?: ConfigsModule) {
+    const httpRouter = HTTPRouter.fromModule(module, configs);
     if (!httpRouter) throw new Error("No actions found");
     return new HTTPLister(httpRouter);
   }
