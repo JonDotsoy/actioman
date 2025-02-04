@@ -1,113 +1,88 @@
 # 🏹 actioman
 
-Share functions with other js clients. Call backend functions with type-safety.
+Actioman is a tool for creating and consuming services in a simple and efficient way. It allows developers to define actions (functions or methods) that can be consumed by clients through a simple interface.
 
-- validate json input/output using zod validation
+## Setup
 
-## Usage
+To start using Actioman, follow these simple steps:
 
-Install the `actioman` module with npm.
+### Service Developer
 
-```shell
-npm add actioman
+1.  Create a file named `acciones.js` in your project folder.
+2.  Define your actions within that file.
+3.  Create a configuration file named `actioman.config.js` to configure the injections.
+4.  Run `npx actioman serve acciones.js` to start your service.
+
+### Client
+
+1.  Install Actioman: `npm install actioman`
+2.  Add a resource: `npx actioman add <name> <url>`
+
+## API
+
+### Server Actions (`acciones.js`)
+
+```javascript
+// acciones.js
+export function greet(name) {
+  return `Hello, ${name}!`;
+}
+
+export const farewell = {
+  handler: function (name) {
+    return `Goodbye, ${name}. See you soon!`;
+  },
+};
 ```
 
-Edit `packaage.json > prepare` script.
+### Injections Configuration File (`actioman.config.js`)
 
-```shell
-npm pkg set scripts.prepare="actioman install"
+```javascript
+// actioman.config.js
+export default {
+  injections: [
+    auth({
+      type: "jwt",
+      secret: "secret",
+    }),
+  ],
+};
 ```
 
-Define some actions on a javascript file.
+### Client (using ESM syntax)
 
-```ts
-// ./actions.js
-import { defineAction } from "actioman";
-import { z } from "zod";
+```javascript
+// client.js
+import actioman from "actioman";
 
-export const hi = defineAction({
-  input: z
-    .object({ name: z.string().optional(), metadata: z.record(z.string()) })
-    .strict(),
-  handler: async ({ name }) => `Hello ${name}`,
-});
+async function consumeServices() {
+  const greeting = await actioman.actions.foo().greet("John");
+  console.log(greeting); // Hello, John!
 
-export const foo = defineAction({
-  description: "foo",
-  input: z.string(),
-  output: z.object({ name: z.string() }).strict(),
-  handler: async (input) => ({ name: input }),
-});
+  const farewellMessage = await actioman.actions.foo().farewell("John");
+  console.log(farewellMessage); // Goodbye, John. See you soon!
+}
+
+consumeServices();
 ```
 
-## Setup a http listener
+## `auth` Injection
 
-```ts
-import { HTTPListener } from "actioman/http-listener";
+The `auth` injection is provided by the `actioman` library and allows you to validate HTTP requests, allowing only requests with an `Authorization` header that have a valid JWT token.
 
-const httpListener = HTTPListener.fromModule(await import("./actions.js"));
+## Contributing
 
-await httpListener.listen();
+Contributions are welcome! If you find errors or have ideas to improve Actioman, please open an issue or submit a pull request.
+
+## License
+
+MIT
+
 ```
 
-### Using custom router with express
+He actualizado el nombre del archivo de configuración a `actioman.config.js` en la sección "Setup" y en el ejemplo de código.
 
-```ts
-const app = express();
-const port = 3000;
+Con este cambio, el README refleja de manera más precisa cómo se utilizan las inyecciones en Actioman, incluyendo el nuevo nombre del archivo de configuración.
 
-const httpRouter = HTTPRouter.fromModule(await import("./actions.js"));
-
-app.use("/", async (req, res, next) => {
-  const ok = await httpRouter.router.requestListener(req, res);
-  if (!ok) next();
-});
-
-const server = app.listen(port);
-```
-
-## Compile actions documents from a URL
-
-```shell
-npx actioman add foo http://example.com
-```
-
-```ts
-const actionsDocument = await ActionsDocument.fromHTTPServer(
-  new URL("http://sample.com/"),
-);
-
-fs.writeFile("sample-actions.js", actionsDocument.toString());
-```
-
-```js
-// sample-actions.js
-import { z } from "zod";
-import { ActionsTarget } from "actioman/actions-target";
-
-const createActionsTarget = () =>
-  new ActionsTarget("http://localhost:30321/__actions", {
-    hi: {
-      description: undefined,
-      input: z
-        .object({ name: z.string().optional(), metadata: z.record(z.string()) })
-        .strict(),
-      output: undefined,
-    },
-    foo: {
-      description: "foo",
-      input: z.string(),
-      output: z.object({ name: z.string() }).strict(),
-    },
-  });
-
-export default createActionsTarget;
-```
-
-## Load actions
-
-```ts
-import { actions } from "actioman";
-
-await actions.foo().hi({ name: "John" });
+¿Hay algo más que te gustaría agregar o modificar en esta versión?
 ```
