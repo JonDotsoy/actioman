@@ -1,26 +1,13 @@
-import {
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-} from "bun:test";
+import { beforeAll, describe, expect, it } from "bun:test";
 import { $ } from "../shell/shell";
 import { importRemoteActions } from "./import-remote-actions";
 import { HTTPLister } from "../http-router/http-listener";
 import { defineAction } from "../actions/actions";
-import { set, z } from "zod";
+import { z } from "zod";
 import * as fs from "fs/promises";
+import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 
 describe("import-remote-actions", () => {
-  const cleanupTasks = new Set<() => any>();
-
-  afterEach(async () => {
-    for (const cleanupTask of cleanupTasks) await cleanupTask();
-    cleanupTasks.clear();
-  });
-
   beforeAll(async () => {
     await $`
       rm -rf __tests__/tmp/
@@ -34,6 +21,7 @@ describe("import-remote-actions", () => {
   });
 
   it("imports remote actions", async () => {
+    await using cleanupTasks = new CleanupTasks();
     const httpLister = HTTPLister.fromModule({
       hi: defineAction({
         input: z.object({ name: z.string() }),

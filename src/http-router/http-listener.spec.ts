@@ -1,15 +1,11 @@
-import { afterEach, beforeAll, describe, expect, it } from "bun:test";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "bun:test";
 import { HTTPLister } from "./http-listener";
 import { HTTPRouter } from "./http-router";
-
-const cleanupTasks = new Set<() => any>();
+import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 
 describe("HTTPLister", () => {
-  afterEach(async () => {
-    for (const cleanupTask of cleanupTasks) await cleanupTask();
-  });
-
   it("should return 404 for unknown paths", async () => {
+    await using cleanupTasks = new CleanupTasks();
     const httpLister = HTTPLister.fromModule({});
     cleanupTasks.add(() => httpLister.close());
     const url = await httpLister.listen();
@@ -20,6 +16,7 @@ describe("HTTPLister", () => {
   });
 
   it("should return 200 for /__actions", async () => {
+    await using cleanupTasks = new CleanupTasks();
     const httpLister = HTTPLister.fromModule({});
     cleanupTasks.add(() => httpLister.close());
     const url = await httpLister.listen();
@@ -30,6 +27,7 @@ describe("HTTPLister", () => {
   });
 
   it("should start a server", async () => {
+    await using cleanupTasks = new CleanupTasks();
     const { default: express } = await import("express");
     const app = express();
     const port = 30_161;
@@ -48,6 +46,7 @@ describe("HTTPLister", () => {
   });
 
   describe("integration tests", () => {
+    const cleanupTasks = new CleanupTasks();
     beforeAll(async () => {
       const { default: express } = await import("express");
       const app = express();
@@ -66,6 +65,10 @@ describe("HTTPLister", () => {
       );
     });
 
+    afterAll(async () => {
+      await cleanupTasks.cleanup();
+    });
+
     it("should return 200 for /__actions", async () => {
       const res = await fetch("http://localhost:30161/__actions");
       expect(res.status).toEqual(200);
@@ -82,6 +85,7 @@ describe("HTTPLister", () => {
   });
 
   it("should create a server with actions", async () => {
+    await using cleanupTasks = new CleanupTasks();
     const httpLister = HTTPLister.fromModule({
       biz: () => true,
       foo: () => true,
