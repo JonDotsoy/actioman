@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { shareActionsTemplate } from "./share-actions-document.template";
 
 describe("shareActionsTemplate", () => {
-  it("", () => {
+  it("generates share actions document", () => {
     expect(
       shareActionsTemplate({
         fileLocation: "/app/script.js",
