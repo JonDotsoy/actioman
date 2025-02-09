@@ -1,0 +1,5 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`a a 1`] = `"{"actions":{"hi":{"description":null,"input":null,"output":null}}}"`;
+
+exports[`async HTTP2Lister should return 200 for /__actions 1`] = `"{"actions":{"hi":{"description":null,"input":null,"output":null}}}"`;
