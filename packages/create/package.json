@@ -1,0 +1,24 @@
+{
+  "name": "create-actioman",
+  "description": "",
+  "version": "0.0.2",
+  "license": "MIT",
+  "module": "index.ts",
+  "type": "module",
+  "bin": "lib/esm/bin.js",
+  "scripts": {
+    "prepack": "make compile"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@jondotsoy/flags": "^2.3.0"
+  },
+  "files": [
+    "lib"
+  ]
+}
