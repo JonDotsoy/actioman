@@ -1,50 +1,14 @@
 import * as http from "http";
 import { HTTPRouter } from "./http-router.js";
-import net from "net";
 import type { ConfigsModule } from "../configs/configs.js";
+import { sanitizeHostname } from "./utils/sanitize-hostname.js";
+import { findNextPort } from "./utils/find-next-port.js";
 
 type ListenOptions = {
   silent: boolean;
 };
 
-const sanatizeHostname = (hostname: string) => {
-  switch (hostname) {
-    case "::1":
-    case "::":
-    case "0.0.0.0":
-    case "127.0.0.1":
-    case "::ffff:127.0.0.1":
-      return "localhost";
-  }
-
-  return hostname;
-};
-
-const INITIAL_PORT = 30_320;
-
-const findNextPort = async () => {
-  let porposalPort = INITIAL_PORT;
-  while (true) {
-    porposalPort++;
-    if (porposalPort >= INITIAL_PORT + 10_000)
-      throw new Error("No available port");
-    const port = await new Promise<number | null>((resolve) => {
-      const connectiong = net.connect({
-        host: "localhost",
-        port: porposalPort,
-      });
-
-      connectiong.addListener("connect", () => {
-        resolve(null);
-        connectiong.destroy();
-      });
-      connectiong.addListener("error", (err) => {
-        if ("code" in err && err.code === "ECONNREFUSED") resolve(porposalPort);
-      });
-    });
-    if (typeof port === "number") return port;
-  }
-};
+export const INITIAL_PORT = 30_320;
 
 export class HTTPLister {
   server: http.Server;
@@ -91,12 +55,12 @@ export class HTTPLister {
         if (typeof address === "object" && address !== null)
           return resolve(
             new URL(
-              `http://${sanatizeHostname(address.address)}:${address.port}`,
+              `http://${sanitizeHostname(address.address)}:${address.port}`,
             ),
           );
         return resolve(
           new URL(
-            `http://${sanatizeHostname(hostnameToListen)}:${portToListen}`,
+            `http://${sanitizeHostname(hostnameToListen)}:${portToListen}`,
           ),
         );
       });
