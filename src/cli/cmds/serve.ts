@@ -9,11 +9,10 @@ import {
   rule,
   type Rule,
 } from "@jondotsoy/flags";
-import { HTTPRouter } from "../../http-router/http-router.js";
 import * as net from "net";
 import { makeServerScript } from "../../scripts/make-server-script.js";
 import { getCWD } from "../utils/get-cwd.js";
-import { $ } from "../../shell/shell.js";
+import { spawnSync } from "child_process";
 
 const nextPort = async () => {
   let porposalPort = 30320;
@@ -83,13 +82,13 @@ export const serve = async (args: string[]) => {
     new URL(actionFile, cwd).pathname,
   );
 
-  await $`
-    node $BOOTSTRAP_SCRIPT
-  `
-    .appendEnvs({
-      BOOTSTRAP_SCRIPT: new URL(bootstrapLocation).pathname,
+  spawnSync(process.argv0, [new URL(bootstrapLocation).pathname], {
+    cwd: cwd.pathname,
+    env: {
+      ...process.env,
       PORT: port.toString(),
       HOST: host,
-    })
-    .cwd(cwd.pathname);
+    },
+    stdio: "inherit",
+  });
 };
