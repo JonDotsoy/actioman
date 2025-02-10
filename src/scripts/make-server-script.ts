@@ -1,23 +1,26 @@
 import * as fs from "fs/promises";
 import { httpListenActionTemplate } from "../gens-templates/http-listen-action.template.js";
-import { findHTTPListenerFileModule } from "./findHTTPListenerFileModule.js";
 import { makebootstrapHTTPListenerFileModule } from "./makebootstrapHTTPListenerFileModule.js";
-import { findConfigsFactoryFileModule } from "./findConfigsFactoryFileModule.js";
-import { findConfigsFileModule } from "./findConfigsFileModule.js";
+import { executablesPaths } from "../executables_paths/executables_paths.js";
 
-export const makeServerScript = async (cwd: string, actionsPath: string) => {
-  const httpListenerLocation = await findHTTPListenerFileModule(
-    new URL(cwd, "file://"),
-  );
-  const configsFactoryLocation = await findConfigsFactoryFileModule(
-    new URL(cwd, "file://"),
-  );
-  const configsLocation = await findConfigsFileModule(new URL(cwd, "file://"));
+export const makeServerScript = async (
+  cwd: string,
+  actionsPath: string,
+  withHttp2Listener: boolean = false,
+) => {
   const bootstrapLocation = await makebootstrapHTTPListenerFileModule(
     new URL(cwd, "file://"),
   );
 
   await fs.mkdir(new URL("./", bootstrapLocation), { recursive: true });
+
+  const modules = {
+    httpListenerModuleLocation: withHttp2Listener
+      ? executablesPaths.HTTP2_LISTENER_PATH.pathname
+      : executablesPaths.HTTP_LISTENER_PATH.pathname,
+    configsModuleLocation: executablesPaths.CONFIG_PATH.pathname,
+    configsFactoryModuleLocation: executablesPaths.FACTORY_PATH.pathname,
+  };
 
   await fs.writeFile(
     bootstrapLocation,
@@ -25,16 +28,12 @@ export const makeServerScript = async (cwd: string, actionsPath: string) => {
       target: bootstrapLocation.pathname,
       actionFileLocation: actionsPath,
       workspaceLocation: cwd,
-      modules: {
-        httpListenerModuleLocation: httpListenerLocation.pathname,
-        configsModuleLocation: configsLocation.pathname,
-        configsFactoryModuleLocation: configsFactoryLocation.pathname,
-      },
+      modules,
     }),
   );
 
   return {
-    bootstrapLocation: bootstrapLocation.toString(),
-    httpListenerLocation: httpListenerLocation.toString(),
+    bootstrapLocation,
+    modules,
   };
 };

@@ -126,3 +126,5 @@ export class HTTP2Lister {
     silent: false,
   };
 }
+
+export const HTTPLister = HTTP2Lister;
