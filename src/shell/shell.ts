@@ -168,7 +168,9 @@ export class ShellConstructor<T> {
     subprocess.addListener("close", (exitCode) => {
       if (typeof exitCode === "number") {
         if (exitCode !== 0 && !throws)
-          return this._promise.reject(new Error(`exitCode: ${exitCode}`));
+          return this._promise.reject(
+            new Error(`exitCode: ${exitCode} cmd: ${cmd}`),
+          );
         return this._promise.resolve(formatOutput(exitCode));
       }
 

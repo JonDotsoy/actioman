@@ -1,9 +1,9 @@
 import { describe, it } from "bun:test";
 import { PrepareWorkspace } from "./prepare-workspace";
 
-describe("", () => {
+describe("PrepareWorkspace", () => {
   it(
-    "",
+    "should setup a workspace",
     async () => {
       const { $ } = await PrepareWorkspace.setup();
 
