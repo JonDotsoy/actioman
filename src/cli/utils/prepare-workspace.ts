@@ -2,6 +2,7 @@ import * as fs from "fs/promises";
 import { existsSync } from "fs";
 import * as os from "os";
 import { $ } from "../../shell/shell.js";
+import { PACKAGE_DIR } from "../../constants/PACKAGE_DIR.js";
 
 type setupOptions = {
   name?: string;
@@ -69,7 +70,7 @@ export class PrepareWorkspace {
   cacheWorkspacesDir = new URL("./workspaces/", this.cacheDir);
   workspacesDir = new URL("./workspaces/", this.cacheDir);
   private _workspaceDir?: URL | undefined;
-  packageDir = new URL("../../../", import.meta.url);
+  packageDir = PACKAGE_DIR;
   _hash?: string;
   cache?: CacheDir;
 
@@ -97,10 +98,10 @@ export class PrepareWorkspace {
 
   async describePackage() {
     const filter = (relativePath: string): boolean => {
-      if (relativePath.startsWith(".git/")) return false;
-      if (relativePath.startsWith(".tmp/")) return false;
-      if (relativePath.startsWith("lib/")) return false;
-      if (relativePath.startsWith("node_modules/")) return false;
+      if (/\.git\//.test(relativePath)) return false;
+      if (/\.tmp\//.test(relativePath)) return false;
+      if (/lib\//.test(relativePath)) return false;
+      if (/node_modules\//.test(relativePath)) return false;
       if (/spec\.\w+$/.test(relativePath)) return false;
       if (/\/_+\w+_+\//.test(relativePath)) return false;
       if (!/\.(ts|json)+$/.test(relativePath)) return false;
@@ -136,11 +137,14 @@ export class PrepareWorkspace {
     const showLogs = options.verbose ?? false;
     const workspaceName = options.name ?? "default";
     this.workspaceDir = new URL(`${workspaceName}/`, this.workspacesDir);
+    if (existsSync(this.workspaceDir)) {
+      await fs.rm(this.workspaceDir, { force: true, recursive: true });
+    }
     await fs.mkdir(this.cacheDir, { recursive: true });
     await fs.mkdir(this.cacheWorkspacesDir, { recursive: true });
     await fs.mkdir(this.cachePackagesDir, { recursive: true });
+    await fs.mkdir(this.packageDir, { recursive: true });
     await fs.mkdir(this.workspaceDir, { recursive: true });
-    await fs.rm(this.workspaceDir, { force: true });
     await using cache = await CacheDir.setup(
       this.cacheWorkspacesDir,
       this.workspaceDir,
