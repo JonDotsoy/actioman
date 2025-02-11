@@ -32,16 +32,16 @@ const getLoader = async (type: Type) => {
 
 function* listAlternativeOptionsFiles(dirPath: URL, name: string) {
   yield new URL(`${name}.js`, dirPath);
-  yield new URL(`${name}.ts`, dirPath);
-  yield new URL(`${name}.mjs`, dirPath);
-  yield new URL(`${name}.json`, dirPath);
-  yield new URL(`${name}.yaml`, dirPath);
-  yield new URL(`${name}.toml`, dirPath);
   yield new URL(`.${name}.js`, dirPath);
-  yield new URL(`.${name}.ts`, dirPath);
+  yield new URL(`${name}.mjs`, dirPath);
   yield new URL(`.${name}.mjs`, dirPath);
+  yield new URL(`${name}.ts`, dirPath);
+  yield new URL(`.${name}.ts`, dirPath);
+  yield new URL(`${name}.json`, dirPath);
   yield new URL(`.${name}.json`, dirPath);
+  yield new URL(`${name}.yaml`, dirPath);
   yield new URL(`.${name}.yaml`, dirPath);
+  yield new URL(`${name}.toml`, dirPath);
   yield new URL(`.${name}.toml`, dirPath);
 }
 
