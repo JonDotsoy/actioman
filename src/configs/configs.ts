@@ -51,12 +51,17 @@ export class Configs {
 
   private constructor() {}
 
-  getHTTPListenerMiddlewares(): Middleware<any>[] {
+  get httpListenerMiddlewares() {
     return (
       this.integrations
         ?.map((integration) => integration.hooks?.["http:middleware"])
         .filter((middleware) => middleware !== undefined) ?? []
     );
+  }
+
+  /** @deprecated */
+  getHTTPListenerMiddlewares(): Middleware<any>[] {
+    return this.httpListenerMiddlewares;
   }
 
   static fromModule(module: unknown) {
