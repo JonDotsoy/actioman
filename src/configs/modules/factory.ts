@@ -30,22 +30,20 @@ const getLoader = async (type: Type) => {
   throw new Error("Unknown file type");
 };
 
-function* listAlternativeOptionsFiles(dirPath: URL, name: string) {
-  yield new URL(`${name}.js`, dirPath);
-  yield new URL(`.${name}.js`, dirPath);
-  yield new URL(`${name}.mjs`, dirPath);
-  yield new URL(`.${name}.mjs`, dirPath);
-  yield new URL(`${name}.ts`, dirPath);
-  yield new URL(`.${name}.ts`, dirPath);
-  yield new URL(`${name}.json`, dirPath);
-  yield new URL(`.${name}.json`, dirPath);
-  yield new URL(`${name}.yaml`, dirPath);
-  yield new URL(`.${name}.yaml`, dirPath);
-  yield new URL(`${name}.toml`, dirPath);
-  yield new URL(`.${name}.toml`, dirPath);
+export function* listAlternativeOptionsFiles(dirPath: URL, name: string) {
+  for (const b of ["", "."]) {
+    for (const a of [".config", "rc"]) {
+      for (const ext of [".js", ".mjs", ".ts"]) {
+        yield new URL(`${b}${name}${a}${ext}`, dirPath);
+      }
+    }
+  }
 }
 
-async function* listOptionsFiles(dirPath: URL, name: string) {
+async function* listOptionsFiles(
+  dirPath: URL,
+  name: string,
+): AsyncGenerator<URL> {
   for (const alternativeOptionsFile of listAlternativeOptionsFiles(
     dirPath,
     name,
