@@ -102,8 +102,9 @@ export class HTTP2Lister {
       console.log(message);
     };
 
-    const portToListen = port ?? (await findNextPort());
-    const hostnameToListen = hostname ?? "::";
+    const portToListen =
+      port ?? this.configs?.server?.port ?? (await findNextPort());
+    const hostnameToListen = hostname ?? this.configs?.server?.host ?? "::";
 
     const url = await new Promise<URL>((resolve) => {
       this.server.listen(portToListen, hostnameToListen, () => {
