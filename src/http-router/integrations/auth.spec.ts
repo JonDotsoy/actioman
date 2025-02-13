@@ -28,7 +28,7 @@ describe("auth integration", () => {
     cleanupTasks.add(() => httpLister.close());
     const url = await httpLister.listen();
 
-    const res = await fetch(new URL("__actions/hello", url), {
+    const res = await fetch(new URL("./__actions/hello", url), {
       method: "POST",
     });
 
@@ -58,7 +58,7 @@ describe("auth integration", () => {
     cleanupTasks.add(() => httpLister.close());
     const url = await httpLister.listen();
 
-    const res = await fetch(new URL("__actions/hello", url), {
+    const res = await fetch(new URL("./__actions/hello", url), {
       method: "POST",
       headers: {
         Authorization:
@@ -92,7 +92,7 @@ describe("auth integration", () => {
     cleanupTasks.add(() => httpLister.close());
     const url = await httpLister.listen();
 
-    const res = await fetch(new URL("__actions/hello", url), {
+    const res = await fetch(new URL("./__actions/hello", url), {
       method: "POST",
       headers: {
         Authorization: "Bearer foo",
@@ -166,7 +166,7 @@ describe("auth integration", () => {
     cleanupTasks.add(() => httpLister.close());
     const url = await httpLister.listen();
 
-    const res = await fetch(new URL("__actions/hello", url), {
+    const res = await fetch(new URL("./__actions/hello", url), {
       method: "POST",
       headers: {
         Authorization:
