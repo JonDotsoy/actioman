@@ -16,6 +16,7 @@ export const INITIAL_PORT = 30_320;
 export class HTTP2Lister {
   server: http2.Http2Server;
   url: URL | undefined;
+  isSecure: boolean;
 
   constructor(
     readonly httpRouter: HTTPRouter,
@@ -24,52 +25,65 @@ export class HTTP2Lister {
     const key = configs?.server?.ssl?.key;
     const cert = configs?.server?.ssl?.cert;
 
-    this.server = http2.createSecureServer(
-      {
-        key,
-        cert,
-        settings: { initialWindowSize: 8 * 1024 * 1024 },
-      },
-      async (requestHttp2, responseHttp2) => {
-        try {
-          // console.log(r)
+    this.isSecure = key !== undefined && cert !== undefined;
 
-          const response = await this.httpRouter.router.fetch(
-            requestHttp2ToRequest(requestHttp2),
-          );
+    const createServer = (
+      onRequestHandler?: (
+        request: http2.Http2ServerRequest,
+        response: http2.Http2ServerResponse,
+      ) => void,
+    ) => {
+      if (this.isSecure) {
+        return http2.createSecureServer(
+          { key, cert, settings: { initialWindowSize: 8 * 1024 * 1024 } },
+          onRequestHandler,
+        );
+      }
+      return http2.createServer(
+        { settings: { initialWindowSize: 8 * 1024 * 1024 } },
+        onRequestHandler,
+      );
+    };
 
-          if (!response) {
-            responseHttp2.statusCode = 404;
-            return responseHttp2.end();
-          }
+    this.server = createServer(async (requestHttp2, responseHttp2) => {
+      try {
+        // console.log(r)
 
-          responseHttp2.statusCode = response.status;
-          response.headers.forEach((value, key) => {
-            if (key.startsWith(":")) return;
-            if (responseHttp2.hasHeader(key)) {
-              responseHttp2.appendHeader(key, value);
-            } else {
-              responseHttp2.setHeader(key, value);
-            }
-          });
-          if (response.body) {
-            const reader = response.body.getReader();
-            for (
-              let readResult = await reader.read();
-              !readResult.done && !requestHttp2.aborted;
-              readResult = await reader.read()
-            ) {
-              responseHttp2.write(readResult.value);
-            }
-          }
-          return responseHttp2.end();
-        } catch (error) {
-          console.error(error);
-          responseHttp2.statusCode = 500;
+        const response = await this.httpRouter.router.fetch(
+          requestHttp2ToRequest(requestHttp2),
+        );
+
+        if (!response) {
+          responseHttp2.statusCode = 404;
           return responseHttp2.end();
         }
-      },
-    );
+
+        responseHttp2.statusCode = response.status;
+        response.headers.forEach((value, key) => {
+          if (key.startsWith(":")) return;
+          if (responseHttp2.hasHeader(key)) {
+            responseHttp2.appendHeader(key, value);
+          } else {
+            responseHttp2.setHeader(key, value);
+          }
+        });
+        if (response.body) {
+          const reader = response.body.getReader();
+          for (
+            let readResult = await reader.read();
+            !readResult.done && !requestHttp2.aborted;
+            readResult = await reader.read()
+          ) {
+            responseHttp2.write(readResult.value);
+          }
+        }
+        return responseHttp2.end();
+      } catch (error) {
+        console.error(error);
+        responseHttp2.statusCode = 500;
+        return responseHttp2.end();
+      }
+    });
   }
 
   async close() {
@@ -93,16 +107,17 @@ export class HTTP2Lister {
 
     const url = await new Promise<URL>((resolve) => {
       this.server.listen(portToListen, hostnameToListen, () => {
+        const protocol = this.isSecure ? "https" : "http";
         const address = this.server.address();
         if (typeof address === "object" && address !== null)
           return resolve(
             new URL(
-              `https://${sanitizeHostname(address.address)}:${address.port}`,
+              `${protocol}://${sanitizeHostname(address.address)}:${address.port}`,
             ),
           );
         return resolve(
           new URL(
-            `https://${sanitizeHostname(hostnameToListen)}:${portToListen}`,
+            `${protocol}://${sanitizeHostname(hostnameToListen)}:${portToListen}`,
           ),
         );
       });
