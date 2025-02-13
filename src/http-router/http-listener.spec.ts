@@ -2,6 +2,10 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "bun:test";
 import { HTTPLister } from "./http-listener";
 import { HTTPRouter } from "./http-router";
 import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
+import { DEFAULT_CERT } from "./DEFAULT_CERT";
+import { DEFAULT_KEY } from "./DEFAULT_KEY";
+import * as https from "https";
+import * as http from "http";
 
 describe("HTTPLister", () => {
   it("should return 404 for unknown paths", async () => {
@@ -93,5 +97,47 @@ describe("HTTPLister", () => {
     });
     cleanupTasks.add(() => httpLister.close());
     await httpLister.listen();
+  });
+
+  it("should create a server with ssl", async () => {
+    await using cleanupTasks = new CleanupTasks();
+    const httpLister = HTTPLister.fromModule(
+      {
+        hi: () => "",
+      },
+      {
+        server: {
+          ssl: {
+            key: DEFAULT_KEY,
+            cert: DEFAULT_CERT,
+          },
+        },
+      },
+    );
+    cleanupTasks.add(() => httpLister.close());
+    const url = await httpLister.listen();
+
+    expect(url.protocol).toEqual("https:");
+
+    const res = await new Promise<http.IncomingMessage>((resolve, reject) => {
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+      https
+        .request(new URL("./__actions", url))
+        .end()
+        .addListener("connect", () => {
+          console.log("connect");
+        })
+        .addListener("close", () => {
+          console.log("end");
+        })
+        .addListener("error", (err) => {
+          reject(err);
+        })
+        .addListener("response", (res) => {
+          resolve(res);
+        });
+    });
+
+    expect(res.statusCode).toEqual(200);
   });
 });

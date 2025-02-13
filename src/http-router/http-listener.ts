@@ -1,4 +1,5 @@
 import * as http from "http";
+import * as https from "https";
 import { HTTPRouter } from "./http-router.js";
 import type { ConfigsModule } from "../configs/configs.js";
 import { sanitizeHostname } from "./utils/sanitize-hostname.js";
@@ -12,9 +13,29 @@ export const INITIAL_PORT = 30_320;
 
 export class HTTPLister {
   server: http.Server;
+  isSecure: boolean;
 
-  constructor(readonly httpRouter: HTTPRouter) {
-    this.server = http.createServer(async (req, res) => {
+  constructor(
+    readonly httpRouter: HTTPRouter,
+    configs?: ConfigsModule,
+  ) {
+    const key = configs?.server?.ssl?.key;
+    const cert = configs?.server?.ssl?.cert;
+    this.isSecure = key !== undefined && cert !== undefined;
+
+    const createServer = <
+      Request extends typeof http.IncomingMessage = typeof http.IncomingMessage,
+      Response extends typeof http.ServerResponse = typeof http.ServerResponse,
+    >(
+      requestListener?: http.RequestListener<Request, Response>,
+    ): http.Server<Request, Response> => {
+      if (this.isSecure) {
+        return https.createServer({ key, cert }, requestListener);
+      }
+      return http.createServer(requestListener);
+    };
+
+    this.server = createServer(async (req, res) => {
       try {
         if (!(await httpRouter.router.requestListener(req, res))) {
           res.statusCode = 404;
@@ -51,16 +72,17 @@ export class HTTPLister {
 
     const url = await new Promise<URL>((resolve) => {
       this.server.listen(portToListen, hostnameToListen, () => {
+        const protocol = this.isSecure ? "https" : "http";
         const address = this.server.address();
         if (typeof address === "object" && address !== null)
           return resolve(
             new URL(
-              `http://${sanitizeHostname(address.address)}:${address.port}`,
+              `${protocol}://${sanitizeHostname(address.address)}:${address.port}`,
             ),
           );
         return resolve(
           new URL(
-            `http://${sanitizeHostname(hostnameToListen)}:${portToListen}`,
+            `${protocol}://${sanitizeHostname(hostnameToListen)}:${portToListen}`,
           ),
         );
       });
@@ -81,7 +103,7 @@ export class HTTPLister {
   static fromModule(module: unknown, configs?: ConfigsModule) {
     const httpRouter = HTTPRouter.fromModule(module, configs);
     if (!httpRouter) throw new Error("No actions found");
-    return new HTTPLister(httpRouter);
+    return new HTTPLister(httpRouter, configs);
   }
 
   static defaultOptions = {
