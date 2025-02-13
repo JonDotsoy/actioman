@@ -17,6 +17,7 @@ jobs:
     steps:
       - name: Auto Assign Issue
         uses: pozil/auto-assign-issue@v1
+        continue-on-error: true
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           assignees: jondotsoy
