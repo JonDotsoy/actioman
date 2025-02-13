@@ -2,6 +2,15 @@ import { get } from "@jondotsoy/utils-js/get";
 import type { Middleware } from "artur/http/router";
 
 export type IntegrationModule = Integration;
+export type ServerConfigsModule = {
+  host?: string;
+  port?: number;
+  headers?: Record<string, string | string[]>;
+  ssl?: {
+    key: string;
+    cert: string;
+  };
+};
 
 export class Integration {
   constructor(
@@ -24,7 +33,7 @@ export class Integration {
   }
 }
 
-export class ServerConfigs {
+export class ServerConfigs implements ServerConfigsModule {
   host?: string;
   port?: number;
   headers?: Record<string, string | string[]>;
@@ -94,6 +103,7 @@ const getStringBoolean = (obj: unknown, ...path: string[]) => {
 };
 
 export type ConfigsModule = {
+  server?: ServerConfigsModule;
   integrations?: IntegrationModule[];
 };
 

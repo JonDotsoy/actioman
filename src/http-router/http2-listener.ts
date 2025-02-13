@@ -17,11 +17,17 @@ export class HTTP2Lister {
   server: http2.Http2Server;
   url: URL | undefined;
 
-  constructor(readonly httpRouter: HTTPRouter) {
+  constructor(
+    readonly httpRouter: HTTPRouter,
+    readonly configs?: ConfigsModule,
+  ) {
+    const key = configs?.server?.ssl?.key;
+    const cert = configs?.server?.ssl?.cert;
+
     this.server = http2.createSecureServer(
       {
-        key: DEFAULT_KEY,
-        cert: DEFAULT_CERT,
+        key,
+        cert,
         settings: { initialWindowSize: 8 * 1024 * 1024 },
       },
       async (requestHttp2, responseHttp2) => {
@@ -119,7 +125,7 @@ export class HTTP2Lister {
   static fromModule(module: unknown, configs?: ConfigsModule) {
     const httpRouter = HTTPRouter.fromModule(module, configs);
     if (!httpRouter) throw new Error("No actions found");
-    return new HTTP2Lister(httpRouter);
+    return new HTTP2Lister(httpRouter, configs);
   }
 
   static defaultOptions = {

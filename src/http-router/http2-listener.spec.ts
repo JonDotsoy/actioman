@@ -3,14 +3,25 @@ import { describe, expect, it } from "bun:test";
 import { HTTP2Lister } from "./http2-listener.js";
 import * as http2 from "http2";
 import { DEFAULT_CERT } from "./DEFAULT_CERT.js";
+import { DEFAULT_KEY } from "./DEFAULT_KEY.js";
 
 describe("async HTTP2Lister", () => {
   it("should return 200 for /__actions", async () => {
     await using cleanupTasks = new CleanupTasks();
 
-    const http2Lister = HTTP2Lister.fromModule({
-      hi: () => "ok",
-    });
+    const http2Lister = HTTP2Lister.fromModule(
+      {
+        hi: () => "ok",
+      },
+      {
+        server: {
+          ssl: {
+            key: DEFAULT_KEY,
+            cert: DEFAULT_CERT,
+          },
+        },
+      },
+    );
     cleanupTasks.add(() => http2Lister.close());
 
     const url = await http2Lister.listen();
