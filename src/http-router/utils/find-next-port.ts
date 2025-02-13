@@ -1,5 +1,5 @@
 import net from "net";
-import { INITIAL_PORT } from "../http-listener.js";
+import { INITIAL_PORT } from "../INITIAL_PORT.js";
 
 export const findNextPort = async () => {
   let porposalPort = INITIAL_PORT;
