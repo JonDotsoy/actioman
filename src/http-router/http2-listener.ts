@@ -3,8 +3,6 @@ import type { ConfigsModule } from "../configs/configs.js";
 import { sanitizeHostname } from "./utils/sanitize-hostname.js";
 import { findNextPort } from "./utils/find-next-port.js";
 import * as http2 from "http2";
-import { DEFAULT_CERT } from "./DEFAULT_CERT.js";
-import { DEFAULT_KEY } from "./DEFAULT_KEY.js";
 import { requestHttp2ToRequest } from "./utils/request-http2-to-request.js";
 
 type ListenOptions = {
