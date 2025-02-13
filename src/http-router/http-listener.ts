@@ -9,8 +9,6 @@ type ListenOptions = {
   silent: boolean;
 };
 
-export const INITIAL_PORT = 30_320;
-
 export class HTTPLister {
   server: http.Server;
   isSecure: boolean;
