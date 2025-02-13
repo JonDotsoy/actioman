@@ -31,8 +31,7 @@ describe("makeServerScript", () => {
       actionsPath,
     );
 
-    expect(res.bootstrapLocation).toBeTypeOf("string");
-    expect(res.httpListenerLocation).toBeTypeOf("string");
+    expect(res.bootstrapLocation).toBeInstanceOf(URL);
     expect(
       await fs.readFile(new URL(res.bootstrapLocation), "utf-8"),
     ).toMatchSnapshot();

@@ -1,0 +1,18 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`listAlternativeOptionsFiles should return an array of URLs 1`] = `
+[
+  "file://app/actioman.config.js",
+  "file://app/actioman.config.mjs",
+  "file://app/actioman.config.ts",
+  "file://app/actiomanrc.js",
+  "file://app/actiomanrc.mjs",
+  "file://app/actiomanrc.ts",
+  "file://app/.actioman.config.js",
+  "file://app/.actioman.config.mjs",
+  "file://app/.actioman.config.ts",
+  "file://app/.actiomanrc.js",
+  "file://app/.actiomanrc.mjs",
+  "file://app/.actiomanrc.ts",
+]
+`;

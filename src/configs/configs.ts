@@ -2,6 +2,15 @@ import { get } from "@jondotsoy/utils-js/get";
 import type { Middleware } from "artur/http/router";
 
 export type IntegrationModule = Integration;
+export type ServerConfigsModule = {
+  host?: string;
+  port?: number;
+  headers?: Record<string, string | string[]>;
+  ssl?: {
+    key: string;
+    cert: string;
+  };
+};
 
 export class Integration {
   constructor(
@@ -24,6 +33,57 @@ export class Integration {
   }
 }
 
+export class ServerConfigs implements ServerConfigsModule {
+  host?: string;
+  port?: number;
+  headers?: Record<string, string | string[]>;
+  ssl?: {
+    key: string;
+    cert: string;
+  };
+
+  private constructor() {}
+
+  static fromModule(module: unknown): ServerConfigs {
+    const serverConfigs = new ServerConfigs();
+
+    serverConfigs.host =
+      get.string(module, "host") ?? get.string(module, "hostname");
+    serverConfigs.port = get.number(module, "port");
+    serverConfigs.headers = Object.fromEntries(
+      Array.from(
+        Object.entries(get.record(module, "headers") ?? {}),
+        ([key, value]) => ({
+          key,
+          value:
+            typeof value === "string"
+              ? value
+              : Array.isArray(value)
+                ? value.filter((value) => typeof value === "string")
+                : null,
+        }),
+      )
+        .filter(
+          (
+            entry,
+          ): entry is Omit<typeof entry, "value"> & {
+            value: Exclude<typeof entry.value, null>;
+          } => entry.value !== null,
+        )
+        .map((entry) => [entry.key, entry.value]),
+    );
+
+    const key = get.string(module, "ssl", "key");
+    const cert = get.string(module, "ssl", "cert");
+
+    if (key && cert) {
+      serverConfigs.ssl = { key, cert };
+    }
+
+    return serverConfigs;
+  }
+}
+
 const stringBooleanMap: Record<string, boolean | undefined> = {
   true: true,
   "1": true,
@@ -43,20 +103,31 @@ const getStringBoolean = (obj: unknown, ...path: string[]) => {
 };
 
 export type ConfigsModule = {
+  server?: ServerConfigsModule;
   integrations?: IntegrationModule[];
 };
 
 export class Configs {
   integrations?: Integration[] = [];
+  server?: ServerConfigs;
 
   private constructor() {}
 
-  getHTTPListenerMiddlewares(): Middleware<any>[] {
+  get httpListenerMiddlewares() {
     return (
       this.integrations
         ?.map((integration) => integration.hooks?.["http:middleware"])
         .filter((middleware) => middleware !== undefined) ?? []
     );
+  }
+
+  get http2SecureContextOptionsKey() {
+    return;
+  }
+
+  /** @deprecated */
+  getHTTPListenerMiddlewares(): Middleware<any>[] {
+    return this.httpListenerMiddlewares;
   }
 
   static fromModule(module: unknown) {
@@ -71,6 +142,7 @@ export class Configs {
     }
 
     configs.integrations = integrations;
+    configs.server = ServerConfigs.fromModule(get(module, "server"));
 
     return configs;
   }

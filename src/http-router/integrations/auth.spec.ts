@@ -4,6 +4,8 @@ import { HTTPLister } from "../http-listener.js";
 import { auth } from "./auth.js";
 import { TEST_RUN_EXPERIMENTAL } from "../../constants/TEST_RUN_EXPERIMENTAL.js";
 
+let test_port = 33321;
+
 describe("auth integration", () => {
   it("should return 401 if there is no token", async () => {
     await using cleanupTasks = new CleanupTasks();
@@ -26,9 +28,9 @@ describe("auth integration", () => {
       },
     );
     cleanupTasks.add(() => httpLister.close());
-    const url = await httpLister.listen();
+    const url = await httpLister.listen(test_port++);
 
-    const res = await fetch(new URL("__actions/hello", url), {
+    const res = await fetch(new URL("./__actions/hello", url), {
       method: "POST",
     });
 
@@ -56,9 +58,9 @@ describe("auth integration", () => {
       },
     );
     cleanupTasks.add(() => httpLister.close());
-    const url = await httpLister.listen();
+    const url = await httpLister.listen(test_port++);
 
-    const res = await fetch(new URL("__actions/hello", url), {
+    const res = await fetch(new URL("./__actions/hello", url), {
       method: "POST",
       headers: {
         Authorization:
@@ -90,9 +92,9 @@ describe("auth integration", () => {
       },
     );
     cleanupTasks.add(() => httpLister.close());
-    const url = await httpLister.listen();
+    const url = await httpLister.listen(test_port++);
 
-    const res = await fetch(new URL("__actions/hello", url), {
+    const res = await fetch(new URL("./__actions/hello", url), {
       method: "POST",
       headers: {
         Authorization: "Bearer foo",
@@ -164,9 +166,9 @@ describe("auth integration", () => {
       },
     );
     cleanupTasks.add(() => httpLister.close());
-    const url = await httpLister.listen();
+    const url = await httpLister.listen(test_port++);
 
-    const res = await fetch(new URL("__actions/hello", url), {
+    const res = await fetch(new URL("./__actions/hello", url), {
       method: "POST",
       headers: {
         Authorization:

@@ -1,56 +1,39 @@
 import * as http from "http";
+import * as https from "https";
 import { HTTPRouter } from "./http-router.js";
-import net from "net";
 import type { ConfigsModule } from "../configs/configs.js";
+import { sanitizeHostname } from "./utils/sanitize-hostname.js";
+import { findNextPort } from "./utils/find-next-port.js";
 
 type ListenOptions = {
   silent: boolean;
 };
 
-const sanatizeHostname = (hostname: string) => {
-  switch (hostname) {
-    case "::1":
-    case "::":
-    case "0.0.0.0":
-    case "127.0.0.1":
-    case "::ffff:127.0.0.1":
-      return "localhost";
-  }
-
-  return hostname;
-};
-
-const INITIAL_PORT = 30_320;
-
-const findNextPort = async () => {
-  let porposalPort = INITIAL_PORT;
-  while (true) {
-    porposalPort++;
-    if (porposalPort >= INITIAL_PORT + 10_000)
-      throw new Error("No available port");
-    const port = await new Promise<number | null>((resolve) => {
-      const connectiong = net.connect({
-        host: "localhost",
-        port: porposalPort,
-      });
-
-      connectiong.addListener("connect", () => {
-        resolve(null);
-        connectiong.destroy();
-      });
-      connectiong.addListener("error", (err) => {
-        if ("code" in err && err.code === "ECONNREFUSED") resolve(porposalPort);
-      });
-    });
-    if (typeof port === "number") return port;
-  }
-};
-
 export class HTTPLister {
   server: http.Server;
+  isSecure: boolean;
 
-  constructor(readonly httpRouter: HTTPRouter) {
-    this.server = http.createServer(async (req, res) => {
+  constructor(
+    readonly httpRouter: HTTPRouter,
+    configs?: ConfigsModule,
+  ) {
+    const key = configs?.server?.ssl?.key;
+    const cert = configs?.server?.ssl?.cert;
+    this.isSecure = key !== undefined && cert !== undefined;
+
+    const createServer = <
+      Request extends typeof http.IncomingMessage = typeof http.IncomingMessage,
+      Response extends typeof http.ServerResponse = typeof http.ServerResponse,
+    >(
+      requestListener?: http.RequestListener<Request, Response>,
+    ): http.Server<Request, Response> => {
+      if (this.isSecure) {
+        return https.createServer({ key, cert }, requestListener);
+      }
+      return http.createServer(requestListener);
+    };
+
+    this.server = createServer(async (req, res) => {
       try {
         if (!(await httpRouter.router.requestListener(req, res))) {
           res.statusCode = 404;
@@ -87,16 +70,17 @@ export class HTTPLister {
 
     const url = await new Promise<URL>((resolve) => {
       this.server.listen(portToListen, hostnameToListen, () => {
+        const protocol = this.isSecure ? "https" : "http";
         const address = this.server.address();
         if (typeof address === "object" && address !== null)
           return resolve(
             new URL(
-              `http://${sanatizeHostname(address.address)}:${address.port}`,
+              `${protocol}://${sanitizeHostname(address.address)}:${address.port}`,
             ),
           );
         return resolve(
           new URL(
-            `http://${sanatizeHostname(hostnameToListen)}:${portToListen}`,
+            `${protocol}://${sanitizeHostname(hostnameToListen)}:${portToListen}`,
           ),
         );
       });
@@ -117,7 +101,7 @@ export class HTTPLister {
   static fromModule(module: unknown, configs?: ConfigsModule) {
     const httpRouter = HTTPRouter.fromModule(module, configs);
     if (!httpRouter) throw new Error("No actions found");
-    return new HTTPLister(httpRouter);
+    return new HTTPLister(httpRouter, configs);
   }
 
   static defaultOptions = {

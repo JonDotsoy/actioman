@@ -9,11 +9,10 @@ import {
   rule,
   type Rule,
 } from "@jondotsoy/flags";
-import { HTTPRouter } from "../../http-router/http-router.js";
 import * as net from "net";
 import { makeServerScript } from "../../scripts/make-server-script.js";
 import { getCWD } from "../utils/get-cwd.js";
-import { $ } from "../../shell/shell.js";
+import { spawnSync } from "child_process";
 
 const nextPort = async () => {
   let porposalPort = 30320;
@@ -40,6 +39,7 @@ const nextPort = async () => {
 export const serve = async (args: string[]) => {
   type Options = {
     help: boolean;
+    http2: boolean;
     actionFile: string;
     port: number;
     host: string;
@@ -54,6 +54,9 @@ export const serve = async (args: string[]) => {
     }),
     rule(flag("-h", "--host"), isStringAt("host"), {
       description: "Host to listen on",
+    }),
+    rule(flag("--http2"), isBooleanAt("http2"), {
+      description: "Use HTTP2",
     }),
     rule(flag("-h", "--help"), isBooleanAt("help"), {
       description: "Show help",
@@ -70,6 +73,11 @@ export const serve = async (args: string[]) => {
   const port = options.port ?? (await nextPort());
   const host = options.host ?? "localhost";
   const cwd = getCWD(options.cwd);
+  const http2 = options.http2 ?? false;
+
+  if (http2) {
+    console.warn("HTTP2 is experimental and may have unexpected behavior.");
+  }
 
   const help = () =>
     console.log(makeHelpMessage("actioman serve <action file>", rules));
@@ -81,15 +89,16 @@ export const serve = async (args: string[]) => {
   const { bootstrapLocation } = await makeServerScript(
     cwd.pathname,
     new URL(actionFile, cwd).pathname,
+    http2,
   );
 
-  await $`
-    node $BOOTSTRAP_SCRIPT
-  `
-    .appendEnvs({
-      BOOTSTRAP_SCRIPT: new URL(bootstrapLocation).pathname,
+  spawnSync(process.argv0, [new URL(bootstrapLocation).pathname], {
+    cwd: cwd.pathname,
+    env: {
+      ...process.env,
       PORT: port.toString(),
       HOST: host,
-    })
-    .cwd(cwd.pathname);
+    },
+    stdio: "inherit",
+  });
 };

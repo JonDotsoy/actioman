@@ -30,7 +30,7 @@ export class HTTPRouter {
     this.router = new Router({
       errorHandling: "pass",
       middlewares: [
-        ...(configs?.getHTTPListenerMiddlewares() ?? []),
+        ...(configs?.httpListenerMiddlewares ?? []),
         (fetch) => async (req) => {
           const res = await fetch(req);
           res?.headers.set("X-Powered-By", "Actioman");
