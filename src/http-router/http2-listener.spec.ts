@@ -56,4 +56,45 @@ describe("async HTTP2Lister", () => {
     expect(status).toEqual(200);
     expect(body).toMatchSnapshot();
   });
+
+  it("should return 200 for /__actions without ssl", async () => {
+    await using cleanupTasks = new CleanupTasks();
+
+    const http2Lister = HTTP2Lister.fromModule({
+      hi: () => "ok",
+    });
+    cleanupTasks.add(() => http2Lister.close());
+
+    const url = await http2Lister.listen();
+
+    const client = http2.connect(url);
+    cleanupTasks.add(() => client.close());
+
+    const { status, body } = await new Promise<{ body: any; status: number }>(
+      (resolve, reject) => {
+        const data: number[] = [];
+        let status: any;
+
+        client
+          .request({
+            [http2.constants.HTTP2_HEADER_PATH]: "/__actions",
+            [http2.constants.HTTP2_HEADER_METHOD]: "GET",
+          })
+          .addListener("error", (err) => reject(err))
+          .addListener("response", (headers) => {
+            status = headers[http2.constants.HTTP2_HEADER_STATUS];
+          })
+          .addListener("data", (d) => data.push(...d))
+          .addListener("close", () => {
+            resolve({
+              status,
+              body: new TextDecoder().decode(new Uint8Array(data)),
+            });
+          });
+      },
+    );
+
+    expect(status).toEqual(200);
+    expect(body).toMatchSnapshot();
+  });
 });
