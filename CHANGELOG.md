@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.5.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.4.0...actioman-v0.5.0) (2025-02-13)
+
+
+### Features
+
+* **configs:** add server configs and http2 secure context options ([e010943](https://github.com/JonDotsoy/actioman/commit/e010943a0ca119a33b44a5b720729756269c7618))
+* **configs:** add ServerConfigsModule interface ([0c89ae9](https://github.com/JonDotsoy/actioman/commit/0c89ae9f5802e66d209119365ea35b5093d36445))
+* **http-listener:** add support for HTTPS ([6380c85](https://github.com/JonDotsoy/actioman/commit/6380c8568b68881f5e2a4bf74ecea6aca36debe4))
+* **http-router:** add HTTP2 listener with tests ([093c4f2](https://github.com/JonDotsoy/actioman/commit/093c4f298612e18e6edf58faf177906ded989548))
+* **http-router:** add support for non-secure HTTP2 server ([5e7690d](https://github.com/JonDotsoy/actioman/commit/5e7690deb2fdfd783bfd6dc9962533de90346add))
+* **http-router:** add support for server configs ([324a61b](https://github.com/JonDotsoy/actioman/commit/324a61b001ed802d2a829a7a9cfc79f36e0e1578))
+* Improve server script generation ([dbde1c3](https://github.com/JonDotsoy/actioman/commit/dbde1c3d1e0d987720100316546247350c43a986))
+* **paths:** Add executable paths for configs and listeners ([322c10d](https://github.com/JonDotsoy/actioman/commit/322c10d669fa704c2b701f7d00d26fe7cc7efd3c))
+* **prepare-workspace:** remove workspace directory before setup ([bccc646](https://github.com/JonDotsoy/actioman/commit/bccc6463fd113307fb262b99525ac0fe5179b406))
+* **serve:** add support for HTTP2 and handle 404 errors ([db4bae6](https://github.com/JonDotsoy/actioman/commit/db4bae65d157366b5ade11116b332c16a82dd97e))
+* **serve:** use spawnSync to run bootstrap script ([d382d63](https://github.com/JonDotsoy/actioman/commit/d382d632dbc3f734358835f29d1605c4d461ad3c))
+
+
+### Bug Fixes
+
+* **configs:** Reorder alternative options file paths ([60fa30b](https://github.com/JonDotsoy/actioman/commit/60fa30b306615d5be9498617212f40deba0a3b5f))
+* **docs:** Improve Spanish README content ([b8a5cc8](https://github.com/JonDotsoy/actioman/commit/b8a5cc8881419234feb77759f4fb04fad861fd19))
+
+
+### Performance Improvements
+
+* add support for various config file formats ([fb6fb54](https://github.com/JonDotsoy/actioman/commit/fb6fb548ce41f739b2295da82ca2f60d27d61194))
+* **configs:** deprecate getHTTPListenerMiddlewares method ([523f9d4](https://github.com/JonDotsoy/actioman/commit/523f9d4f7d06e3ea172e9689cad06e75f5544eea))
+* **http-router:** add initial port and find next port ([55f30f0](https://github.com/JonDotsoy/actioman/commit/55f30f0d8735b187db25bb8e741ce0738052b51c))
+* **http-router:** remove default cert and key ([82b32e5](https://github.com/JonDotsoy/actioman/commit/82b32e5e0032fa2ed191250263bbd5fe8bc9ba21))
+
 ## [0.4.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.3.0...actioman-v0.4.0) (2025-02-02)
 
 
