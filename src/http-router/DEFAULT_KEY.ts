@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== "test") {
+  console.warn("The variable DEFAULT_KEY is only to test environment");
+}
+
 export const DEFAULT_KEY =
   "-----BEGIN PRIVATE KEY-----\n" +
   "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQClwW7mZrBSigyG\n" +
