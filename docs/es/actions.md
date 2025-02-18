@@ -48,11 +48,11 @@ export const hello = defineAction({
 **Desglose del ejemplo con `defineAction`:**
 
 - **`import { defineAction } from "actioman";`**: Importamos la función `defineAction` desde la librería `actioman`.
-- **`import {z} from "zod";`**: Importamos la librería Zod para definir esquemas de validación.
+- **`import { z } from "zod";`**: Importamos la librería Zod para definir esquemas de validación.
 - **`defineAction({ ... })`**: Utilizamos `defineAction` para definir la acción `hello`.
   - **`input: z.object({ name: z.string() })`**: Define el contrato para los datos de entrada. En este caso, espera un objeto Javascript con una propiedad llamada `name` que debe ser de tipo `string` según Zod.
   - **`output: z.string()`**: Define el contrato para el valor de retorno de la acción. Aquí, se espera que la función retorne un valor de tipo `string`.
-  - **`handler: ({name}) => \`hello ${name}!\``**: Esta es la función **handler** que contiene la lógica de tu acción. Recibe como argumento un objeto que coincide con la estructura definida en el contrato `input`. En este caso, recibe un objeto con la propiedad `name`. La función handler debe retornar un valor que coincida con el contrato `output`.
+  - **`handler: ({name}) => "hello " + name + "!"`**: Esta es la función **handler** que contiene la lógica de tu acción. Recibe como argumento un objeto que coincide con la estructura definida en el contrato `input`. En este caso, recibe un objeto con la propiedad `name`. La función handler debe retornar un valor que coincida con el contrato `output`.
 
 ### Beneficios de Usar Contratos Zod
 
