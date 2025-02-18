@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== "test") {
+  console.warn("The variable DEFAULT_CERT is only to test environment");
+}
+
 export const DEFAULT_CERT =
   "-----BEGIN CERTIFICATE-----\n" +
   "MIIDCTCCAfGgAwIBAgIUcx4/uMJz+em1t9pyg8YBn8mOtz8wDQYJKoZIhvcNAQEL\n" +
