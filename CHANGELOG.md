@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.5.0...actioman-v0.6.0) (2025-02-18)
+
+
+### Features
+
+* add actions.md file with action definition examples ([3dff820](https://github.com/JonDotsoy/actioman/commit/3dff820abf2edfedef86564cae26f6b19d3e1a66))
+* **config:** update server configuration ([7fe7a7d](https://github.com/JonDotsoy/actioman/commit/7fe7a7d164d0413cdf524744ac65d60c7a6ed074))
+
 ## [0.5.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.4.0...actioman-v0.5.0) (2025-02-13)
 
 
