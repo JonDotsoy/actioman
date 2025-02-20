@@ -1,455 +1,85 @@
-import escodegen from "escodegen";
 import * as path from "path";
+import {
+  $,
+  $template,
+  $import,
+  $const,
+  $call,
+  $await,
+  $string,
+  $new,
+  $statement,
+  $doc,
+  render,
+  $asyncArrowFunction,
+} from "./typescript-factory/typescript-factory.js";
 
 type ProgramASTProps = {
   httpListenerModuleLocation: string;
   configsModuleLocation: string;
   configsFactoryModuleLocation: string;
-  actionFileLocation: string;
-  workspaceLocation: string;
+  actionRelativeFileLocation: string;
+  relativeWorkspaceLocation: string;
 };
 
-const getProgramAST = (props: ProgramASTProps) => ({
-  type: "Program",
-  body: [
-    {
-      type: "ImportDeclaration",
-      specifiers: [
-        {
-          type: "ImportSpecifier",
-          local: {
-            type: "Identifier",
-            name: "HTTPLister",
-          },
-          imported: {
-            type: "Identifier",
-            name: "HTTPLister",
-          },
-        },
-      ],
-      source: {
-        type: "Literal",
-        value: props.httpListenerModuleLocation,
-      },
-    },
-    {
-      type: "ImportDeclaration",
-      specifiers: [
-        {
-          type: "ImportSpecifier",
-          local: {
-            type: "Identifier",
-            name: "factory",
-          },
-          imported: {
-            type: "Identifier",
-            name: "factory",
-          },
-        },
-      ],
-      source: {
-        type: "Literal",
-        value: props.configsFactoryModuleLocation,
-      },
-    },
-    {
-      type: "ImportDeclaration",
-      specifiers: [
-        {
-          type: "ImportSpecifier",
-          local: {
-            type: "Identifier",
-            name: "Configs",
-          },
-          imported: {
-            type: "Identifier",
-            name: "Configs",
-          },
-        },
-      ],
-      source: {
-        type: "Literal",
-        value: props.configsModuleLocation,
-      },
-    },
-
-    {
-      type: "VariableDeclaration",
-      declarations: [
-        {
-          type: "VariableDeclarator",
-          id: {
-            type: "Identifier",
-            name: "PORT",
-          },
-          init: {
-            type: "MemberExpression",
-            computed: false,
-            object: {
-              type: "MemberExpression",
-              computed: false,
-              object: {
-                type: "Identifier",
-                name: "process",
-              },
-              property: {
-                type: "Identifier",
-                name: "env",
-              },
-            },
-            property: {
-              type: "Identifier",
-              name: "PORT",
-            },
-          },
-        },
-      ],
-      kind: "const",
-    },
-    {
-      type: "VariableDeclaration",
-      declarations: [
-        {
-          type: "VariableDeclarator",
-          id: {
-            type: "Identifier",
-            name: "HOST",
-          },
-          init: {
-            type: "MemberExpression",
-            computed: false,
-            object: {
-              type: "MemberExpression",
-              computed: false,
-              object: {
-                type: "Identifier",
-                name: "process",
-              },
-              property: {
-                type: "Identifier",
-                name: "env",
-              },
-            },
-            property: {
-              type: "Identifier",
-              name: "HOST",
-            },
-          },
-        },
-      ],
-      kind: "const",
-    },
-
-    {
-      type: "VariableDeclaration",
-      declarations: [
-        {
-          type: "VariableDeclarator",
-          id: {
-            type: "Identifier",
-            name: "bootstrap",
-          },
-          init: {
-            type: "ArrowFunctionExpression",
-            id: null,
-            params: [],
-            body: {
-              type: "BlockStatement",
-              body: [
-                {
-                  type: "VariableDeclaration",
-                  declarations: [
-                    {
-                      type: "VariableDeclarator",
-                      id: {
-                        type: "Identifier",
-                        name: "configs",
-                      },
-                      init: {
-                        type: "CallExpression",
-                        callee: {
-                          type: "MemberExpression",
-                          computed: false,
-                          object: {
-                            type: "Identifier",
-                            name: "Configs",
-                          },
-                          property: {
-                            type: "Identifier",
-                            name: "fromModule",
-                          },
-                        },
-                        arguments: [
-                          {
-                            type: "AwaitExpression",
-                            argument: {
-                              type: "CallExpression",
-                              callee: {
-                                type: "MemberExpression",
-                                computed: false,
-                                object: {
-                                  type: "Identifier",
-                                  name: "factory",
-                                },
-                                property: {
-                                  type: "Identifier",
-                                  name: "findOn",
-                                },
-                              },
-                              arguments: [
-                                {
-                                  type: "CallExpression",
-                                  callee: {
-                                    type: "MemberExpression",
-                                    computed: false,
-                                    object: {
-                                      type: "NewExpression",
-                                      callee: {
-                                        type: "Identifier",
-                                        name: "URL",
-                                      },
-                                      arguments: [
-                                        {
-                                          type: "Literal",
-                                          value: props.workspaceLocation,
-                                        },
-                                        {
-                                          type: "MemberExpression",
-                                          computed: false,
-                                          object: {
-                                            type: "MemberExpression",
-                                            computed: false,
-                                            object: {
-                                              type: "Identifier",
-                                              name: "import",
-                                            },
-                                            property: {
-                                              type: "Identifier",
-                                              name: "meta",
-                                            },
-                                          },
-                                          property: {
-                                            type: "Identifier",
-                                            name: "url",
-                                          },
-                                        },
-                                      ],
-                                    },
-                                    property: {
-                                      type: "Identifier",
-                                      name: "toString",
-                                    },
-                                  },
-                                  arguments: [],
-                                },
-                                {
-                                  type: "Literal",
-                                  value: "configs",
-                                  raw: '"configs"',
-                                },
-                              ],
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                  kind: "const",
-                },
-                {
-                  type: "VariableDeclaration",
-                  declarations: [
-                    {
-                      type: "VariableDeclarator",
-                      id: {
-                        type: "Identifier",
-                        name: "httpLister",
-                      },
-                      init: {
-                        type: "AwaitExpression",
-                        argument: {
-                          type: "CallExpression",
-                          callee: {
-                            type: "MemberExpression",
-                            computed: false,
-                            object: {
-                              type: "Identifier",
-                              name: "HTTPLister",
-                            },
-                            property: {
-                              type: "Identifier",
-                              name: "fromModule",
-                            },
-                          },
-                          arguments: [
-                            {
-                              type: "AwaitExpression",
-                              argument: {
-                                type: "CallExpression",
-                                callee: {
-                                  type: "Identifier",
-                                  name: "import",
-                                },
-                                arguments: [
-                                  {
-                                    type: "Literal",
-                                    value: props.actionFileLocation,
-                                  },
-                                ],
-                              },
-                            },
-                            {
-                              type: "Identifier",
-                              name: "configs",
-                            },
-                          ],
-                        },
-                      },
-                    },
-                  ],
-                  kind: "const",
-                },
-                {
-                  type: "VariableDeclaration",
-                  declarations: [
-                    {
-                      type: "VariableDeclarator",
-                      id: {
-                        type: "Identifier",
-                        name: "url",
-                      },
-                      init: {
-                        type: "AwaitExpression",
-                        argument: {
-                          type: "CallExpression",
-                          callee: {
-                            type: "MemberExpression",
-                            computed: false,
-                            object: {
-                              type: "Identifier",
-                              name: "httpLister",
-                            },
-                            property: {
-                              type: "Identifier",
-                              name: "listen",
-                            },
-                          },
-                          arguments: [
-                            { type: "Identifier", name: "PORT" },
-                            { type: "Identifier", name: "HOST" },
-                          ],
-                        },
-                      },
-                    },
-                  ],
-                  kind: "const",
-                },
-                {
-                  type: "ExpressionStatement",
-                  expression: {
-                    type: "CallExpression",
-                    callee: {
-                      type: "MemberExpression",
-                      computed: false,
-                      object: {
-                        type: "Identifier",
-                        name: "console",
-                      },
-                      property: {
-                        type: "Identifier",
-                        name: "log",
-                      },
-                    },
-                    arguments: [
-                      {
-                        type: "TemplateLiteral",
-                        quasis: [
-                          {
-                            type: "TemplateElement",
-                            value: {
-                              raw: "Server running at ",
-                            },
-                            tail: false,
-                          },
-                          {
-                            type: "TemplateElement",
-                            value: {
-                              raw: "",
-                            },
-                            tail: true,
-                          },
-                        ],
-                        expressions: [
-                          {
-                            type: "CallExpression",
-                            callee: {
-                              type: "MemberExpression",
-                              computed: false,
-                              object: {
-                                type: "Identifier",
-                                name: "url",
-                              },
-                              property: {
-                                type: "Identifier",
-                                name: "toString",
-                              },
-                            },
-                            arguments: [],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-            generator: false,
-            expression: false,
-            async: true,
-          },
-        },
-      ],
-      kind: "const",
-    },
-    {
-      type: "ExpressionStatement",
-      expression: {
-        type: "CallExpression",
-        callee: {
-          type: "MemberExpression",
-          computed: false,
-          object: {
-            type: "CallExpression",
-            callee: {
-              type: "Identifier",
-              name: "bootstrap",
-            },
-            arguments: [],
-          },
-          property: {
-            type: "Identifier",
-            name: "catch",
-          },
-        },
-        arguments: [
-          {
-            type: "MemberExpression",
-            computed: false,
-            object: {
-              type: "Identifier",
-              name: "console",
-            },
-            property: {
-              type: "Identifier",
-              name: "error",
-            },
-          },
-        ],
-      },
-    },
-  ],
-  sourceType: "module",
-});
+const getTSProgram = (props: ProgramASTProps) =>
+  $doc([
+    $import(props.httpListenerModuleLocation, ["HTTPLister"]),
+    $import(props.configsFactoryModuleLocation, ["factory"]),
+    $import(props.configsModuleLocation, ["Configs"]),
+    $const("PORT", $("process", "env", "PORT")),
+    $const("HOST", $("process", "env", "HOST")),
+    $const(
+      "bootstrap",
+      $asyncArrowFunction([
+        $const(
+          "configs",
+          $call(
+            $("Configs", "fromModule"),
+            $await(
+              $call(
+                $("factory", "findOn"),
+                $call(
+                  $(
+                    $new(
+                      "URL",
+                      $string(props.relativeWorkspaceLocation),
+                      $("import", "meta", "url"),
+                    ),
+                    "toString",
+                  ),
+                ),
+                $string("configs"),
+              ),
+            ),
+          ),
+        ),
+        $const(
+          "httpLister",
+          $await(
+            $call(
+              $("HTTPLister", "fromModule"),
+              $await(
+                $call("import", $string(props.actionRelativeFileLocation)),
+              ),
+              $("configs"),
+            ),
+          ),
+        ),
+        $const(
+          "url",
+          $await($call($("httpLister", "listen"), $("PORT"), $("HOST"))),
+        ),
+        $statement(
+          $call(
+            $("console", "log"),
+            $template`Server running at ${$call($("url", "toString"))}`,
+          ),
+        ),
+      ]),
+    ),
+    $statement($call($($call("bootstrap"), "catch"), $("console", "error"))),
+  ]);
 
 type Props = {
   target: string;
@@ -482,13 +112,13 @@ export const httpListenActionTemplate = (props: Props) => {
     return `./${path.relative(dirname.pathname, path2.pathname)}`;
   };
 
-  const ast = getProgramAST({
+  const ast = getTSProgram({
     httpListenerModuleLocation: relative(httpListenerModuleLocation),
     configsModuleLocation: relative(configsModuleLocation),
     configsFactoryModuleLocation: relative(configsFactoryModuleLocation),
-    actionFileLocation: relative(actionFileLocation),
-    workspaceLocation: `${relative(workspaceLocation)}/`,
+    actionRelativeFileLocation: relative(actionFileLocation),
+    relativeWorkspaceLocation: `${relative(workspaceLocation)}/`,
   });
 
-  return `// @ts-nocheck\n${escodegen.generate(ast)}`;
+  return `// @ts-nocheck\n${render(ast)}`;
 };
