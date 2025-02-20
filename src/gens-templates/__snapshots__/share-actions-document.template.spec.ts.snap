@@ -1,14 +1,5 @@
 // Bun Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`shareActionsTemplate  1`] = `
-"export {
-    default as foo
-} from './../actions/foo.js';
-export {
-    default as taz
-} from './../actions/taz.js';"
-`;
-
 exports[`shareActionsTemplate generates share actions document 1`] = `
 "export {
     default as foo
