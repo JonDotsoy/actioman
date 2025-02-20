@@ -2,16 +2,17 @@
 
 exports[`makeServerScript generates bootstrap script 1`] = `
 "// @ts-nocheck
-import { HTTPLister } from './../../../../../../../http-router/http-listener.js';
-import { factory } from './../../../../../../../configs/modules/factory.js';
-import { Configs } from './../../../../../../../configs/configs.js';
+import { HTTPLister } from "./../../../../../../../http-router/http-listener.js";
+import { factory } from "./../../../../../../../configs/modules/factory.js";
+import { Configs } from "./../../../../../../../configs/configs.js";
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
 const bootstrap = async () => {
-    const configs = Configs.fromModule(await factory.findOn(new URL('./../../../', import.meta.url).toString(), 'configs'));
-    const httpLister = await HTTPLister.fromModule(await import('./../../../actions.js'), configs);
+    const configs = Configs.fromModule(await factory.findOn(new URL("./../../../", import.meta.url).toString(), "configs"));
+    const httpLister = await HTTPLister.fromModule(await import("./../../../actions.js"), configs);
     const url = await httpLister.listen(PORT, HOST);
-    console.log(\`Server running at \${ url.toString() }\`);
+    console.log(\`Server running at \${url.toString()}\`);
 };
-bootstrap().catch(console.error);"
+bootstrap().catch(console.error);
+"
 `;
