@@ -1,5 +1,12 @@
 import * as path from "path";
-import escodegen from "escodegen";
+import {
+  $,
+  $doc,
+  $export,
+  $import,
+  $object,
+  render,
+} from "./typescript-factory/typescript-factory.js";
 
 type getProgramASTParams = {
   modules: {
@@ -8,33 +15,19 @@ type getProgramASTParams = {
   }[];
 };
 
-const getProgramAST = (params: getProgramASTParams) => ({
-  type: "Program",
-  body: [
-    ...params.modules.map((module) => ({
-      type: "ExportNamedDeclaration",
-      declaration: null,
-      specifiers: [
-        {
-          type: "ExportSpecifier",
-          exported: {
-            type: "Identifier",
-            name: module.name,
-          },
-          local: {
-            type: "Identifier",
-            name: "default",
-          },
-        },
-      ],
-      source: {
-        type: "Literal",
-        value: module.location,
-      },
-    })),
-  ],
-  sourceType: "module",
-});
+const getProgramAST = (params: getProgramASTParams) =>
+  $doc([
+    ...params.modules.map((module) =>
+      $import(module.location, undefined, module.name),
+    ),
+    $export(
+      $object(
+        Object.fromEntries(
+          params.modules.map((module) => [module.name, $(module.name)]),
+        ),
+      ),
+    ),
+  ]);
 
 type Params = {
   fileLocation: string;
@@ -55,5 +48,5 @@ export const shareActionsTemplate = (params: Params) => {
     })),
   });
 
-  return escodegen.generate(ast);
+  return `// @ts-nocheck\n${render(ast)}`;
 };
