@@ -2,19 +2,20 @@
 
 exports[`actionDocumentTemplate should generate the actions target code 1`] = `
 "// @ts-nocheck
-import { z } from 'zod';
-import { ActionsTarget } from './../node_modules/actioman/lib/esm/actions-target/actions-target.js';
-const createActionsTarget = () => new ActionsTarget('http://localhost/', {
+import { z } from "zod";
+import { ActionsTarget } from "./../node_modules/actioman/lib/esm/actions-target/actions-target.js";
+const createActionsTarget = () => new ActionsTarget("http://localhost/", {
     hi: {
-        description: 'foo',
+        description: "foo",
         input: z.object({ "name": z.string() }).strict(),
         output: z.object({ "outname": z.union([z.number(), z.null()]) }).strict()
     },
     foo: {
-        description: 'foo',
+        description: "foo",
         input: undefined,
         output: z.object({ "outname": z.union([z.number(), z.null()]) }).strict()
     }
 }).compile();
-export default createActionsTarget;"
+export default createActionsTarget;
+"
 `;
