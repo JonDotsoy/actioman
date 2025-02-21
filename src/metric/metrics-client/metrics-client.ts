@@ -29,7 +29,7 @@ export class MetricsClient {
 
   constructor() {}
 
-  toStateKey(state: State) {
+  private toStateKey(state: State) {
     if (!state.labels) return state.name;
     const labels = state.labels;
     const meta = Object.keys(labels)
@@ -39,7 +39,7 @@ export class MetricsClient {
     return `${state.name}{${meta}}`;
   }
 
-  toUniqueState(state: State) {
+  private toUniqueState(state: State) {
     const stateString = this.toStateKey(state);
     const ref = this.statesRefs.get(stateString);
     if (ref) return ref;
@@ -72,6 +72,15 @@ export class MetricsClient {
         store.toValue(),
       ]),
     );
+  }
+
+  *[Symbol.iterator]() {
+    for (const [state, calculator] of this.db.entries()) {
+      yield {
+        state,
+        value: calculator.toValue(),
+      };
+    }
   }
 }
 
