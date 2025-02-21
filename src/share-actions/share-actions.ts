@@ -1,1 +1,1 @@
-export const ____shareActions = {};
+export default {};
