@@ -61,25 +61,30 @@ export const $let = (name: string, initializer: any) =>
     ),
   );
 
-export const $import = (modelueName: string, exports?: string[]) => {
-  return ts.factory.createImportDeclaration(
+export const $import = (
+  modelueName: string,
+  exports?: string[],
+  defaultExport?: string,
+) =>
+  ts.factory.createImportDeclaration(
     [],
     ts.factory.createImportClause(
       false,
-      undefined,
-      ts.factory.createNamedImports([
-        ...(exports?.map((exportName) =>
-          ts.factory.createImportSpecifier(
-            false,
-            undefined,
-            $indentifier(exportName),
-          ),
-        ) ?? []),
-      ]),
+      defaultExport ? $indentifier(defaultExport) : undefined,
+      (exports?.length ?? 0) > 0
+        ? ts.factory.createNamedImports([
+            ...(exports?.map((exportName) =>
+              ts.factory.createImportSpecifier(
+                false,
+                undefined,
+                $indentifier(exportName),
+              ),
+            ) ?? []),
+          ])
+        : undefined,
     ),
     ts.factory.createStringLiteral(modelueName),
   );
-};
 
 export const $asyncArrowFunction = (statements: ts.Statement[] = []) => {
   return ts.factory.createArrowFunction(
@@ -166,7 +171,7 @@ export const $template = (
 export const $statement = (expression: ts.Expression) =>
   ts.factory.createExpressionStatement(expression);
 
-export const $doc = (statements: ts.Statement[]) => {
+export const $doc = (statements: ts.Statement[] = []) => {
   return ts.factory.createSourceFile(
     statements,
     ts.factory.createToken(ts.SyntaxKind.EndOfFileToken),
