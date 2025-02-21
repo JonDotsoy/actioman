@@ -1,8 +1,22 @@
 import * as path from "path";
-import escodegen from "escodegen";
-import type { ActionsDocument } from "../exporter-actions/exporter-actions";
+import type { ActionsDocument } from "../exporter-actions/exporter-actions.js";
 import { get } from "@jondotsoy/utils-js/get";
 import jsonSchemaToZod from "json-schema-to-zod";
+import {
+  $,
+  $arrowFunction,
+  $call,
+  $const,
+  $doc,
+  $exportDefault,
+  $import,
+  $indentifier,
+  $new,
+  $object,
+  $string,
+  $undefined,
+  render,
+} from "./typescript-factory/typescript-factory.js";
 
 type getProgramASTParams = {
   actionTargetUrl: string;
@@ -17,195 +31,47 @@ type getProgramASTParams = {
   >;
 };
 
-const g = (value: string | null | undefined) =>
-  value === undefined
-    ? {
-        type: "Identifier",
-        name: "undefined",
-      }
-    : {
-        type: "Literal",
-        value: value,
-      };
-
-const getProgramAST = (params: getProgramASTParams) => ({
-  type: "Program",
-
-  body: [
-    {
-      type: "ImportDeclaration",
-
-      specifiers: [
-        {
-          type: "ImportSpecifier",
-
-          imported: {
-            type: "Identifier",
-
-            name: "z",
-          },
-          local: {
-            type: "Identifier",
-
-            name: "z",
-          },
-        },
-      ],
-      source: {
-        type: "Literal",
-
-        value: "zod",
-      },
-    },
-    {
-      type: "ImportDeclaration",
-
-      specifiers: [
-        {
-          type: "ImportSpecifier",
-
-          imported: {
-            type: "Identifier",
-
-            name: "ActionsTarget",
-          },
-          local: {
-            type: "Identifier",
-
-            name: "ActionsTarget",
-          },
-        },
-      ],
-      source: {
-        type: "Literal",
-
-        value: params.actionModulePath,
-      },
-    },
-    {
-      type: "VariableDeclaration",
-
-      declarations: [
-        {
-          type: "VariableDeclarator",
-
-          id: {
-            type: "Identifier",
-
-            name: "createActionsTarget",
-          },
-          init: {
-            type: "ArrowFunctionExpression",
-
-            id: null,
-            expression: true,
-            generator: false,
-            async: false,
-            params: [],
-            body: {
-              type: "CallExpression",
-
-              callee: {
-                type: "MemberExpression",
-
-                object: {
-                  type: "NewExpression",
-
-                  callee: {
-                    type: "Identifier",
-
-                    name: "ActionsTarget",
-                  },
-                  arguments: [
-                    {
-                      type: "Literal",
-
-                      value: params.actionTargetUrl,
-                    },
-                    {
-                      type: "ObjectExpression",
-
-                      properties: [
-                        ...Object.entries(params.actionDefinitions).map(
-                          ([key, values]) => ({
-                            type: "Property",
-                            method: false,
-                            shorthand: false,
-                            computed: false,
-                            key: {
-                              type: "Identifier",
-                              name: key,
-                            },
-                            value: {
-                              type: "ObjectExpression",
-                              properties: [
-                                {
-                                  type: "Property",
-                                  key: {
-                                    type: "Identifier",
-                                    name: "description",
-                                  },
-                                  value: g(values.description),
-                                },
-                                {
-                                  type: "Property",
-                                  key: {
-                                    type: "Identifier",
-                                    name: "input",
-                                  },
-                                  value: {
-                                    type: "Identifier",
-                                    name: values.input,
-                                  },
-                                },
-                                {
-                                  type: "Property",
-                                  key: {
-                                    type: "Identifier",
-                                    name: "output",
-                                  },
-                                  value: {
-                                    type: "Identifier",
-                                    name: values.output,
-                                  },
-                                },
-                              ],
-                            },
-                            kind: "init",
-                          }),
-                        ),
-                      ],
-                    },
-                  ],
-                },
-                property: {
-                  type: "Identifier",
-
-                  name: "compile",
-                },
-                computed: false,
-                optional: false,
-              },
-              arguments: [],
-              optional: false,
-            },
-          },
-        },
-      ],
-      kind: "const",
-    },
-    {
-      type: "ExportDefaultDeclaration",
-
-      declaration: {
-        type: "Identifier",
-
-        name: "createActionsTarget",
-      },
-    },
-  ],
-  sourceType: "module",
-});
+const getProgramAST = (params: getProgramASTParams) =>
+  $doc([
+    $import("zod", [`z`]),
+    $import(params.actionModulePath, [`ActionsTarget`]),
+    $const(
+      "createActionsTarget",
+      $arrowFunction(
+        $call(
+          $(
+            $new(
+              "ActionsTarget",
+              $string(params.actionTargetUrl),
+              $object(
+                Object.fromEntries(
+                  Array.from(
+                    Object.entries(params.actionDefinitions),
+                    ([key, values]) => [
+                      key,
+                      $object({
+                        description: values.description
+                          ? $string(values.description)
+                          : $undefined(),
+                        input: values.input
+                          ? $indentifier(values.input)
+                          : $undefined(),
+                        output: values.output
+                          ? $indentifier(values.output)
+                          : $undefined(),
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            "compile",
+          ),
+        ),
+      ),
+    ),
+    $exportDefault($("createActionsTarget")),
+  ]);
 
 type Params = {
   fileLocation: string;
@@ -237,5 +103,5 @@ export const actionDocumentTemplate = (params: Params) => {
     ),
   });
 
-  return `// @ts-nocheck\n${escodegen.generate(ast)}`;
+  return `// @ts-nocheck\n${render(ast)}`;
 };
