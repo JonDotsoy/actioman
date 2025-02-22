@@ -1,0 +1,77 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ActiomanConfig updates the server port 1`] = `
+"export default { server: { port: 3000 } };
+"
+`;
+
+exports[`ActiomanConfig updates the server host 1`] = `
+"export default { server: { host: "my-host" } };
+"
+`;
+
+exports[`ActiomanConfig updates the server host from a variable declaration 1`] = `
+"export const other = {};
+const configs = { a: 3, server: { host: "my-host" } };
+export const tho = () => { };
+export default configs;
+export const a = 3;
+"
+`;
+
+exports[`ActiomanConfig updates the server host from a default export object 1`] = `
+"export default { server: { port: 3000, host: "my-host" } };
+"
+`;
+
+exports[`ActiomanConfig updates the server ssl key from a default export object 1`] = `
+"export default { server: { ssl: { key: "-----BEGIN PRIVATE KEY-----\\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQClwW7mZrBSigyG\\nwf/Vth1EyfU9OWZGI9EmSiiiSRY6FUfvTeJhUKRkvf0MX21cbiIA012MV6lUhxJl\\n27JkFeyUC+68VZo270jnYhjINgNp0NOgu9cWLd2x+cisZ/rwksGpmc5LFUuDzQe3\\neZo5JtzfoNtQ7lgT2dTSeED/BD3zePQUPMErOs9g8U0huYjdIRU+OGsWvFyLv5Nt\\n2TLhKkjAtE3tJalu78Y+YvOW8Pxcy5ZzDV2wGipX3D6kzDLYNNy1DdJTedvG68yA\\nwq7jC5f2ZYuIKbKQZwu9hSsjwIoXPM9/jxB3b8cLWXPAIqLCfnsyGiRvNwpaEHwT\\n3pfcca1XAgMBAAECggEAGE8voAvEZT6IysSt7B5a2YlS9aky5it/k4GBxxc38snH\\nNIH0JviIO5wffg6Kv+kJBJz7FcePdm2e1aBsX8BVY3sChs15IgBi7UhWQRqm0oCF\\nYQfbag3M+zqaYyqWw2yKiYCcoCdd3VUXAiIL68DW2NdDAvIJqdOjIkDvq1bobQn+\\nMNdNBnu58t95JRfEbQHiDUUVTGv1b4E8gAUtCmsDPtsSQAox8rTD4UTA0+9oxE5e\\nSoV69YWS+BqFaDZgxxTKxyoL6g4K7WrF58oOSIlayUBGOO0VpGBf3sFB9YvYw76P\\n7m8S1EY71G8/Bp4JoVrNR7TemG0Qotc/3AapEjyv7QKBgQDVKfOWe81oKuFJlpKP\\n1W0v7xoo0fV9GXJlOrpDTvcuoY+XiMuQtTWDl7de+4y+mzQ+YUWKCrEn6yj0eUgy\\nowEpk8p6E+nvU0w9Yhnlk0wmfHkQw/P4kwCuG7sFvcpJ8471Ad94NWLddeHdVQZb\\n3A8PZgXouoBstTlKJ9WkZHxmCwKBgQDHEJmiR/U6m882A8G7yhoDB4U2tYPS2WZq\\nsZdgaCDrYZNME46N11b6HEJYD6jHyP33FPgyLD9uz157/1WTod6y2fdrlRnTWXZt\\nKKX837tOaKZFYpJtTzVFdR6nCO6O4fL6tK/CyNIWOB+kAXmtr8GBfbBfGHuePuYr\\n9jjkGmIhZQKBgBes7Cgnof3S3Wjd93NQQitTxDUKdNirLeB+cFevepbMTPWItQti\\nhQoTnMNI7y3wcRIInb+iRmDnponYuqMdJbDngFKkyZPSTaJ3teagwJF5u7yX9w4B\\nzc6It/IATWp/Sb5+scJZM5zjTe3WVrl3LJkKPNfHdyIb0rwgxoLWwlZXAoGALI8s\\ntMTCwgHKml6w6SZOOEtgqGRtQ69iW5OxPOVSKR5IaIkgKeQAFjBpMWkf8MivALXy\\n8Ngyws0sazk2oLtlLEfaOHzBsSufdMPalAZI2T5XqcRs3ocSd5/F4sH/FIDDcRct\\nGL73N/4MJxwlbpmfCStnZYIHed6+iyysg3LccHkCgYBTPy0YejvOaTr3FMqIeL4r\\n3TsSbN9Q3/BX0oEvgTiJvLU1wsT3G0VzBE9qDbAmn9NuJhDKKgQRA7BdPVijZwib\\nNS49DtF2a5rB2wXfWNTG4KsQUPQ+zkhu3TyFUQijdlD+Vh47vD3bnH8hgInllUNc\\nWWPRkIP/TR8122xeYnv/hQ==\\n-----END PRIVATE KEY-----\\n" } } };
+"
+`;
+
+exports[`ActiomanConfig updates the server ssl key from a default export object with existing ssl property 1`] = `
+"export default { server: { ssl: { key: "-----BEGIN PRIVATE KEY-----\\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQClwW7mZrBSigyG\\nwf/Vth1EyfU9OWZGI9EmSiiiSRY6FUfvTeJhUKRkvf0MX21cbiIA012MV6lUhxJl\\n27JkFeyUC+68VZo270jnYhjINgNp0NOgu9cWLd2x+cisZ/rwksGpmc5LFUuDzQe3\\neZo5JtzfoNtQ7lgT2dTSeED/BD3zePQUPMErOs9g8U0huYjdIRU+OGsWvFyLv5Nt\\n2TLhKkjAtE3tJalu78Y+YvOW8Pxcy5ZzDV2wGipX3D6kzDLYNNy1DdJTedvG68yA\\nwq7jC5f2ZYuIKbKQZwu9hSsjwIoXPM9/jxB3b8cLWXPAIqLCfnsyGiRvNwpaEHwT\\n3pfcca1XAgMBAAECggEAGE8voAvEZT6IysSt7B5a2YlS9aky5it/k4GBxxc38snH\\nNIH0JviIO5wffg6Kv+kJBJz7FcePdm2e1aBsX8BVY3sChs15IgBi7UhWQRqm0oCF\\nYQfbag3M+zqaYyqWw2yKiYCcoCdd3VUXAiIL68DW2NdDAvIJqdOjIkDvq1bobQn+\\nMNdNBnu58t95JRfEbQHiDUUVTGv1b4E8gAUtCmsDPtsSQAox8rTD4UTA0+9oxE5e\\nSoV69YWS+BqFaDZgxxTKxyoL6g4K7WrF58oOSIlayUBGOO0VpGBf3sFB9YvYw76P\\n7m8S1EY71G8/Bp4JoVrNR7TemG0Qotc/3AapEjyv7QKBgQDVKfOWe81oKuFJlpKP\\n1W0v7xoo0fV9GXJlOrpDTvcuoY+XiMuQtTWDl7de+4y+mzQ+YUWKCrEn6yj0eUgy\\nowEpk8p6E+nvU0w9Yhnlk0wmfHkQw/P4kwCuG7sFvcpJ8471Ad94NWLddeHdVQZb\\n3A8PZgXouoBstTlKJ9WkZHxmCwKBgQDHEJmiR/U6m882A8G7yhoDB4U2tYPS2WZq\\nsZdgaCDrYZNME46N11b6HEJYD6jHyP33FPgyLD9uz157/1WTod6y2fdrlRnTWXZt\\nKKX837tOaKZFYpJtTzVFdR6nCO6O4fL6tK/CyNIWOB+kAXmtr8GBfbBfGHuePuYr\\n9jjkGmIhZQKBgBes7Cgnof3S3Wjd93NQQitTxDUKdNirLeB+cFevepbMTPWItQti\\nhQoTnMNI7y3wcRIInb+iRmDnponYuqMdJbDngFKkyZPSTaJ3teagwJF5u7yX9w4B\\nzc6It/IATWp/Sb5+scJZM5zjTe3WVrl3LJkKPNfHdyIb0rwgxoLWwlZXAoGALI8s\\ntMTCwgHKml6w6SZOOEtgqGRtQ69iW5OxPOVSKR5IaIkgKeQAFjBpMWkf8MivALXy\\n8Ngyws0sazk2oLtlLEfaOHzBsSufdMPalAZI2T5XqcRs3ocSd5/F4sH/FIDDcRct\\nGL73N/4MJxwlbpmfCStnZYIHed6+iyysg3LccHkCgYBTPy0YejvOaTr3FMqIeL4r\\n3TsSbN9Q3/BX0oEvgTiJvLU1wsT3G0VzBE9qDbAmn9NuJhDKKgQRA7BdPVijZwib\\nNS49DtF2a5rB2wXfWNTG4KsQUPQ+zkhu3TyFUQijdlD+Vh47vD3bnH8hgInllUNc\\nWWPRkIP/TR8122xeYnv/hQ==\\n-----END PRIVATE KEY-----\\n" } } };
+"
+`;
+
+exports[`ActiomanConfig updates the server ssl key and cert from a default export object with existing ssl property 1`] = `
+"export default {
+    server: {
+        ssl: {
+            key: "-----BEGIN PRIVATE KEY-----\\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQClwW7mZrBSigyG\\nwf/Vth1EyfU9OWZGI9EmSiiiSRY6FUfvTeJhUKRkvf0MX21cbiIA012MV6lUhxJl\\n27JkFeyUC+68VZo270jnYhjINgNp0NOgu9cWLd2x+cisZ/rwksGpmc5LFUuDzQe3\\neZo5JtzfoNtQ7lgT2dTSeED/BD3zePQUPMErOs9g8U0huYjdIRU+OGsWvFyLv5Nt\\n2TLhKkjAtE3tJalu78Y+YvOW8Pxcy5ZzDV2wGipX3D6kzDLYNNy1DdJTedvG68yA\\nwq7jC5f2ZYuIKbKQZwu9hSsjwIoXPM9/jxB3b8cLWXPAIqLCfnsyGiRvNwpaEHwT\\n3pfcca1XAgMBAAECggEAGE8voAvEZT6IysSt7B5a2YlS9aky5it/k4GBxxc38snH\\nNIH0JviIO5wffg6Kv+kJBJz7FcePdm2e1aBsX8BVY3sChs15IgBi7UhWQRqm0oCF\\nYQfbag3M+zqaYyqWw2yKiYCcoCdd3VUXAiIL68DW2NdDAvIJqdOjIkDvq1bobQn+\\nMNdNBnu58t95JRfEbQHiDUUVTGv1b4E8gAUtCmsDPtsSQAox8rTD4UTA0+9oxE5e\\nSoV69YWS+BqFaDZgxxTKxyoL6g4K7WrF58oOSIlayUBGOO0VpGBf3sFB9YvYw76P\\n7m8S1EY71G8/Bp4JoVrNR7TemG0Qotc/3AapEjyv7QKBgQDVKfOWe81oKuFJlpKP\\n1W0v7xoo0fV9GXJlOrpDTvcuoY+XiMuQtTWDl7de+4y+mzQ+YUWKCrEn6yj0eUgy\\nowEpk8p6E+nvU0w9Yhnlk0wmfHkQw/P4kwCuG7sFvcpJ8471Ad94NWLddeHdVQZb\\n3A8PZgXouoBstTlKJ9WkZHxmCwKBgQDHEJmiR/U6m882A8G7yhoDB4U2tYPS2WZq\\nsZdgaCDrYZNME46N11b6HEJYD6jHyP33FPgyLD9uz157/1WTod6y2fdrlRnTWXZt\\nKKX837tOaKZFYpJtTzVFdR6nCO6O4fL6tK/CyNIWOB+kAXmtr8GBfbBfGHuePuYr\\n9jjkGmIhZQKBgBes7Cgnof3S3Wjd93NQQitTxDUKdNirLeB+cFevepbMTPWItQti\\nhQoTnMNI7y3wcRIInb+iRmDnponYuqMdJbDngFKkyZPSTaJ3teagwJF5u7yX9w4B\\nzc6It/IATWp/Sb5+scJZM5zjTe3WVrl3LJkKPNfHdyIb0rwgxoLWwlZXAoGALI8s\\ntMTCwgHKml6w6SZOOEtgqGRtQ69iW5OxPOVSKR5IaIkgKeQAFjBpMWkf8MivALXy\\n8Ngyws0sazk2oLtlLEfaOHzBsSufdMPalAZI2T5XqcRs3ocSd5/F4sH/FIDDcRct\\nGL73N/4MJxwlbpmfCStnZYIHed6+iyysg3LccHkCgYBTPy0YejvOaTr3FMqIeL4r\\n3TsSbN9Q3/BX0oEvgTiJvLU1wsT3G0VzBE9qDbAmn9NuJhDKKgQRA7BdPVijZwib\\nNS49DtF2a5rB2wXfWNTG4KsQUPQ+zkhu3TyFUQijdlD+Vh47vD3bnH8hgInllUNc\\nWWPRkIP/TR8122xeYnv/hQ==\\n-----END PRIVATE KEY-----\\n",
+            cert: "-----BEGIN CERTIFICATE-----\\nMIIDCTCCAfGgAwIBAgIUcx4/uMJz+em1t9pyg8YBn8mOtz8wDQYJKoZIhvcNAQEL\\nBQAwFDESMBAGA1UEAwwJbG9jYWxob3N0MB4XDTI1MDIwNzE1MDcyMloXDTI1MDMw\\nOTE1MDcyMlowFDESMBAGA1UEAwwJbG9jYWxob3N0MIIBIjANBgkqhkiG9w0BAQEF\\nAAOCAQ8AMIIBCgKCAQEApcFu5mawUooMhsH/1bYdRMn1PTlmRiPRJkoookkWOhVH\\n703iYVCkZL39DF9tXG4iANNdjFepVIcSZduyZBXslAvuvFWaNu9I52IYyDYDadDT\\noLvXFi3dsfnIrGf68JLBqZnOSxVLg80Ht3maOSbc36DbUO5YE9nU0nhA/wQ983j0\\nFDzBKzrPYPFNIbmI3SEVPjhrFrxci7+Tbdky4SpIwLRN7SWpbu/GPmLzlvD8XMuW\\ncw1dsBoqV9w+pMwy2DTctQ3SU3nbxuvMgMKu4wuX9mWLiCmykGcLvYUrI8CKFzzP\\nf48Qd2/HC1lzwCKiwn57MhokbzcKWhB8E96X3HGtVwIDAQABo1MwUTAdBgNVHQ4E\\nFgQUPsTW/85jbxCCvyiMwx33xM6nh/IwHwYDVR0jBBgwFoAUPsTW/85jbxCCvyiM\\nwx33xM6nh/IwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEANfYP\\ner5WrTFuWtY2ApxMjvDWo0xuL6+kCv4UkaLtfsR4TkcF9svGtb/PvrlOmffP+By1\\nTkBoMju3uHU7/hPo5UMRUI445QnIVSSpLaHnLHBi85KGMl55ErRbOGVgYR1n+Qxo\\nnFwucn2hjHBmswXNY9DJx8vmewKqa9Kc694YxNx44tmMNbokUYKliofnisxxhM3Y\\n4REA+w3bme7z7JDLt0J1EGCAEeT2NcLbnXw8gEKJ0D39Zt5b5qR1Re4wWtknXlkc\\n5VGw96c5jbejD49BJsDWqVsJG1D4dhJ61ybBT6j2aRnSH+MxPHpH/Rm9wXIGha4G\\nmZLuodbHDBrL/FT4cQ==\\n-----END CERTIFICATE-----\\n"
+        }
+    }
+};
+"
+`;
+
+exports[`ActiomanConfig updates the server ssl key and cert from a type definition 1`] = `
+"type A = {
+    server: {
+        ssl: any;
+    };
+};
+const configs: A = {
+    server: {
+        ssl: {
+            key: "-----BEGIN PRIVATE KEY-----\\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQClwW7mZrBSigyG\\nwf/Vth1EyfU9OWZGI9EmSiiiSRY6FUfvTeJhUKRkvf0MX21cbiIA012MV6lUhxJl\\n27JkFeyUC+68VZo270jnYhjINgNp0NOgu9cWLd2x+cisZ/rwksGpmc5LFUuDzQe3\\neZo5JtzfoNtQ7lgT2dTSeED/BD3zePQUPMErOs9g8U0huYjdIRU+OGsWvFyLv5Nt\\n2TLhKkjAtE3tJalu78Y+YvOW8Pxcy5ZzDV2wGipX3D6kzDLYNNy1DdJTedvG68yA\\nwq7jC5f2ZYuIKbKQZwu9hSsjwIoXPM9/jxB3b8cLWXPAIqLCfnsyGiRvNwpaEHwT\\n3pfcca1XAgMBAAECggEAGE8voAvEZT6IysSt7B5a2YlS9aky5it/k4GBxxc38snH\\nNIH0JviIO5wffg6Kv+kJBJz7FcePdm2e1aBsX8BVY3sChs15IgBi7UhWQRqm0oCF\\nYQfbag3M+zqaYyqWw2yKiYCcoCdd3VUXAiIL68DW2NdDAvIJqdOjIkDvq1bobQn+\\nMNdNBnu58t95JRfEbQHiDUUVTGv1b4E8gAUtCmsDPtsSQAox8rTD4UTA0+9oxE5e\\nSoV69YWS+BqFaDZgxxTKxyoL6g4K7WrF58oOSIlayUBGOO0VpGBf3sFB9YvYw76P\\n7m8S1EY71G8/Bp4JoVrNR7TemG0Qotc/3AapEjyv7QKBgQDVKfOWe81oKuFJlpKP\\n1W0v7xoo0fV9GXJlOrpDTvcuoY+XiMuQtTWDl7de+4y+mzQ+YUWKCrEn6yj0eUgy\\nowEpk8p6E+nvU0w9Yhnlk0wmfHkQw/P4kwCuG7sFvcpJ8471Ad94NWLddeHdVQZb\\n3A8PZgXouoBstTlKJ9WkZHxmCwKBgQDHEJmiR/U6m882A8G7yhoDB4U2tYPS2WZq\\nsZdgaCDrYZNME46N11b6HEJYD6jHyP33FPgyLD9uz157/1WTod6y2fdrlRnTWXZt\\nKKX837tOaKZFYpJtTzVFdR6nCO6O4fL6tK/CyNIWOB+kAXmtr8GBfbBfGHuePuYr\\n9jjkGmIhZQKBgBes7Cgnof3S3Wjd93NQQitTxDUKdNirLeB+cFevepbMTPWItQti\\nhQoTnMNI7y3wcRIInb+iRmDnponYuqMdJbDngFKkyZPSTaJ3teagwJF5u7yX9w4B\\nzc6It/IATWp/Sb5+scJZM5zjTe3WVrl3LJkKPNfHdyIb0rwgxoLWwlZXAoGALI8s\\ntMTCwgHKml6w6SZOOEtgqGRtQ69iW5OxPOVSKR5IaIkgKeQAFjBpMWkf8MivALXy\\n8Ngyws0sazk2oLtlLEfaOHzBsSufdMPalAZI2T5XqcRs3ocSd5/F4sH/FIDDcRct\\nGL73N/4MJxwlbpmfCStnZYIHed6+iyysg3LccHkCgYBTPy0YejvOaTr3FMqIeL4r\\n3TsSbN9Q3/BX0oEvgTiJvLU1wsT3G0VzBE9qDbAmn9NuJhDKKgQRA7BdPVijZwib\\nNS49DtF2a5rB2wXfWNTG4KsQUPQ+zkhu3TyFUQijdlD+Vh47vD3bnH8hgInllUNc\\nWWPRkIP/TR8122xeYnv/hQ==\\n-----END PRIVATE KEY-----\\n",
+            cert: "-----BEGIN CERTIFICATE-----\\nMIIDCTCCAfGgAwIBAgIUcx4/uMJz+em1t9pyg8YBn8mOtz8wDQYJKoZIhvcNAQEL\\nBQAwFDESMBAGA1UEAwwJbG9jYWxob3N0MB4XDTI1MDIwNzE1MDcyMloXDTI1MDMw\\nOTE1MDcyMlowFDESMBAGA1UEAwwJbG9jYWxob3N0MIIBIjANBgkqhkiG9w0BAQEF\\nAAOCAQ8AMIIBCgKCAQEApcFu5mawUooMhsH/1bYdRMn1PTlmRiPRJkoookkWOhVH\\n703iYVCkZL39DF9tXG4iANNdjFepVIcSZduyZBXslAvuvFWaNu9I52IYyDYDadDT\\noLvXFi3dsfnIrGf68JLBqZnOSxVLg80Ht3maOSbc36DbUO5YE9nU0nhA/wQ983j0\\nFDzBKzrPYPFNIbmI3SEVPjhrFrxci7+Tbdky4SpIwLRN7SWpbu/GPmLzlvD8XMuW\\ncw1dsBoqV9w+pMwy2DTctQ3SU3nbxuvMgMKu4wuX9mWLiCmykGcLvYUrI8CKFzzP\\nf48Qd2/HC1lzwCKiwn57MhokbzcKWhB8E96X3HGtVwIDAQABo1MwUTAdBgNVHQ4E\\nFgQUPsTW/85jbxCCvyiMwx33xM6nh/IwHwYDVR0jBBgwFoAUPsTW/85jbxCCvyiM\\nwx33xM6nh/IwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEANfYP\\ner5WrTFuWtY2ApxMjvDWo0xuL6+kCv4UkaLtfsR4TkcF9svGtb/PvrlOmffP+By1\\nTkBoMju3uHU7/hPo5UMRUI445QnIVSSpLaHnLHBi85KGMl55ErRbOGVgYR1n+Qxo\\nnFwucn2hjHBmswXNY9DJx8vmewKqa9Kc694YxNx44tmMNbokUYKliofnisxxhM3Y\\n4REA+w3bme7z7JDLt0J1EGCAEeT2NcLbnXw8gEKJ0D39Zt5b5qR1Re4wWtknXlkc\\n5VGw96c5jbejD49BJsDWqVsJG1D4dhJ61ybBT6j2aRnSH+MxPHpH/Rm9wXIGha4G\\nmZLuodbHDBrL/FT4cQ==\\n-----END CERTIFICATE-----\\n"
+        }
+    }
+};
+export default configs;
+"
+`;
+
+exports[`ActiomanConfig updates the server ssl key and cert from a default export object 1`] = `
+"export default {
+    server: {
+        ssl: {
+            key: "-----BEGIN PRIVATE KEY-----\\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQClwW7mZrBSigyG\\nwf/Vth1EyfU9OWZGI9EmSiiiSRY6FUfvTeJhUKRkvf0MX21cbiIA012MV6lUhxJl\\n27JkFeyUC+68VZo270jnYhjINgNp0NOgu9cWLd2x+cisZ/rwksGpmc5LFUuDzQe3\\neZo5JtzfoNtQ7lgT2dTSeED/BD3zePQUPMErOs9g8U0huYjdIRU+OGsWvFyLv5Nt\\n2TLhKkjAtE3tJalu78Y+YvOW8Pxcy5ZzDV2wGipX3D6kzDLYNNy1DdJTedvG68yA\\nwq7jC5f2ZYuIKbKQZwu9hSsjwIoXPM9/jxB3b8cLWXPAIqLCfnsyGiRvNwpaEHwT\\n3pfcca1XAgMBAAECggEAGE8voAvEZT6IysSt7B5a2YlS9aky5it/k4GBxxc38snH\\nNIH0JviIO5wffg6Kv+kJBJz7FcePdm2e1aBsX8BVY3sChs15IgBi7UhWQRqm0oCF\\nYQfbag3M+zqaYyqWw2yKiYCcoCdd3VUXAiIL68DW2NdDAvIJqdOjIkDvq1bobQn+\\nMNdNBnu58t95JRfEbQHiDUUVTGv1b4E8gAUtCmsDPtsSQAox8rTD4UTA0+9oxE5e\\nSoV69YWS+BqFaDZgxxTKxyoL6g4K7WrF58oOSIlayUBGOO0VpGBf3sFB9YvYw76P\\n7m8S1EY71G8/Bp4JoVrNR7TemG0Qotc/3AapEjyv7QKBgQDVKfOWe81oKuFJlpKP\\n1W0v7xoo0fV9GXJlOrpDTvcuoY+XiMuQtTWDl7de+4y+mzQ+YUWKCrEn6yj0eUgy\\nowEpk8p6E+nvU0w9Yhnlk0wmfHkQw/P4kwCuG7sFvcpJ8471Ad94NWLddeHdVQZb\\n3A8PZgXouoBstTlKJ9WkZHxmCwKBgQDHEJmiR/U6m882A8G7yhoDB4U2tYPS2WZq\\nsZdgaCDrYZNME46N11b6HEJYD6jHyP33FPgyLD9uz157/1WTod6y2fdrlRnTWXZt\\nKKX837tOaKZFYpJtTzVFdR6nCO6O4fL6tK/CyNIWOB+kAXmtr8GBfbBfGHuePuYr\\n9jjkGmIhZQKBgBes7Cgnof3S3Wjd93NQQitTxDUKdNirLeB+cFevepbMTPWItQti\\nhQoTnMNI7y3wcRIInb+iRmDnponYuqMdJbDngFKkyZPSTaJ3teagwJF5u7yX9w4B\\nzc6It/IATWp/Sb5+scJZM5zjTe3WVrl3LJkKPNfHdyIb0rwgxoLWwlZXAoGALI8s\\ntMTCwgHKml6w6SZOOEtgqGRtQ69iW5OxPOVSKR5IaIkgKeQAFjBpMWkf8MivALXy\\n8Ngyws0sazk2oLtlLEfaOHzBsSufdMPalAZI2T5XqcRs3ocSd5/F4sH/FIDDcRct\\nGL73N/4MJxwlbpmfCStnZYIHed6+iyysg3LccHkCgYBTPy0YejvOaTr3FMqIeL4r\\n3TsSbN9Q3/BX0oEvgTiJvLU1wsT3G0VzBE9qDbAmn9NuJhDKKgQRA7BdPVijZwib\\nNS49DtF2a5rB2wXfWNTG4KsQUPQ+zkhu3TyFUQijdlD+Vh47vD3bnH8hgInllUNc\\nWWPRkIP/TR8122xeYnv/hQ==\\n-----END PRIVATE KEY-----\\n",
+            cert: "-----BEGIN CERTIFICATE-----\\nMIIDCTCCAfGgAwIBAgIUcx4/uMJz+em1t9pyg8YBn8mOtz8wDQYJKoZIhvcNAQEL\\nBQAwFDESMBAGA1UEAwwJbG9jYWxob3N0MB4XDTI1MDIwNzE1MDcyMloXDTI1MDMw\\nOTE1MDcyMlowFDESMBAGA1UEAwwJbG9jYWxob3N0MIIBIjANBgkqhkiG9w0BAQEF\\nAAOCAQ8AMIIBCgKCAQEApcFu5mawUooMhsH/1bYdRMn1PTlmRiPRJkoookkWOhVH\\n703iYVCkZL39DF9tXG4iANNdjFepVIcSZduyZBXslAvuvFWaNu9I52IYyDYDadDT\\noLvXFi3dsfnIrGf68JLBqZnOSxVLg80Ht3maOSbc36DbUO5YE9nU0nhA/wQ983j0\\nFDzBKzrPYPFNIbmI3SEVPjhrFrxci7+Tbdky4SpIwLRN7SWpbu/GPmLzlvD8XMuW\\ncw1dsBoqV9w+pMwy2DTctQ3SU3nbxuvMgMKu4wuX9mWLiCmykGcLvYUrI8CKFzzP\\nf48Qd2/HC1lzwCKiwn57MhokbzcKWhB8E96X3HGtVwIDAQABo1MwUTAdBgNVHQ4E\\nFgQUPsTW/85jbxCCvyiMwx33xM6nh/IwHwYDVR0jBBgwFoAUPsTW/85jbxCCvyiM\\nwx33xM6nh/IwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEANfYP\\ner5WrTFuWtY2ApxMjvDWo0xuL6+kCv4UkaLtfsR4TkcF9svGtb/PvrlOmffP+By1\\nTkBoMju3uHU7/hPo5UMRUI445QnIVSSpLaHnLHBi85KGMl55ErRbOGVgYR1n+Qxo\\nnFwucn2hjHBmswXNY9DJx8vmewKqa9Kc694YxNx44tmMNbokUYKliofnisxxhM3Y\\n4REA+w3bme7z7JDLt0J1EGCAEeT2NcLbnXw8gEKJ0D39Zt5b5qR1Re4wWtknXlkc\\n5VGw96c5jbejD49BJsDWqVsJG1D4dhJ61ybBT6j2aRnSH+MxPHpH/Rm9wXIGha4G\\nmZLuodbHDBrL/FT4cQ==\\n-----END CERTIFICATE-----\\n"
+        }
+    }
+};
+"
+`;
