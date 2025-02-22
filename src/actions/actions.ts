@@ -2,7 +2,8 @@ import type { z } from "zod";
 import type { Configs, ConfigsModule } from "../configs/configs.js";
 import actionsList from "../share-actions/share-actions.js";
 
-export const actions = actionsList;
+export const actions: typeof import("../share-actions/share-actions.js").default =
+  actionsList;
 
 type InferZodType<T> = T extends z.ZodType ? z.infer<T> : any;
 type ParameterTypeInferer<T> = T extends (i: infer R) => any ? R : any;
