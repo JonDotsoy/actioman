@@ -1,3 +1,5 @@
+import type { MetricsClient } from "../metrics-client/metrics-client";
+
 // ↑, ↓, ↔
 export enum Direction {
   up = "↑",
@@ -89,21 +91,33 @@ class Formats {
 export class ShellDashboard {
   private items: Map<string, Stat> = new Map();
   private itemColSize = 0;
-  private footer?: string;
+  private footer: string = "";
+  private refreshRenderCallbacks = new Set<() => any>();
 
   private formats = new Formats();
 
-  addItem(key: string) {
-    this.items.set(key, {
+  private createItem() {
+    return {
       requests: 0,
       countErrors: 0,
       dataTransference: 0,
       requestDurationAverage: 0,
-    });
+    };
+  }
+
+  ensureItem(key: string) {
+    if (!this.items.has(key)) {
+      this.addItem(key);
+    }
+  }
+
+  addItem(key: string) {
+    this.items.set(key, this.createItem());
     this.itemColSize = Math.max(this.itemColSize, key.length);
   }
 
   updateItem(key: string, stat: Partial<Stat>) {
+    this.ensureItem(key);
     const prevStat = this.items.get(key);
     if (!prevStat) throw new Error(`Item ${key} not found`);
     const newState = {
@@ -126,6 +140,10 @@ export class ShellDashboard {
   }
 
   render(): any {
+    this.refreshRenderCallbacks.forEach((refreshRenderCallback) =>
+      refreshRenderCallback(),
+    );
+
     let body = "";
     const { numberFormat, percentFormat, millisecondFormat, dataSizeFormat } =
       this.formats;
@@ -143,5 +161,39 @@ export class ShellDashboard {
     }
 
     return `${body}${this.footer}\n`;
+  }
+
+  subscribeMetrics(client: MetricsClient) {
+    const refreshCallback = () => {
+      for (const { state, value } of client) {
+        const method = state.labels?.method;
+        const path = state.labels?.path;
+
+        if (!method || !path) break;
+
+        const route = `${method} ${path}`;
+
+        const stat: Partial<Stat> = {};
+
+        if (state.name === "request_counters") {
+          stat.requests = value;
+        }
+        if (state.name === "request_duration_seconds") {
+          stat.requestDurationAverage = value;
+        }
+        if (state.name === "request_data_transference_bytes") {
+          stat.dataTransference = value;
+        }
+        if (state.name === "request_error_counters") {
+          stat.countErrors = value;
+        }
+
+        this.updateItem(route, stat);
+      }
+    };
+    this.refreshRenderCallbacks.add(refreshCallback);
+    return () => {
+      this.refreshRenderCallbacks.delete(refreshCallback);
+    };
   }
 }
