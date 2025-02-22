@@ -1,5 +1,6 @@
 import { get } from "@jondotsoy/utils-js/get";
 import type { Middleware } from "artur/http/router";
+import type { HTTPRouter } from "../http-router/http-router.js";
 
 export type IntegrationModule = Integration;
 export type ServerConfigsModule = {
@@ -16,6 +17,7 @@ export class Integration {
   constructor(
     readonly name: string,
     readonly hooks?: {
+      "http:setup"?: (httpRouter: HTTPRouter) => void;
       "http:middleware"?: Middleware<any> | undefined;
     },
   ) {}
@@ -26,9 +28,11 @@ export class Integration {
     const hooks = get.object(module, "hooks");
 
     const httpMiddleware: any = get.function(hooks, "http:middleware");
+    const httpSetup: any = get.function(hooks, "http:setup");
 
     return new Integration(name, {
       "http:middleware": httpMiddleware,
+      "http:setup": httpSetup,
     });
   }
 }
@@ -119,6 +123,12 @@ export class Configs {
         ?.map((integration) => integration.hooks?.["http:middleware"])
         .filter((middleware) => middleware !== undefined) ?? []
     );
+  }
+
+  httpSetup(httpRouter: HTTPRouter) {
+    this.integrations?.forEach((integration) => {
+      integration.hooks?.["http:setup"]?.(httpRouter);
+    });
   }
 
   get http2SecureContextOptionsKey() {
