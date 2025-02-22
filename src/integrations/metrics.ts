@@ -1,4 +1,5 @@
 import type { Integration } from "../configs/configs.js";
+import { MetricTextEncoder } from "../metric/metric-text-encoder.js";
 
 export const metrics = (): Integration => {
   return {
@@ -10,12 +11,13 @@ export const metrics = (): Integration => {
             let body = "";
 
             for (const e of httpRouter.metrics) {
-              const l = e.state.labels
-                ? Object.entries(e.state.labels).map(
-                    ([key, value]) => `${key}=${JSON.stringify(value)}`,
-                  )
-                : null;
-              body += `${e.state.name}${l ? `{${l.join(",")}}` : ""} ${e.value}\n`;
+              const metricText = new MetricTextEncoder().encode({
+                name: e.state.name,
+                labels: e.state.labels,
+                value: e.value,
+              });
+
+              body += `${metricText}\n`;
             }
 
             return new Response(body);
