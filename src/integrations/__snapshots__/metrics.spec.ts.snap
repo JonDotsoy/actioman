@@ -1,0 +1,17 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Metrics Integration should expose metrics endpoint 1`] = `
+"request_error_counters{action="hi"} 0
+request_counters{action="hi"} 0
+request_data_transference_bytes{action="hi"} 0
+request_duration_seconds{action="hi"} NaN
+"
+`;
+
+exports[`Metrics Integration should expose metrics endpoint with data 1`] = `
+"request_error_counters{action="hi"} 0
+request_counters{action="hi"} 1
+request_data_transference_bytes{action="hi"} 0
+request_duration_seconds{action="hi"} 200
+"
+`;
