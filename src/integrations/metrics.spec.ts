@@ -22,6 +22,8 @@ describe("Metrics Integration", () => {
 
     const url = await httpLister.listen();
 
+    console.log('checking url+port for tests', {url})
+
     const res = await fetch(new URL("/metrics", url));
     expect(res.status).toBe(200);
     expect(await res.text()).toMatchSnapshot();
