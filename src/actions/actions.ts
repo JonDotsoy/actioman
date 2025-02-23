@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { Configs, ConfigsModule } from "../configs/configs.js";
+import { get } from "@jondotsoy/utils-js/get";
 import actionsList from "../share-actions/share-actions.js";
 
 export const actions = actionsList;
@@ -20,9 +21,29 @@ export const defineAction = <I = any, R = any>(
   action: Action<I, R>,
 ): Action<I, R> => action;
 
+export const actionFromModule = (module: any) => {
+  const handlerFn = get.function(module) as
+    | undefined
+    | ((...args: any[]) => any);
+  if (handlerFn) return defineAction({ handler: handlerFn });
+  const handlerObj = get.record(module);
+  if (!handlerObj) return null;
+  const handler = get.function(handlerObj, "handler") as
+    | undefined
+    | ((...args: any[]) => any);
+  if (!handler) return null;
+  return defineAction({
+    description: get.string(handlerObj, "description"),
+    input: get.record(handlerObj, "input"),
+    output: get.record(handlerObj, "output"),
+    handler,
+  });
+};
+
 export class Actions<ActionsDefinitions extends Record<string, Action> = any> {
   constructor(private definition: ActionsDefinitions) {}
 
+  /** @deprecated It has never been used */
   call = async <NameActionDefinition extends keyof ActionsDefinitions>(
     name: NameActionDefinition,
     input: ParameterTypeInferer<
@@ -49,18 +70,9 @@ export class Actions<ActionsDefinitions extends Record<string, Action> = any> {
     const actionDefinitions: Record<string, Action> = {};
 
     for (const [moduleName, handler] of Object.entries(module)) {
-      const definition =
-        typeof handler === "function"
-          ? defineAction({ handler })
-          : typeof handler === "object" &&
-              handler !== null &&
-              "handler" in handler &&
-              typeof handler.handler === "function"
-            ? defineAction({ handler: handler.handler, ...handler })
-            : null;
-      if (definition) {
-        actionDefinitions[moduleName] = definition;
-      }
+      const definition = actionFromModule(handler);
+      if (!definition) break;
+      actionDefinitions[moduleName] = definition;
     }
 
     return new Actions(actionDefinitions);
