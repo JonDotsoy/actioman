@@ -2,16 +2,9 @@ import { Router } from "artur";
 import { Actions } from "../actions/actions.js";
 import { z } from "zod";
 import { get } from "@jondotsoy/utils-js/get";
+import { result } from "@jondotsoy/utils-js/result";
 import { actionsToJson } from "../exporter-actions/exporter-actions.js";
 import { Configs, type ConfigsModule } from "../configs/configs.js";
-
-const result = async <T>(fn: () => Promise<T>) => {
-  try {
-    return { error: null, data: await fn() };
-  } catch (error) {
-    return { error, data: null };
-  }
-};
 
 const isParser = (value: any): value is { parse: (value: any) => any } =>
   get.function(value, "parse") !== undefined;
@@ -47,7 +40,7 @@ export class HTTPRouter {
     for (const [name, describe] of Object.entries(Actions.describe(actions))) {
       this.router.use("POST", `/__actions/${name}`, {
         fetch: async (req) => {
-          const { data } = await result(() => req.json());
+          const [, data] = await result(() => req.json());
           const input = isParser(describe.input)
             ? describe.input.parse(data)
             : null;
