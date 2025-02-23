@@ -6,6 +6,7 @@ import { DEFAULT_CERT } from "./DEFAULT_CERT";
 import { DEFAULT_KEY } from "./DEFAULT_KEY";
 import * as https from "https";
 import * as http from "http";
+import { EventSource } from "eventsource";
 
 describe("HTTPLister", () => {
   it("should return 404 for unknown paths", async () => {
@@ -139,5 +140,35 @@ describe("HTTPLister", () => {
     });
 
     expect(res.statusCode).toEqual(200);
+  });
+
+  it("should handle sse actions", async () => {
+    await using cleanupTasks = new CleanupTasks();
+    const httpLister = HTTPLister.fromModule({
+      *hi() {
+        yield 1;
+        yield 2;
+      },
+    });
+    cleanupTasks.add(() => httpLister.close());
+
+    const url = await httpLister.listen();
+
+    const eventSource = new EventSource(new URL("/__actions/hi", url));
+
+    const messages: any[] = [];
+
+    eventSource.addEventListener("message", (message) => {
+      messages.push(message.data);
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      eventSource.addEventListener("error", reject);
+      eventSource.addEventListener("close", () => {
+        resolve();
+      });
+    });
+
+    expect(messages).toEqual([`1`, `2`]);
   });
 });

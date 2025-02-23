@@ -7,6 +7,7 @@ exports[`HTTPRouter should handle actions with zod validation 1`] = `
       "description": null,
       "input": null,
       "output": null,
+      "sse": false,
     },
     "taz": {
       "description": null,
@@ -26,3 +27,14 @@ exports[`HTTPRouter should handle actions with zod validation 1`] = `
 `;
 
 exports[`HTTPRouter should handle actions without zod validation 1`] = `"ok"`;
+
+exports[`HTTPRouter should handle sse actions 1`] = `
+"data: {"a":1}
+
+data: "2"
+
+event: close
+data: true
+
+"
+`;

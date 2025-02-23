@@ -103,6 +103,7 @@ export const actionsToJson = (actions: Actions): ActionsDefinitionsJsonDTO => {
         name,
         {
           description: definition.description ?? null,
+          sse: definition.sse,
           input: definition.input
             ? zodToJsonSchema(definition.input, { target: undefined })
             : null,
