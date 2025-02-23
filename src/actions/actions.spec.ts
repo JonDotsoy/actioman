@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { z } from "zod";
 import { expectTypeOf } from "expect-type";
 import { Actions, defineAction } from "./actions";
+import type { actions } from "actioman";
 
 describe("Actions", () => {
   it("should create a new action", () => {
@@ -63,5 +64,40 @@ describe("Actions", () => {
 
     expectTypeOf<callActionInput>().toEqualTypeOf<{ name: string }>;
     expectTypeOf<extractedResponseType>().toEqualTypeOf<string>;
+  });
+
+  it("should infer sse handler", () => {
+    const action = defineAction({
+      sse: true,
+      output: z.string(),
+      *handler() {
+        yield "";
+      },
+    });
+
+    type Action = typeof action;
+    type callActionInput = ReturnType<Action["handler"]>;
+
+    expectTypeOf<callActionInput>().toEqualTypeOf<
+      Generator<string> | AsyncGenerator<string>
+    >;
+  });
+
+  it("should infer sse from module", () => {
+    const actions = Actions.fromModule({
+      *f1() {
+        yield "ok";
+      },
+      async *f2() {
+        yield "ok";
+      },
+      f3: () => "ok",
+      f4: async () => "ok",
+    });
+
+    expect(Actions.describe(actions!).f1.sse).toBeTrue();
+    expect(Actions.describe(actions!).f2.sse).toBeTrue();
+    expect(Actions.describe(actions!).f3.sse).toBeFalse();
+    expect(Actions.describe(actions!).f4.sse).toBeFalse();
   });
 });
