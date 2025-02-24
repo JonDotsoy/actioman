@@ -1,7 +1,10 @@
-import { describe, it } from "bun:test";
+import { afterEach, describe, it } from "bun:test";
 import { PrepareWorkspace } from "./prepare-workspace";
+import { cleanHistoryPids } from "../../shell/shell";
 
 describe("PrepareWorkspace", () => {
+  afterEach(() => cleanHistoryPids());
+
   it(
     "should setup a workspace",
     async () => {

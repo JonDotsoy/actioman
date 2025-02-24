@@ -4,6 +4,7 @@ import type { ActionsDefinitionsJsonDTO } from "./dtos/actions-definitions-json.
 import { get } from "@jondotsoy/utils-js/get";
 import jsonSchemaToZod from "json-schema-to-zod";
 import { actionDocumentTemplate } from "../gens-templates/action-document.template.js";
+import { fetch } from "fetch-h2";
 
 /** @deprecated by {@link actionDocumentTemplate} */
 const templateAction = (
@@ -83,7 +84,7 @@ export class ActionsDocument {
     actionsTargetModuleLocation?: string,
   ) {
     const targetUrl = new URL("./__actions", url);
-    const res = await fetch(targetUrl);
+    const res = await fetch(targetUrl.toString());
     const b = await res.json();
     const actionsJson = b.actions;
     return new ActionsDocument(

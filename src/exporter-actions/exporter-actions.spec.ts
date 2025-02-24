@@ -10,6 +10,8 @@ import type { ActionsDefinitionsJsonDTO } from "./dtos/actions-definitions-json.
 import { HTTPLister } from "../http-router/http-listener";
 import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 
+let port = 11080;
+
 describe("actionsToJson", () => {
   it("should export actions to JSON", () => {
     const actions = new Actions({
@@ -84,7 +86,7 @@ it("should create ActionsDocument from HTTP server", async () => {
       handler: () => "ok",
     },
   });
-  const url = await httpLister.listen(43112);
+  const url = await httpLister.listen(port++);
 
   const actionsDocument = await ActionsDocument.fromHTTPServer(
     url,
