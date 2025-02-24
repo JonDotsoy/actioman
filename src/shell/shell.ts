@@ -126,10 +126,14 @@ export class ShellConstructor<T> {
     const stderrWritableWriter = this.stderrWritable.getWriter();
 
     const subprocess = spawn("sh", ["-c", cmd], {
-      signal: abortController.signal,
+      // signal: abortController.signal,
       stdio: ["pipe", "pipe", "pipe"],
       env: env,
       cwd: cwd,
+    });
+
+    abortController.signal.addEventListener("abort", () => {
+      subprocess.kill(1);
     });
 
     subprocess.stdout.addListener("data", (chunk: Uint8Array) => {
