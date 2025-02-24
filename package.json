@@ -33,6 +33,7 @@
     "@jondotsoy/flags": "^2.3.0",
     "@jondotsoy/utils-js": "^0.6.0",
     "artur": "^1.2.3",
+    "eventsource": "^3.0.5",
     "jose": "^5.9.6",
     "json-schema-to-zod": "^2.6.0",
     "toml": "^3.0.0",
