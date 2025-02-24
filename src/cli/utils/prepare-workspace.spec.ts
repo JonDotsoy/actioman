@@ -8,7 +8,7 @@ describe("PrepareWorkspace", () => {
   it(
     "should setup a workspace",
     async () => {
-      const { $ } = await PrepareWorkspace.setup();
+      const { $ } = await PrepareWorkspace.setup({ verbose: true });
 
       await $`pwd`;
     },
