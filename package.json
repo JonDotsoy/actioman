@@ -27,6 +27,10 @@
     ".": {
       "import": "./lib/esm/actions/actions.js",
       "types": "./lib/esm/actions/actions.d.ts"
+    },
+    "./integrations/metrics": {
+      "import": "./lib/esm/integrations/metrics.js",
+      "types": "./lib/esm/integrations/metrics.d.ts"
     }
   },
   "dependencies": {
