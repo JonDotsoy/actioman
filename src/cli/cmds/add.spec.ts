@@ -6,6 +6,8 @@ import * as fs from "fs/promises";
 import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 import { PrepareWorkspace } from "../utils/prepare-workspace.js";
 
+let port = 9080;
+
 describe("add", async () => {
   it(
     "should add remote actions and use them",
@@ -25,7 +27,7 @@ describe("add", async () => {
         sum: ({ a, b }: { a: number; b: number }) => 3,
         add: ({ a, b }: { a: number; b: number }) => 3,
       });
-      const serviceUrl = await httpLocation.listen();
+      const serviceUrl = await httpLocation.listen(port++);
 
       await $`npx actioman add foo ${serviceUrl.toString()}`;
       await $`npx actioman add taz ${serviceUrl.toString()}`;
