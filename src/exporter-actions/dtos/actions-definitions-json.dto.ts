@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const ActionDefinitionJson = z.object({
   description: z.string().nullable().optional(),
+  sse: z.boolean().optional(),
   input: z.object({}).nullable().optional(),
   output: z.object({}).nullable().optional(),
 });
