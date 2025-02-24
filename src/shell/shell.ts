@@ -1,5 +1,15 @@
 import { spawn, spawnSync } from "child_process";
 
+export const shellHistoryPids = new Set<number>();
+
+export const cleanHistoryPids = async () => {
+  for (const shellHistoryPid of shellHistoryPids) {
+    try {
+      spawnSync(`kill ${shellHistoryPid}`);
+    } catch {}
+  }
+};
+
 type ShellConstructorOutput = "codeStatus" | "text" | "pipe";
 
 type ShellConstructorOptions = {
@@ -131,6 +141,8 @@ export class ShellConstructor<T> {
       env: env,
       cwd: cwd,
     });
+
+    if (subprocess.pid) shellHistoryPids.add(subprocess.pid);
 
     abortController.signal.addEventListener("abort", () => {
       subprocess.kill(1);

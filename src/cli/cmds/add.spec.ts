@@ -1,14 +1,17 @@
-import { describe, expect, it, mock } from "bun:test";
+import { afterEach, describe, expect, it, mock } from "bun:test";
 import { HTTPLister } from "../../http-router/http-listener.js";
 import { defineAction } from "../../actions/actions";
 import { z } from "zod";
 import * as fs from "fs/promises";
 import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 import { PrepareWorkspace } from "../utils/prepare-workspace.js";
+import { cleanHistoryPids } from "../../shell/shell.js";
 
 let port = 9080;
 
 describe("add", async () => {
+  afterEach(() => cleanHistoryPids());
+
   it(
     "should add remote actions and use them",
     async () => {
