@@ -3,7 +3,8 @@ import type { Configs, ConfigsModule } from "../configs/configs.js";
 import { get } from "@jondotsoy/utils-js/get";
 import actionsList from "../share-actions/share-actions.js";
 
-export const actions = actionsList;
+export const actions: typeof import("../share-actions/share-actions.js").default =
+  actionsList;
 const GeneratorFunction = function* () {}.constructor;
 const AsyncGeneratorFunction = async function* () {}.constructor;
 

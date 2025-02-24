@@ -5,6 +5,7 @@ import { get } from "@jondotsoy/utils-js/get";
 import { result } from "@jondotsoy/utils-js/result";
 import { actionsToJson } from "../exporter-actions/exporter-actions.js";
 import { Configs, type ConfigsModule } from "../configs/configs.js";
+import { MetricsClient } from "../metric/metrics-client/metrics-client.js";
 
 const isParser = (value: any): value is { parse: (value: any) => any } =>
   get.function(value, "parse") !== undefined;
@@ -26,12 +27,15 @@ class EventStreamDataEncoder {
 
 export class HTTPRouter {
   router: Router<"pass">;
+  metrics: MetricsClient;
 
   constructor(
     actions: Actions,
     readonly configs?: Configs,
   ) {
     const actionsJson = actionsToJson(actions);
+
+    this.metrics = new MetricsClient();
 
     this.router = new Router({
       errorHandling: "pass",
@@ -46,14 +50,51 @@ export class HTTPRouter {
       ],
     });
 
+    configs?.httpSetup(this);
+
     this.router.use("GET", `/__actions`, {
       fetch: () => Response.json({ actions: actionsJson }),
     });
 
     for (const [name, describe] of Object.entries(Actions.describe(actions))) {
+      const metricLabels = {
+        action: name,
+      };
+
+      const requestErrorCountersMetric = this.metrics.counter({
+        name: "request_error_counters",
+        labels: metricLabels,
+      });
+      const requestCountersMetric = this.metrics.counter({
+        name: "request_counters",
+        labels: metricLabels,
+      });
+      const requestDataTransferenceBytesMetric = this.metrics.counter({
+        name: "request_data_transference_bytes",
+        labels: metricLabels,
+      });
+      const requestDurationSecondsMetric = this.metrics.averageBySecond({
+        name: "request_duration_seconds",
+        labels: metricLabels,
+      });
+
       const isSSE = isSSEAction(describe);
       const method = isSSE ? "GET" : "POST";
       this.router.use(method, `/__actions/${name}`, {
+        middlewares: [
+          (fetch) => (req) => {
+            const start = Date.now();
+            requestCountersMetric.increment();
+            return Promise.resolve(fetch(req))
+              .catch((err) => {
+                requestErrorCountersMetric.increment();
+                throw err;
+              })
+              .finally(() => {
+                requestDurationSecondsMetric.add(Date.now() - start);
+              });
+          },
+        ],
         fetch: async (req) => {
           if (isSSE) return this.sseHandler(describe, req);
           return this.handler(describe, req);
