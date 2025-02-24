@@ -5,6 +5,8 @@ import { HTTPLister } from "../../http-router/http-listener.js";
 import { defineAction } from "../../actions/actions.js";
 import { z } from "zod";
 
+let port = 10080;
+
 describe("install", async () => {
   it(
     "should install without errors",
@@ -33,7 +35,7 @@ describe("install", async () => {
           handler: async ({ name }) => `hello ${name}!`,
         }),
       });
-      const serviceUrl = await httpLocation.listen();
+      const serviceUrl = await httpLocation.listen(port++);
 
       await $work`npx actioman add "my action" ${serviceUrl.toString()}`;
 
