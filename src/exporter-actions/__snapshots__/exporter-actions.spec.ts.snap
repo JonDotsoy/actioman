@@ -19,8 +19,29 @@ exports[`actionsToJson should export actions to JSON 1`] = `
     "output": {
       "type": "string",
     },
+    "sse": undefined,
   },
 }
+`;
+
+exports[`should create ActionsDocument from HTTP server 1`] = `
+"// @ts-nocheck
+import { z } from "zod";
+import { ActionsTarget } from "./node_modules/actions-target/actions-target.js";
+const createActionsTarget = () => new ActionsTarget("http://localhost:11080/__actions", {
+    hi: {
+        description: undefined,
+        input: z.object({ "name": z.string().optional(), "metadata": z.record(z.string()) }).strict(),
+        output: undefined
+    },
+    foo: {
+        description: "foo",
+        input: z.string(),
+        output: z.object({ "name": z.string() }).strict()
+    }
+}).compile();
+export default createActionsTarget;
+"
 `;
 
 exports[`importActionsFromJson should import actions from JSON 1`] = `
@@ -46,25 +67,5 @@ export const foo = {
   output: null,
 } as const;
 
-"
-`;
-
-exports[`should create ActionsDocument from HTTP server 1`] = `
-"// @ts-nocheck
-import { z } from "zod";
-import { ActionsTarget } from "./node_modules/actions-target/actions-target.js";
-const createActionsTarget = () => new ActionsTarget("http://localhost:43112/__actions", {
-    hi: {
-        description: undefined,
-        input: z.object({ "name": z.string().optional(), "metadata": z.record(z.string()) }).strict(),
-        output: undefined
-    },
-    foo: {
-        description: "foo",
-        input: z.string(),
-        output: z.object({ "name": z.string() }).strict()
-    }
-}).compile();
-export default createActionsTarget;
 "
 `;

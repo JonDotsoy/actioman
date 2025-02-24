@@ -6,13 +6,16 @@ import { DEFAULT_CERT } from "./DEFAULT_CERT";
 import { DEFAULT_KEY } from "./DEFAULT_KEY";
 import * as https from "https";
 import * as http from "http";
+import { EventSource } from "eventsource";
+
+let port = 7080;
 
 describe("HTTPLister", () => {
   it("should return 404 for unknown paths", async () => {
     await using cleanupTasks = new CleanupTasks();
     const httpLister = HTTPLister.fromModule({});
     cleanupTasks.add(() => httpLister.close());
-    const url = await httpLister.listen();
+    const url = await httpLister.listen(port++);
 
     const res = await fetch(new URL("/", url!));
 
@@ -23,7 +26,7 @@ describe("HTTPLister", () => {
     await using cleanupTasks = new CleanupTasks();
     const httpLister = HTTPLister.fromModule({});
     cleanupTasks.add(() => httpLister.close());
-    const url = await httpLister.listen();
+    const url = await httpLister.listen(port++);
 
     const res = await fetch(new URL("/__actions", url!));
 
@@ -34,7 +37,6 @@ describe("HTTPLister", () => {
     await using cleanupTasks = new CleanupTasks();
     const { default: express } = await import("express");
     const app = express();
-    const port = 30_161;
 
     const httpRouter = HTTPRouter.fromModule({ hi: () => "ok" });
 
@@ -43,18 +45,19 @@ describe("HTTPLister", () => {
       if (!ok) next();
     });
 
-    const server = app.listen(port);
+    const server = app.listen(port++);
     cleanupTasks.add(
       () => new Promise<true>((resolve) => server.close(() => resolve(true))),
     );
   });
 
   describe("integration tests", () => {
+    let url = new URL(`http://localhost:${port++}`);
+
     const cleanupTasks = new CleanupTasks();
     beforeAll(async () => {
       const { default: express } = await import("express");
       const app = express();
-      const port = 30_161;
 
       const httpRouter = HTTPRouter.fromModule({ hi: () => "ok" });
 
@@ -63,7 +66,7 @@ describe("HTTPLister", () => {
         if (!ok) next();
       });
 
-      const server = app.listen(port);
+      const server = app.listen(url.port);
       cleanupTasks.add(
         () => new Promise<true>((resolve) => server.close(() => resolve(true))),
       );
@@ -74,13 +77,13 @@ describe("HTTPLister", () => {
     });
 
     it("should return 200 for /__actions", async () => {
-      const res = await fetch("http://localhost:30161/__actions");
+      const res = await fetch(new URL("/__actions", url));
       expect(res.status).toEqual(200);
       expect(await res.text()).toMatchSnapshot();
     });
 
     it("should return 200 for /__actions/hi", async () => {
-      const res = await fetch("http://localhost:30161/__actions/hi", {
+      const res = await fetch(new URL("/__actions/hi", url), {
         method: "POST",
       });
       expect(res.status).toEqual(200);
@@ -96,7 +99,7 @@ describe("HTTPLister", () => {
       taz: () => true,
     });
     cleanupTasks.add(() => httpLister.close());
-    await httpLister.listen();
+    await httpLister.listen(port++);
   });
 
   it("should create a server with ssl", async () => {
@@ -115,7 +118,7 @@ describe("HTTPLister", () => {
       },
     );
     cleanupTasks.add(() => httpLister.close());
-    const url = await httpLister.listen();
+    const url = await httpLister.listen(port++);
 
     expect(url.protocol).toEqual("https:");
 
@@ -139,5 +142,35 @@ describe("HTTPLister", () => {
     });
 
     expect(res.statusCode).toEqual(200);
+  });
+
+  it("should handle sse actions", async () => {
+    await using cleanupTasks = new CleanupTasks();
+    const httpLister = HTTPLister.fromModule({
+      *hi() {
+        yield 1;
+        yield 2;
+      },
+    });
+    cleanupTasks.add(() => httpLister.close());
+
+    const url = await httpLister.listen(port++);
+
+    const eventSource = new EventSource(new URL("/__actions/hi", url));
+
+    const messages: any[] = [];
+
+    eventSource.addEventListener("message", (message) => {
+      messages.push(message.data);
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      eventSource.addEventListener("error", reject);
+      eventSource.addEventListener("close", () => {
+        resolve();
+      });
+    });
+
+    expect(messages).toEqual([`1`, `2`]);
   });
 });

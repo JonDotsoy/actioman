@@ -66,7 +66,7 @@ export class HTTPLister {
     };
 
     const portToListen = port ?? (await findNextPort());
-    const hostnameToListen = hostname ?? "localhost";
+    const hostnameToListen = hostname ?? "::";
 
     const url = await new Promise<URL>((resolve) => {
       this.server.listen(portToListen, hostnameToListen, () => {

@@ -1,12 +1,17 @@
-import { describe, expect, it, mock } from "bun:test";
+import { afterEach, describe, expect, it, mock } from "bun:test";
 import { HTTPLister } from "../../http-router/http-listener.js";
 import { defineAction } from "../../actions/actions";
 import { z } from "zod";
 import * as fs from "fs/promises";
 import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 import { PrepareWorkspace } from "../utils/prepare-workspace.js";
+import { cleanHistoryPids } from "../../shell/shell.js";
+
+let port = 9080;
 
 describe("add", async () => {
+  afterEach(() => cleanHistoryPids());
+
   it(
     "should add remote actions and use them",
     async () => {
@@ -25,7 +30,7 @@ describe("add", async () => {
         sum: ({ a, b }: { a: number; b: number }) => 3,
         add: ({ a, b }: { a: number; b: number }) => 3,
       });
-      const serviceUrl = await httpLocation.listen();
+      const serviceUrl = await httpLocation.listen(port++);
 
       await $`npx actioman add foo ${serviceUrl.toString()}`;
       await $`npx actioman add taz ${serviceUrl.toString()}`;

@@ -51,4 +51,26 @@ describe("HTTPRouter", () => {
     expect(res?.headers.get("Content-Type")).toStartWith("application/json");
     expect(await res?.json()).toMatchSnapshot();
   });
+
+  it("should handle sse actions", async () => {
+    const httpRouter = HTTPRouter.fromModule({
+      async *f1() {
+        yield { a: 1 };
+        yield "2";
+      },
+    });
+
+    const res = await httpRouter.router.fetch(
+      new Request("http://localhost/__actions/f1", { method: "GET" }),
+    );
+    const controlCacheHeader = res?.headers.get("Cache-Control");
+    const contentTypeHeader = res?.headers.get("Content-Type");
+    const statusCode = res?.status;
+    const body = await res?.text();
+
+    expect(statusCode).toEqual(200);
+    expect(controlCacheHeader).toEqual("no-cache");
+    expect(contentTypeHeader).toEqual("text/event-stream");
+    expect(body).toMatchSnapshot();
+  });
 });
