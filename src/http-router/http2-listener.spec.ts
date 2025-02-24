@@ -5,6 +5,8 @@ import * as http2 from "http2";
 import { DEFAULT_CERT } from "./DEFAULT_CERT.js";
 import { DEFAULT_KEY } from "./DEFAULT_KEY.js";
 
+let port = 8080;
+
 describe("async HTTP2Lister", () => {
   it("should return 200 for /__actions", async () => {
     await using cleanupTasks = new CleanupTasks();
@@ -24,7 +26,7 @@ describe("async HTTP2Lister", () => {
     );
     cleanupTasks.add(() => http2Lister.close());
 
-    const url = await http2Lister.listen();
+    const url = await http2Lister.listen(port++);
 
     const client = http2.connect(url, { ca: DEFAULT_CERT });
     cleanupTasks.add(() => client.close());
@@ -65,7 +67,7 @@ describe("async HTTP2Lister", () => {
     });
     cleanupTasks.add(() => http2Lister.close());
 
-    const url = await http2Lister.listen();
+    const url = await http2Lister.listen(port++);
 
     const client = http2.connect(url);
     cleanupTasks.add(() => client.close());

@@ -4,7 +4,7 @@ import { HTTPLister } from "../http-listener.js";
 import { auth } from "./auth.js";
 import { TEST_RUN_EXPERIMENTAL } from "../../constants/TEST_RUN_EXPERIMENTAL.js";
 
-let test_port = 33321;
+let test_port = 12080;
 
 describe("auth integration", () => {
   it("should return 401 if there is no token", async () => {
