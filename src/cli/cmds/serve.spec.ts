@@ -1,9 +1,12 @@
-import { describe, expect, it } from "bun:test";
+import { afterEach, describe, expect, it } from "bun:test";
 import { PrepareWorkspace } from "../utils/prepare-workspace";
 import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 import { DEFAULT_CERT } from "../../http-router/DEFAULT_CERT";
+import { cleanHistoryPids } from "../../shell/shell";
 
 describe("serve", () => {
+  afterEach(() => cleanHistoryPids());
+
   it(
     "should start a server and return 404 if the requested resource is not found",
     async () => {
