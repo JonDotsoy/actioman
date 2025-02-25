@@ -4,6 +4,8 @@ Comparte funciones con otros clientes JS. Llama a funciones del backend con type
 
 Actioman es una herramienta para exponer funciones de Javascript como servicios web de manera sencilla y rápida. Con actioman, puedes construir APIs robustas y con tipado seguro utilizando tus funciones Javascript existentes, facilitando la comunicación entre tu backend y clientes Javascript (ya sean navegadores, aplicaciones móviles, o incluso otros servicios backend).
 
+![Sample steps to use actioman](assets/demo-client-server.png)
+
 ## Características
 
 - **Simple de desplegar servicio:** Con actioman, levantar un servicio es tan fácil como ejecutar un comando, sin configuraciones complejas ni despliegues laboriosos.
