@@ -61,7 +61,7 @@ describe("HTTPRouter", () => {
     });
 
     const res = await httpRouter.router.fetch(
-      new Request("http://localhost/__actions/f1", { method: "GET" }),
+      new Request("http://localhost/__actions/f1", { method: "POST" }),
     );
     const controlCacheHeader = res?.headers.get("Cache-Control");
     const contentTypeHeader = res?.headers.get("Content-Type");

@@ -79,7 +79,7 @@ export class HTTPRouter {
       });
 
       const isSSE = isSSEAction(describe);
-      const method = isSSE ? "GET" : "POST";
+      const method = "POST";
       this.router.use(method, `/__actions/${name}`, {
         middlewares: [
           (fetch) => (req) => {
