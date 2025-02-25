@@ -53,6 +53,9 @@ describe("Metrics Integration", () => {
 
     const res = await fetch(new URL("/metrics", url));
     expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toEqual(
+      expect.stringContaining("text/plain"),
+    );
     expect(await res.text()).toMatchSnapshot();
   });
 });

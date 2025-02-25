@@ -20,7 +20,11 @@ export const metrics = (): Integration => {
               body += `${metricText}\n`;
             }
 
-            return new Response(body);
+            return new Response(body, {
+              headers: {
+                "Content-Type": "text/plain; version=0.0.4; charset=utf-8",
+              },
+            });
           },
         });
       },
