@@ -31,6 +31,10 @@
     "./integrations/metrics": {
       "import": "./lib/esm/integrations/metrics.js",
       "types": "./lib/esm/integrations/metrics.d.ts"
+    },
+    "./integrations/auth": {
+      "import": "./lib/esm/integrations/auth.js",
+      "types": "./lib/esm/integrations/auth.d.ts"
     }
   },
   "dependencies": {

@@ -1,8 +1,8 @@
 import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 import { describe, it, expect } from "bun:test";
-import { HTTPLister } from "../http-listener.js";
+import { HTTPLister } from "../http-router/http-listener.js";
 import { auth } from "./auth.js";
-import { TEST_RUN_EXPERIMENTAL } from "../../constants/TEST_RUN_EXPERIMENTAL.js";
+import { TEST_RUN_EXPERIMENTAL } from "../constants/TEST_RUN_EXPERIMENTAL.js";
 
 let test_port = 12080;
 
