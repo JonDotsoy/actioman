@@ -1,6 +1,8 @@
 import { afterEach, describe, it } from "bun:test";
 import { PrepareWorkspace } from "./prepare-workspace";
 import { cleanHistoryPids } from "../../shell/shell";
+import * as YAML from "yaml";
+import * as fs from "fs";
 
 describe("PrepareWorkspace", () => {
   afterEach(() => cleanHistoryPids());
@@ -37,6 +39,95 @@ describe("PrepareWorkspace", () => {
           echo "## bootstrap" >> serve.sh
           echo "bunx actioman serve actions.ts --port 6565 --host ::" >> serve.sh
         `;
+      },
+      { timeout: 60_000 },
+    );
+
+    it(
+      "should make a prometheus and compose file",
+      async () => {
+        const { $, workspaceDir } = await PrepareWorkspace.setup({
+          name: "simple_actions_server_with_prometheus",
+          // verbose: true,
+        });
+
+        await $`
+          set -e
+
+          npm pkg set type=module
+
+          echo "export async function f1() { return 'ok' }" >> actions.ts
+          echo "export async function * f2() { yield 'ok' }" >> actions.ts
+
+          echo "#!/bin/sh" > serve.sh
+          echo "## bootstrap" >> serve.sh
+          echo "bunx actioman serve actions.ts --port 6565 --host ::" >> serve.sh
+        `;
+
+        const actiomanConfigFile = new URL("actioman.config.js", workspaceDir);
+        fs.writeFileSync(
+          actiomanConfigFile,
+          "" +
+            'import { metrics } from "actioman/integrations/metrics"\n' +
+            "\n" +
+            "export default {\n" +
+            "    integrations: [\n" +
+            "        metrics()\n" +
+            "    ]\n" +
+            "}\n",
+        );
+
+        const prometheusFile = new URL("prometheus.yml", workspaceDir);
+        fs.writeFileSync(
+          prometheusFile,
+          YAML.stringify({
+            scrape_configs: [
+              {
+                job_name: "actioman",
+                metrics_path: "/metrics",
+                scheme: "http",
+                scrape_interval: "5s",
+                scrape_timeout: "5s",
+                static_configs: [
+                  {
+                    targets: ["host.docker.internal:6565"],
+                  },
+                ],
+              },
+            ],
+          }),
+        );
+
+        const composeFile = new URL("compose.yml", workspaceDir);
+        fs.writeFileSync(
+          composeFile,
+          YAML.stringify({
+            services: {
+              prom: {
+                image: "prom/prometheus",
+                develop: {
+                  watch: [
+                    {
+                      path: "./prometheus.yml",
+                      action: "restart",
+                    },
+                  ],
+                },
+                volumes: ["./prometheus.yml:/etc/prometheus/prometheus.yml"],
+                ports: ["9090:9090"],
+                network_mode: "bridge",
+                extra_hosts: ["host.docker.internal:host-gateway"],
+              },
+            },
+          }),
+        );
+
+        console.log(``);
+        console.log(``);
+        console.log(`## Workspace`);
+        console.log(`${workspaceDir.pathname}`);
+        console.log(``);
+        console.log(``);
       },
       { timeout: 60_000 },
     );
