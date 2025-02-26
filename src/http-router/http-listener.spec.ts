@@ -156,7 +156,9 @@ describe("HTTPLister", () => {
 
     const url = await httpLister.listen(port++);
 
-    const eventSource = new EventSource(new URL("/__actions/hi", url));
+    const eventSource = new EventSource(new URL("/__actions/hi", url), {
+      fetch: (url, init) => fetch(url, { ...init, method: "POST" }),
+    });
 
     const messages: any[] = [];
 
