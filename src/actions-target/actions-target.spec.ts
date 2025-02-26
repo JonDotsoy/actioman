@@ -150,3 +150,31 @@ it("should call actions from http listener", async () => {
 
   expect(await Array.fromAsync(res)).toEqual([1, 2]);
 });
+
+it("should throw error if sse action is not implemented", async () => {
+  await using cleanupTasks = new CleanupTasks();
+
+  const http2Lister = HTTPLister.fromModule({});
+  cleanupTasks.add(() => http2Lister.close());
+
+  const url = await http2Lister.listen(port++);
+
+  const actionsJson = {
+    actions: {
+      fn: {
+        description: null,
+        sse: true,
+        input: null,
+        output: null,
+      },
+    },
+  } as const;
+
+  const actionsTarget = new ActionsTarget(new URL(url), actionsJson.actions);
+
+  const targets = actionsTarget.compile();
+
+  expect(async () => {
+    await Array.fromAsync(targets.fn());
+  }).toThrowError();
+});

@@ -73,7 +73,7 @@ export class ActionsTarget<T extends ActionsDefinitionsJsonDTO> {
     );
 
     const res = await fetch(
-      new URL(`__actions/${name.toString()}`, this.targetUrl),
+      new URL(`__actions/${name.toString()}`, this.targetUrl).toString(),
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -109,11 +109,21 @@ export class ActionsTarget<T extends ActionsDefinitionsJsonDTO> {
       start: (readableStreamDefaultController) => {
         const eventSource = new EventSource(
           new URL(`__actions/${name.toString()}`, this.targetUrl),
-          {},
+          {
+            fetch: async (input, init) => {
+              const res: Promise<any> = fetch(input.toString(), {
+                method: "POST",
+                ...init,
+              });
+
+              return res;
+            },
+          },
         );
 
         eventSource.addEventListener("error", (event) => {
-          // readableStreamDefaultController.error(event)
+          eventSource.close();
+          readableStreamDefaultController.error(event);
         });
 
         eventSource.addEventListener("message", (event) => {
@@ -121,6 +131,7 @@ export class ActionsTarget<T extends ActionsDefinitionsJsonDTO> {
         });
 
         eventSource.addEventListener("close", () => {
+          eventSource.close();
           readableStreamDefaultController.close();
         });
       },
