@@ -79,7 +79,7 @@ export class HTTPRouter {
       });
 
       const isSSE = isSSEAction(describe);
-      const method = isSSE ? "GET" : "POST";
+      const method = "POST";
       this.router.use(method, `/__actions/${name}`, {
         middlewares: [
           (fetch) => (req) => {
@@ -113,7 +113,20 @@ export class HTTPRouter {
     const resultAction = await action.handler(input);
     const body = new ReadableStream<Uint8Array>({
       pull: async (ctrl) => {
-        const { done, value } = await resultAction.next();
+        const [err, iteratorResult] = await result(() => resultAction.next());
+
+        if (err) {
+          console.error(err);
+          ctrl.enqueue(
+            new EventStreamDataEncoder().encode({
+              event: "error",
+              data: "Internal error",
+            }),
+          );
+          return ctrl.close();
+        }
+
+        const { done, value } = iteratorResult;
 
         if (done) {
           ctrl.enqueue(

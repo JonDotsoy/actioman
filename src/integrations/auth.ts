@@ -1,5 +1,5 @@
 import { get } from "@jondotsoy/utils-js/get";
-import type { Integration } from "../../configs/configs";
+import type { Integration } from "../configs/configs.js";
 import * as jose from "jose";
 
 type Validation = { valid: boolean };

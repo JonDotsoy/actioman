@@ -49,7 +49,7 @@ const getTSProgram = (props: ProgramASTProps) =>
                     "toString",
                   ),
                 ),
-                $string("configs"),
+                $string("actioman"),
               ),
             ),
           ),

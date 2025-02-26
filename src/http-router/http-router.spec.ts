@@ -61,7 +61,7 @@ describe("HTTPRouter", () => {
     });
 
     const res = await httpRouter.router.fetch(
-      new Request("http://localhost/__actions/f1", { method: "GET" }),
+      new Request("http://localhost/__actions/f1", { method: "POST" }),
     );
     const controlCacheHeader = res?.headers.get("Cache-Control");
     const contentTypeHeader = res?.headers.get("Content-Type");
@@ -72,5 +72,30 @@ describe("HTTPRouter", () => {
     expect(controlCacheHeader).toEqual("no-cache");
     expect(contentTypeHeader).toEqual("text/event-stream");
     expect(body).toMatchSnapshot();
+  });
+
+  it("should handle sse actions with internal error", async () => {
+    const httpRouter = HTTPRouter.fromModule({
+      async *f1() {
+        yield { a: 1 };
+        yield "2";
+        throw new Error("failed");
+      },
+    });
+
+    const res = await httpRouter.router.fetch(
+      new Request("http://localhost/__actions/f1", { method: "POST" }),
+    );
+    const statusCode = res?.status;
+    const body = await res?.text();
+
+    expect(statusCode).toEqual(200);
+    expect(body).toEqual(
+      "" +
+        'data: {"a":1}\n\n' +
+        'data: "2"\n\n' +
+        'event: error\ndata: "Internal error"\n\n' +
+        "",
+    );
   });
 });

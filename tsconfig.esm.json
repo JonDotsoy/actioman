@@ -6,5 +6,13 @@
     "allowImportingTsExtensions": false,
     "declaration": true
   },
-  "exclude": ["node_modules", "**/*.spec.ts", "packages"]
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "packages",
+    "**/constants/TEST_RUN_EXPERIMENTAL.*",
+    "**/http-router/DEFAULT_KEY.*",
+    "**/http-router/DEFAULT_CERT.*",
+    "**/__*__/**"
+  ]
 }
