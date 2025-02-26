@@ -1,9 +1,14 @@
-import { expect, it, mock } from "bun:test";
+import { afterAll, beforeAll, expect, it, mock } from "bun:test";
 import { ActionsTarget } from "./actions-target";
 import { z } from "zod";
 import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
+import { get } from "@jondotsoy/utils-js/get";
 import { HTTPLister } from "../http-router/http-listener";
 import { expectTypeOf } from "expect-type";
+import { HTTP2Lister } from "../http-router/http2-listener";
+import { DEFAULT_KEY } from "../http-router/DEFAULT_KEY";
+import { DEFAULT_CERT } from "../http-router/DEFAULT_CERT";
+import * as http2 from "http2";
 
 let port = 6767;
 
@@ -177,4 +182,123 @@ it("should throw error if sse action is not implemented", async () => {
   expect(async () => {
     await Array.fromAsync(targets.fn());
   }).toThrowError();
+});
+
+const originFetch = globalThis.fetch;
+const mockFetch = mock(originFetch);
+
+beforeAll(() => {
+  globalThis.fetch = mockFetch;
+});
+
+afterAll(() => {
+  globalThis.fetch = originFetch;
+});
+
+it("should call a action generator with http2", async () => {
+  mockFetch.mockImplementation(
+    // @ts-ignore
+    (inputURL, requestInfo) => {
+      const request = typeof inputURL === "object" ? inputURL : requestInfo;
+      const url =
+        inputURL instanceof URL
+          ? inputURL
+          : typeof inputURL === "string"
+            ? new URL(inputURL)
+            : "url" in inputURL
+              ? new URL(inputURL.url)
+              : new URL(inputURL);
+
+      return new Promise((resolve, reject) => {
+        const client = http2.connect(new URL("/", url), { ca: DEFAULT_CERT });
+
+        client.addListener("error", (err) => {
+          reject(err);
+        });
+
+        client.addListener("connect", () => {
+          const clientStream = client.request({
+            [http2.constants.HTTP2_HEADER_METHOD]: get.string(
+              request,
+              "method",
+            ),
+            [http2.constants.HTTP2_HEADER_PATH]: url.pathname,
+            ...get.record(request, "headers"),
+          });
+
+          const body = new ReadableStream<any>({
+            start: (ctrl) => {
+              clientStream.addListener("data", (data) => {
+                ctrl.enqueue(data);
+              });
+
+              clientStream.addListener("end", () => {
+                ctrl.close();
+              });
+            },
+          });
+
+          clientStream.addListener("response", (response) => {
+            const { ":status": status, ...headers } = response;
+
+            resolve(
+              new Response(body, {
+                status,
+                headers: Object.fromEntries(
+                  Array.from(Object.entries(response), ([k, v]) => {
+                    if (k.startsWith(":")) return [];
+                    if (!v) return [];
+                    if (typeof v === "string") return [[k, v]];
+                    if (Array.from(v)) return v.map((v) => [k, v]);
+                    return [];
+                  }).flat(),
+                ),
+              }),
+            );
+          });
+        });
+
+        // reject(new Error('Not implemented yet'))
+      });
+    },
+  );
+
+  await using cleanupTasks = new CleanupTasks();
+
+  const http2Lister = HTTP2Lister.fromModule(
+    {
+      async *fn() {
+        yield 1;
+        yield 2;
+      },
+    },
+    {
+      server: {
+        ssl: {
+          key: DEFAULT_KEY,
+          cert: DEFAULT_CERT,
+        },
+      },
+    },
+  );
+  cleanupTasks.add(() => http2Lister.close());
+
+  const url = await http2Lister.listen(port++);
+
+  const actionsJson = {
+    actions: {
+      fn: {
+        description: null,
+        sse: true,
+        input: null,
+        output: null,
+      },
+    },
+  } as const;
+
+  const actionsTarget = new ActionsTarget(new URL(url), actionsJson.actions);
+
+  const targets = actionsTarget.compile();
+
+  expect(await Array.fromAsync(targets.fn())).toEqual([1, 2]);
 });

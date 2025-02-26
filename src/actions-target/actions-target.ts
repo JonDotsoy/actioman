@@ -3,7 +3,7 @@ import type {
   ActionDefinitionJsonDTO,
   ActionsDefinitionsJsonDTO,
 } from "../exporter-actions/dtos/actions-definitions-json.dto";
-import { EventSource } from "eventsource";
+import { requestEventSource } from "./request-event-source/request-event-source";
 
 type Infer<T> = T extends z.ZodTypeAny ? z.infer<T> : unknown;
 type InferWithOptional<T> = T extends z.ZodTypeAny
@@ -105,43 +105,33 @@ export class ActionsTarget<T extends ActionsDefinitionsJsonDTO> {
       name,
     );
 
-    const readableStream = new ReadableStream<any>({
-      start: (readableStreamDefaultController) => {
-        const eventSource = new EventSource(
-          new URL(`__actions/${name.toString()}`, this.targetUrl),
-          {
-            fetch: async (input, init) => {
-              const res: Promise<any> = fetch(input.toString(), {
-                method: "POST",
-                ...init,
-              });
+    const abort = new AbortController();
 
-              return res;
-            },
-          },
-        );
-
-        eventSource.addEventListener("error", (event) => {
-          eventSource.close();
-          readableStreamDefaultController.error(event);
-        });
-
-        eventSource.addEventListener("message", (event) => {
-          readableStreamDefaultController.enqueue(JSON.parse(event.data));
-        });
-
-        eventSource.addEventListener("close", () => {
-          eventSource.close();
-          readableStreamDefaultController.close();
-        });
+    const res = await fetch(
+      new URL(`__actions/${name.toString()}`, this.targetUrl).toString(),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(inputParser(input)),
+        signal: abort.signal,
       },
-    });
+    );
 
-    const reader = await readableStream.getReader();
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) return;
-      yield outputParser(value);
+    if (res.status !== 200)
+      throw new Error(`Invalid status ${res.status} ${await res.text()}`);
+
+    for await (const eventObj of requestEventSource(res)) {
+      const { id, event = "message", data } = eventObj;
+
+      if (event === "close") {
+        abort.abort();
+        return;
+      }
+
+      if (event === "message") {
+        yield outputParser(JSON.parse(data));
+        continue;
+      }
     }
   }
 
