@@ -3,6 +3,8 @@ import { HTTPLister } from "../http-router/http-listener";
 import { metrics } from "./metrics";
 import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 
+let port = 12000;
+
 describe("Metrics Integration", () => {
   afterAll(() => setSystemTime());
 
@@ -20,7 +22,7 @@ describe("Metrics Integration", () => {
 
     cleanupTasks.add(() => httpLister.close());
 
-    const url = await httpLister.listen();
+    const url = await httpLister.listen(port++);
 
     console.log("checking url+port for tests", { url });
 
@@ -47,7 +49,7 @@ describe("Metrics Integration", () => {
 
     cleanupTasks.add(() => httpLister.close());
 
-    const url = await httpLister.listen();
+    const url = await httpLister.listen(port++);
 
     await fetch(new URL("/__actions/hi", url), { method: "POST" });
 
