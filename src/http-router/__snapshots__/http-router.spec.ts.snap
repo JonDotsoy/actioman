@@ -38,3 +38,14 @@ data: true
 
 "
 `;
+
+exports[`HTTPRouter should handle sse actions with error 1`] = `
+"data: {"a":1}
+
+data: "2"
+
+event: close
+data: true
+
+"
+`;
