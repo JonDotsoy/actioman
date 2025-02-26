@@ -2,8 +2,8 @@ import { z } from "zod";
 import type {
   ActionDefinitionJsonDTO,
   ActionsDefinitionsJsonDTO,
-} from "../exporter-actions/dtos/actions-definitions-json.dto";
-import { requestEventSource } from "./request-event-source/request-event-source";
+} from "../exporter-actions/dtos/actions-definitions-json.dto.js";
+import { requestEventSource } from "./request-event-source/request-event-source.js";
 
 type Infer<T> = T extends z.ZodTypeAny ? z.infer<T> : unknown;
 type InferWithOptional<T> = T extends z.ZodTypeAny
