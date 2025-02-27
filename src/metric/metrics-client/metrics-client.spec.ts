@@ -24,10 +24,22 @@ describe("MetricsClient", () => {
     c.increment();
     c.increment(10);
 
-    expect(client.toJSON()).toEqual({
-      http_requests: 1,
-      "http_requests{a=sd,route=fs}": 12,
-    });
+    expect(client.toJSON()).toEqual([
+      {
+        name: "http_requests",
+        labels: {},
+        value: 1,
+        help: undefined,
+        timestamp: undefined,
+      },
+      {
+        name: "http_requests",
+        labels: { a: "sd", route: "fs" },
+        value: 12,
+        help: undefined,
+        timestamp: undefined,
+      },
+    ]);
   });
 
   it("averageBySecond calculates the average of values added within the same second", () => {
@@ -41,7 +53,15 @@ describe("MetricsClient", () => {
     a.add(100);
     a.add(200);
 
-    expect(client.toJSON()).toEqual({ http_request_duration_seconds: 150 });
+    expect(client.toJSON()).toEqual([
+      {
+        name: "http_request_duration_seconds",
+        labels: {},
+        value: 150,
+        help: undefined,
+        timestamp: undefined,
+      },
+    ]);
   });
 
   it("averageBySecond calculates the average across two consecutive seconds", async () => {
@@ -58,7 +78,13 @@ describe("MetricsClient", () => {
     setSystemTime(2000);
     a.add(100);
 
-    expect(client.toJSON()).toEqual({ http_request_duration_seconds: 125 });
+    expect(client.toJSON()).toEqual([
+      {
+        name: "http_request_duration_seconds",
+        value: 125,
+        labels: {},
+      },
+    ]);
   });
 
   it("averageBySecond returns the average of the last second after a gap in data", async () => {
@@ -75,7 +101,16 @@ describe("MetricsClient", () => {
     setSystemTime(3000);
     a.add(200);
 
-    expect(client.toJSON()).toEqual({ http_request_duration_seconds: 200 });
+    expect(client.toJSON()).toEqual(
+      [
+        {
+          name: "http_request_duration_seconds",
+          value: 200,
+          labels: {},
+        },
+      ],
+      // { http_request_duration_seconds: 200 }
+    );
   });
 
   it("averageBySecond returns NaN when no data for current or consecutive past second after a gap", async () => {
@@ -93,7 +128,16 @@ describe("MetricsClient", () => {
     a.add(200);
     setSystemTime(4000);
 
-    expect(client.toJSON()).toEqual({ http_request_duration_seconds: NaN });
+    expect(client.toJSON()).toEqual(
+      [
+        {
+          name: "http_request_duration_seconds",
+          value: NaN,
+          labels: {},
+        },
+      ],
+      // { http_request_duration_seconds: NaN }
+    );
   });
 
   it("averageBySecond calculates combined average for two consecutive seconds after a gap", async () => {
@@ -113,6 +157,35 @@ describe("MetricsClient", () => {
     a.add(100);
     setSystemTime(5000 - 1);
 
-    expect(client.toJSON()).toEqual({ http_request_duration_seconds: 150 });
+    expect(client.toJSON()).toEqual(
+      [
+        {
+          name: "http_request_duration_seconds",
+          value: 150,
+          labels: {},
+        },
+      ],
+      // { http_request_duration_seconds: 150 }
+    );
+  });
+
+  it("show help message", () => {
+    const client = new MetricsClient();
+
+    client
+      .counter({
+        name: "test_counter",
+        help: "foo",
+      })
+      .increment();
+
+    expect(Array.from(client.metrics())).toEqual([
+      {
+        name: "test_counter",
+        help: "foo",
+        labels: {},
+        value: 1,
+      },
+    ]);
   });
 });

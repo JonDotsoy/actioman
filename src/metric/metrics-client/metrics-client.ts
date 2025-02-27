@@ -1,10 +1,23 @@
 export type Labels = Record<string, string>;
 
-export type State = {
+export type Bucket = { value: number; timestamp?: number };
+
+export type MetricState = {
   name: string;
-  labels?: Labels;
+  help?: string;
+  labels: Labels;
+  value: Aggregator;
 };
 
+export type Metric = {
+  name: string;
+  help?: string;
+  labels: Labels;
+  value: number;
+  timestamp?: number;
+};
+
+/** @deprecated */
 export type Store = {
   current: number;
 };
@@ -15,94 +28,126 @@ export interface SecondState {
   count: number;
 }
 
-export class CalculatorState {
-  constructor(readonly store: Store) {}
-
+export class Aggregator {
+  /** @deprecated */
   toValue() {
-    return this.store.current;
+    return NaN;
+  }
+
+  *buckets(): Generator<Bucket> {}
+}
+
+export type MetricRefValue = MetricRef | { name: string; labels?: Labels };
+
+export class MetricRef {
+  private constructor(
+    readonly name: string,
+    readonly labels: Labels,
+  ) {}
+
+  private static week = new Map<string, MetricRef>();
+
+  static from(value: MetricRefValue) {
+    if (value instanceof MetricRef) return value;
+    const { name, labels } = value;
+    const labelsString = Object.keys(labels ?? {})
+      .sort()
+      .map((label) => `${label}=${labels?.[label] ?? ""}`)
+      .join(",");
+    const metricRefFound = MetricRef.week.get(`${name}{${labelsString}}`);
+    if (metricRefFound) return metricRefFound;
+    const metricRef = new MetricRef(name, labels ?? {});
+    MetricRef.week.set(`${name}{${labelsString}}`, metricRef);
+    return metricRef;
   }
 }
 
 export class MetricsClient {
-  private db = new Map<State, CalculatorState>();
-  private statesRefs = new Map<string, State>();
+  private db = new Map<MetricRef, MetricState>();
 
   constructor() {}
 
-  private toStateKey(state: State) {
-    if (!state.labels) return state.name;
-    const labels = state.labels;
-    const meta = Object.keys(labels)
-      .sort()
-      .map((labelName) => `${labelName}=${labels[labelName]}`)
-      .join(",");
-    return `${state.name}{${meta}}`;
-  }
+  bind<A extends Aggregator>(aggregator: { new (): A }) {
+    return (
+      state: Pick<Metric, "name"> &
+        Partial<Pick<Metric, Exclude<keyof Metric, "value" | "name">>>,
+    ): A => {
+      const ref = MetricRef.from({
+        name: state.name,
+        labels: state.labels ?? {},
+      });
 
-  private toUniqueState(state: State) {
-    const stateString = this.toStateKey(state);
-    const ref = this.statesRefs.get(stateString);
-    if (ref) return ref;
-    this.statesRefs.set(stateString, state);
-    return state;
-  }
-
-  counter(state: State) {
-    const calculator = this.db.get(this.toUniqueState(state)) as Counter;
-    if (calculator) return calculator;
-    const newCalculator = new Counter({ current: 0 });
-    this.db.set(state, newCalculator);
-    return newCalculator;
-  }
-
-  averageBySecond(state: State) {
-    const calculator = this.db.get(
-      this.toUniqueState(state),
-    ) as AverageBySecond;
-    if (calculator) return calculator;
-    const newCalculator = new AverageBySecond({ current: 0 });
-    this.db.set(state, newCalculator);
-    return newCalculator;
-  }
-
-  toJSON() {
-    return Object.fromEntries(
-      Array.from(this.db, ([state, store]) => [
-        this.toStateKey(state),
-        store.toValue(),
-      ]),
-    );
-  }
-
-  *[Symbol.iterator]() {
-    for (const [state, calculator] of this.db.entries()) {
-      yield {
-        state,
-        value: calculator.toValue(),
+      const metricState = this.db.get(ref);
+      if (metricState) {
+        if (!(metricState.value instanceof aggregator))
+          throw new Error("Metric is not a counter");
+        return metricState.value as any;
+      }
+      const newMetricState: MetricState = {
+        name: state.name,
+        labels: state.labels ?? {},
+        help: state.help,
+        value: new aggregator(),
       };
+      this.db.set(ref, newMetricState);
+      return newMetricState.value as any;
+    };
+  }
+
+  counter = this.bind(Counter);
+  /** @deprecated */
+  averageBySecond = this.bind(AverageBySecond);
+
+  *metrics(): Generator<Metric> {
+    for (const metricState of this.db.values()) {
+      for (const bucket of metricState.value.buckets()) {
+        yield {
+          name: metricState.name,
+          help: metricState.help,
+          labels: metricState.labels ?? {},
+          value: bucket.value,
+          timestamp: bucket.timestamp,
+        };
+      }
     }
   }
+
+  [Symbol.iterator] = () => this.metrics();
+  toJSON = () => Array.from(this.metrics());
 }
 
-export class Counter extends CalculatorState {
+export class Counter extends Aggregator {
+  private bucket: Pick<Bucket, "value"> = { value: 0 };
+
   increment(v: number = 1) {
-    this.store.current += v;
+    this.bucket.value += v;
   }
 
   decrement(v: number = 1) {
-    this.store.current -= v;
+    this.bucket.value -= v;
   }
 
   reset() {
-    this.store.current = 0;
+    this.bucket.value = 0;
   }
 
   toString() {
-    return this.store.current;
+    return this.bucket.value;
+  }
+
+  *buckets(): Generator<Bucket> {
+    yield {
+      value: this.bucket.value,
+    };
   }
 }
 
-export class AverageBySecond extends CalculatorState {
+/** @deprecated */
+export class AverageBySecond extends Aggregator {
+  constructor(private store = { current: 0 }) {
+    super();
+  }
+
   private static MILLISECONDS_IN_SECOND = 1000;
   static storeStates = new WeakMap<
     Store,
@@ -179,5 +224,11 @@ export class AverageBySecond extends CalculatorState {
     if (pastAverage !== null && average === null) return pastAverage;
 
     return NaN;
+  }
+
+  *buckets() {
+    yield {
+      value: this.toValue(),
+    };
   }
 }
