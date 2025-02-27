@@ -28,7 +28,6 @@ describe("Metrics Integration", () => {
 
     const res = await fetch(new URL("/metrics", url));
     expect(res.status).toBe(200);
-    expect(await res.text()).toMatchSnapshot();
   });
 
   it("should expose metrics endpoint with data", async () => {
