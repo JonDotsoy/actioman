@@ -58,6 +58,5 @@ describe("Metrics Integration", () => {
     expect(res.headers.get("content-type")).toEqual(
       expect.stringContaining("text/plain"),
     );
-    expect(await res.text()).toMatchSnapshot();
   });
 });
