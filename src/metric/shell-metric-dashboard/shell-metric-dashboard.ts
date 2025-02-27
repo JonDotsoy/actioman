@@ -1,5 +1,3 @@
-import type { MetricsClient } from "../metrics-client/metrics-client";
-
 // ↑, ↓, ↔
 export enum Direction {
   up = "↑",
@@ -163,37 +161,32 @@ export class ShellDashboard {
     return `${body}${this.footer}\n`;
   }
 
-  subscribeMetrics(client: MetricsClient) {
-    const refreshCallback = () => {
-      for (const { state, value } of client) {
-        const method = state.labels?.method;
-        const path = state.labels?.path;
-
-        if (!method || !path) break;
-
-        const route = `${method} ${path}`;
-
-        const stat: Partial<Stat> = {};
-
-        if (state.name === "request_counters") {
-          stat.requests = value;
-        }
-        if (state.name === "request_duration_seconds") {
-          stat.requestDurationAverage = value;
-        }
-        if (state.name === "request_data_transference_bytes") {
-          stat.dataTransference = value;
-        }
-        if (state.name === "request_error_counters") {
-          stat.countErrors = value;
-        }
-
-        this.updateItem(route, stat);
-      }
-    };
-    this.refreshRenderCallbacks.add(refreshCallback);
-    return () => {
-      this.refreshRenderCallbacks.delete(refreshCallback);
-    };
+  subscribeMetrics() {
+    // const refreshCallback = () => {
+    //   for (const { state, value } of client) {
+    //     const method = state.labels?.method;
+    //     const path = state.labels?.path;
+    //     if (!method || !path) break;
+    //     const route = `${method} ${path}`;
+    //     const stat: Partial<Stat> = {};
+    //     if (state.name === "request_counters") {
+    //       stat.requests = value;
+    //     }
+    //     if (state.name === "request_duration_seconds") {
+    //       stat.requestDurationAverage = value;
+    //     }
+    //     if (state.name === "request_data_transference_bytes") {
+    //       stat.dataTransference = value;
+    //     }
+    //     if (state.name === "request_error_counters") {
+    //       stat.countErrors = value;
+    //     }
+    //     this.updateItem(route, stat);
+    //   }
+    // };
+    // this.refreshRenderCallbacks.add(refreshCallback);
+    // return () => {
+    //   this.refreshRenderCallbacks.delete(refreshCallback);
+    // };
   }
 }
