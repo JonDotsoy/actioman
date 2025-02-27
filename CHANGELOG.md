@@ -1,5 +1,73 @@
 # Changelog
 
+## [0.6.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.5.0...actioman-v0.6.0) (2025-02-27)
+
+
+### Features
+
+* **action-document:** Improve code generation for actions ([e19a267](https://github.com/JonDotsoy/actioman/commit/e19a267cb4769368180ef0a6bff84f569f615847))
+* **actions-target:** add error handling for SSE actions ([04390d1](https://github.com/JonDotsoy/actioman/commit/04390d11be2e73e24e677041112ea740909bf3a2))
+* **actions-target:** add support for SSE actions ([bcd7cd6](https://github.com/JonDotsoy/actioman/commit/bcd7cd65e949621af92009819e1fb3b5f7e14820))
+* **actions-target:** Implement HTTP2 support for actions target ([5eafa48](https://github.com/JonDotsoy/actioman/commit/5eafa4813bce976c23efe672d405a162c71e1328))
+* **actions:** add actionsList export and remove wildcard import ([68dea25](https://github.com/JonDotsoy/actioman/commit/68dea25d0a32c2876465e42632797cbd0d3f726c))
+* **actions:** add support for SSE handlers and infer SSE from module ([c925a36](https://github.com/JonDotsoy/actioman/commit/c925a36f58c6db646cbf9c2de15a78417ca7fff5))
+* add actions.md file with action definition examples ([3dff820](https://github.com/JonDotsoy/actioman/commit/3dff820abf2edfedef86564cae26f6b19d3e1a66))
+* add eventsource dependency ([c707f06](https://github.com/JonDotsoy/actioman/commit/c707f06e126d985e829d0c559391add13e4b3e98))
+* add new factory functions for object properties and exports ([4859e71](https://github.com/JonDotsoy/actioman/commit/4859e71e530e5533e58596684321936b9163fe7a))
+* **auth:** Add JWT authentication integration tests ([022c595](https://github.com/JonDotsoy/actioman/commit/022c5957d144a55435ac06bed0f20332c58e6e9e))
+* **config:** add server and integration configurations ([b3a8d75](https://github.com/JonDotsoy/actioman/commit/b3a8d75390f2b2d30877240898e25f82a4249fbe))
+* **configs:** add http:setup hook and call it in httpSetup ([af89061](https://github.com/JonDotsoy/actioman/commit/af890612a6d4c20df4afed9541929b4807f79fc9))
+* **config:** update server configuration ([7fe7a7d](https://github.com/JonDotsoy/actioman/commit/7fe7a7d164d0413cdf524744ac65d60c7a6ed074))
+* **docs:** add recipe for using Actioman with Bun.sh ([b45426e](https://github.com/JonDotsoy/actioman/commit/b45426e6c3ef2e1d6e1abf5639b0dd180a7dc792))
+* **exporter-actions:** use fetch-h2 library for fetching actions ([7c2d740](https://github.com/JonDotsoy/actioman/commit/7c2d740da78ee40ef24dafc9d630b592e618a2bb))
+* **http-listen-action:** improve template generation ([4df0201](https://github.com/JonDotsoy/actioman/commit/4df0201e66ed050060928e4fbeba992a6c8e0913))
+* **http-router:** add metrics client and request metrics ([542f11b](https://github.com/JonDotsoy/actioman/commit/542f11b2af97cb7c0f0bcf15347d7d4f09d69dd9))
+* **http-router:** add support for server-sent events (SSE) ([867c733](https://github.com/JonDotsoy/actioman/commit/867c7330e90b0b8b92cb1f01416e246b77ef8df0))
+* **http-router:** change action method to POST ([e89c403](https://github.com/JonDotsoy/actioman/commit/e89c403593a9a36dcb3faa181cc6b619a454ed54))
+* **http-router:** handle internal errors in SSE actions ([1380e92](https://github.com/JonDotsoy/actioman/commit/1380e92b688c8b510c79a43c46e1f9f990ffb760))
+* **http-router:** improve URL handling in tests ([af7264d](https://github.com/JonDotsoy/actioman/commit/af7264db69163f7813b82ff9897e5e0c6cfca354))
+* Implement event source parsing in request-event-source ([8ff2865](https://github.com/JonDotsoy/actioman/commit/8ff2865c1b2f859a9ec4bceb1b0b7bbcbfcd6de3))
+* **metric-text-encoder:** Implement metric text encoding ([2a98147](https://github.com/JonDotsoy/actioman/commit/2a981476577178bc2fadd4382b490163422f3159))
+* **metrics-client:** add iterator to MetricsClient ([b1aa14d](https://github.com/JonDotsoy/actioman/commit/b1aa14dc11bfb3c13614c7b871662784c93a0842))
+* **metrics-client:** add support for default labels ([13ce299](https://github.com/JonDotsoy/actioman/commit/13ce29962900022d95192244f9c209f156fd54a5))
+* **metrics-client:** Implement counter and average-by-second metrics ([a2c7fcf](https://github.com/JonDotsoy/actioman/commit/a2c7fcf0ab37edb2d17be560423e75ed916092ca))
+* **metrics:** add content-type header to metrics response ([eb11502](https://github.com/JonDotsoy/actioman/commit/eb11502b33e4c10a0673ef567f4c62c9950ee55f))
+* **metrics:** add metrics integration ([42e909a](https://github.com/JonDotsoy/actioman/commit/42e909aa2f09b8624ea02fd152230b6536c718d2))
+* **package:** Add metrics integration entry points ([4334450](https://github.com/JonDotsoy/actioman/commit/4334450f4d8bb344f2186535b1c6adf48d41079c))
+* rename "configs" to "actioman" in HTTP listen action ([bbde49d](https://github.com/JonDotsoy/actioman/commit/bbde49dce0f38b715e6c75af3f99e3a5a6b1b80e))
+* **share-actions-document:** refactor AST generation using typescript-factory ([38ceca6](https://github.com/JonDotsoy/actioman/commit/38ceca6c15d34b21b8010c1442de4c6ad578c011))
+* **shell-metric-dashboard:** add metrics subscription and update dashboard ([9f8c1b3](https://github.com/JonDotsoy/actioman/commit/9f8c1b3b021345d1e0614eaa155fda780053be7e))
+* **shell-metric-dashboard:** add new metric dashboard ([d6fe43e](https://github.com/JonDotsoy/actioman/commit/d6fe43e9ff77bc0ea25abff6e6b1aa778865ee31))
+* **shell:** add signal handling for subprocess ([7325615](https://github.com/JonDotsoy/actioman/commit/73256158bf9f945c008aea206b315a8531bad922))
+* **typescript-factory:** add optional default export to $import ([8bdea4f](https://github.com/JonDotsoy/actioman/commit/8bdea4f8c3c973911af9db96cb93fdd12c69ce32))
+
+
+### Bug Fixes
+
+* **actions-target:** update imports to use .js extensions ([a16c798](https://github.com/JonDotsoy/actioman/commit/a16c7983804c00a2b73079b0f28f356fe3bd7084))
+* infer type for actions module ([04400af](https://github.com/JonDotsoy/actioman/commit/04400af8f83ab3a0e284999d38b564793bc9242e))
+* update dependencies in package.json ([6542b4a](https://github.com/JonDotsoy/actioman/commit/6542b4ad93cf817512c93d980a91537d18229ed8))
+
+
+### Performance Improvements
+
+* **actions:** improve action definition and handling ([5984597](https://github.com/JonDotsoy/actioman/commit/59845974abd5d72b4c2ed0f402097a69890ca742))
+* **dependencies:** add express and its types ([e0436fd](https://github.com/JonDotsoy/actioman/commit/e0436fd02e6ea522caab6887bb928132bc3c1f3a))
+* **deps:** remove unused escodegen dependency ([a257b03](https://github.com/JonDotsoy/actioman/commit/a257b03a09c9bab302475967f25fe79f565cbb29))
+* exclude 'packages' directory from tsconfig.esm.json ([6e596d5](https://github.com/JonDotsoy/actioman/commit/6e596d57f98c194ce94ca2eb706dde112f7be412))
+* **http-router:** improve error handling in JSON parsing ([f705225](https://github.com/JonDotsoy/actioman/commit/f7052252ab1541e4d0f43bb14aa5b8712f054edd))
+* **http-router:** Optimize request metrics and error handling ([0a4ca8f](https://github.com/JonDotsoy/actioman/commit/0a4ca8f3c0856a1dcfd03c40690c550c8a51fe3c))
+* **http-router:** remove unused INITIAL_PORT constant ([d61a107](https://github.com/JonDotsoy/actioman/commit/d61a1070097286c47c529ca29c15f0b9e0b1f93c))
+* **metric:** Remove metric text encoder and related tests ([f904e5d](https://github.com/JonDotsoy/actioman/commit/f904e5d47a61506a4baf6f7b1ef373b157b34151))
+* **metric:** remove metrics client subscription from shell dashboard ([f7d6b02](https://github.com/JonDotsoy/actioman/commit/f7d6b02c439d1d80a71b70c4578b16e99a8efbb9))
+* **metrics-client:** add support for metric metadata and improve toJSON output ([33753ee](https://github.com/JonDotsoy/actioman/commit/33753ee0ac859a2925b496a709796640d5855216))
+* **metrics-client:** remove deprecated code and simplify API ([c5ec755](https://github.com/JonDotsoy/actioman/commit/c5ec75500d6d4e3145e2fcad2725d677deee2d0e))
+* **metrics:** Implement streaming metrics response ([a7bf4bc](https://github.com/JonDotsoy/actioman/commit/a7bf4bc704f159bdbc323b6a9ec180d5ae291937))
+* **metrics:** Improve metric text encoding ([5c3b103](https://github.com/JonDotsoy/actioman/commit/5c3b103fae30ce94f4300e18252f9ba9dbfacb1e))
+* refactor metrics integration ([43b77eb](https://github.com/JonDotsoy/actioman/commit/43b77eb45e4ac42e7705fb723cf17d648e1a802e))
+* **shell:** add subprocess pid to history and clean up on exit ([238ca8e](https://github.com/JonDotsoy/actioman/commit/238ca8ef284a13f8f8c8ee25fb9c28df0e754364))
+* update bun.lock file ([5e36c25](https://github.com/JonDotsoy/actioman/commit/5e36c2532cf86932649b569d80417b63f30c3cd7))
+
 ## [0.5.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.4.0...actioman-v0.5.0) (2025-02-13)
 
 
