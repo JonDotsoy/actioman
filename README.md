@@ -1,5 +1,7 @@
 # 🏹 actioman
 
+[Documentación en Español](docs/es/README.md)
+
 Share functions with other JS clients. Call backend functions with type-safety.
 
 Actioman is a tool to expose Javascript functions as web services in a simple and fast way. With actioman, you can build robust and type-safe APIs using your existing Javascript functions, facilitating communication between your backend and Javascript clients (whether they are browsers, mobile applications, or even other backend services).
