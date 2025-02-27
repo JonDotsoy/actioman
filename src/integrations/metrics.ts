@@ -1,5 +1,5 @@
 import type { Integration } from "../configs/configs.js";
-import { MetricTextEncoder } from "../metric/metric-text-encoder.js";
+import client from "prom-client";
 
 export const metrics = (): Integration => {
   return {
@@ -7,20 +7,10 @@ export const metrics = (): Integration => {
     hooks: {
       "http:setup": (httpRouter) => {
         httpRouter.router.use("ALL", "/metrics", {
-          fetch: () => {
-            let body = "";
+          fetch: async () => {
+            const body = await client.register.metrics();
 
-            for (const e of httpRouter.metrics) {
-              const metricText = new MetricTextEncoder().encode({
-                name: e.state.name,
-                labels: e.state.labels,
-                value: e.value,
-              });
-
-              body += `${metricText}\n`;
-            }
-
-            return new Response(body, {
+            return new Response(new TextEncoder().encode(body), {
               headers: {
                 "Content-Type": "text/plain; version=0.0.4; charset=utf-8",
               },
