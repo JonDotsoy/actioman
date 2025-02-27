@@ -2,6 +2,8 @@
 
 Actioman facilita la monitorización de tus servicios exponiendo métricas en formato Prometheus, un estándar en la industria para la recolección y análisis de métricas. Esta integración te permite obtener información valiosa sobre el rendimiento y uso de tus acciones, integrándose fácilmente con Prometheus o cualquier sistema de monitorización compatible con el formato `prometheustext`.
 
+**Esta integración se basa en la librería [prom-client](https://www.npmjs.com/package/prom-client) de Node.js**, una librería ampliamente utilizada para instrumentar aplicaciones con métricas de Prometheus. Actioman utiliza `prom-client` internamente para generar las métricas predefinidas y también te permite crear métricas personalizadas para adaptarlas a las necesidades específicas de tu aplicación.
+
 ### Habilitando la Integración de Métricas
 
 Para activar la integración de métricas de Prometheus en tu proyecto Actioman, debes modificar el archivo de configuración `actioman.config.js`. Si no tienes este archivo, créalo en la raíz de tu proyecto. Luego, importa la integración `metrics` desde el módulo `actioman/integrations/metrics` y agrégala al array `integrations` dentro de la configuración.
@@ -11,9 +13,7 @@ Para activar la integración de métricas de Prometheus en tu proyecto Actioman,
 import { metrics } from "actioman/integrations/metrics";
 
 export default {
-  integrations: [
-    metrics(), // Declara la integración de métricas
-  ],
+  integrations: [metrics()],
 };
 ```
 
@@ -42,26 +42,77 @@ Abre tu terminal y ejecuta el siguiente comando, reemplazando `http://localhost:
 curl http://localhost:6565/metrics
 ```
 
-Este comando realizará una petición GET al endpoint `/metrics` y mostrará las métricas en formato `prometheustext` en tu terminal. La salida será similar a la siguiente, mostrando contadores y duraciones de las peticiones a tus acciones (en este ejemplo, `f1` y `f2`):
+Este comando realizará una petición GET al endpoint `/metrics` y mostrará las métricas en formato `prometheustext` en tu terminal. La salida será similar a la siguiente, mostrando métricas de las peticiones a tus acciones (en este ejemplo, para una acción llamada `hi`):
 
 ```
-request_error_counters{action="f1"} 5
-request_counters{action="f1"} 143
-request_data_transference_bytes{action="f1"} 341205
-request_duration_seconds{action="f1"} 32
-request_error_counters{action="f2"} 5
-request_counters{action="f2"} 31
-request_data_transference_bytes{action="f2"} 52341
-request_duration_seconds{action="f2"} 16
+# HELP action_requests_seconds The total number of request
+# TYPE action_requests_seconds summary
+action_requests_seconds{quantile="0.01",action="hi",success="1"} 0.00146375
+action_requests_seconds{quantile="0.05",action="hi",success="1"} 0.00146375
+action_requests_seconds{quantile="0.5",action="hi",success="1"} 0.00146375
+action_requests_seconds{quantile="0.9",action="hi",success="1"} 0.00146375
+action_requests_seconds{quantile="0.95",action="hi",success="1"} 0.00146375
+action_requests_seconds{quantile="0.99",action="hi",success="1"} 0.00146375
+action_requests_seconds{quantile="0.999",action="hi",success="1"} 0.00146375
+action_requests_seconds_sum{action="hi",success="1"} 0.00146375
+action_requests_seconds_count{action="hi",success="1"} 1
 ```
 
 **Métricas Exponiendo:**
 
-La integración de métricas de Actioman expone las siguientes métricas para cada acción definida en tu proyecto:
+La integración de métricas de Actioman expone las siguientes métricas por defecto para cada acción definida en tu proyecto:
 
-- `request_counters`: Número total de peticiones realizadas a la acción.
-- `request_error_counters`: Número total de peticiones que resultaron en error para la acción.
-- `request_duration_seconds`: Histograma de la duración de las peticiones a la acción en segundos. Proporciona `_count`, `_sum` y `_max` para análisis estadístico.
-- `request_data_transference_bytes`: Cantidad total de datos transferidos (en bytes) durante las peticiones a la acción.
+- **`action_requests_seconds` (Summary):** Mide la duración de las peticiones a las acciones en segundos. Se presenta como un Summary de Prometheus, proporcionando percentiles (quantile) de la duración, la suma total (`_sum`) y el conteo total (`_count`) de las mediciones.
+  - **Labels:**
+    - `action`: Nombre de la acción invocada.
+    - `success`: Indica si la petición fue exitosa (`1`) o fallida (`0`).
 
-Con esta integración, puedes obtener una visión detallada del rendimiento de tus servicios Actioman y monitorizar su comportamiento en tiempo real utilizando Prometheus o cualquier sistema de monitorización compatible.
+En este formato, la duración de las peticiones se agrega a un Summary, que es útil para entender la distribución de las latencias. En lugar de un histograma, el Summary calcula percentiles directamente, lo que puede ser más eficiente en algunos casos para monitorear la experiencia del usuario.
+
+### Métricas Personalizadas
+
+Dado que Actioman utiliza `prom-client`, puedes extender la monitorización de tus servicios creando métricas personalizadas. Esto te permite recolectar información específica de tu dominio de negocio y enriquecer la telemetría de tus acciones.
+
+Para crear métricas personalizadas, puedes importar `prom-client` directamente en tu código y definir las métricas que necesites. A continuación, se muestra un ejemplo de cómo crear un contador personalizado para registrar el número de ventas:
+
+```javascript
+// actions.js
+import promClient from "prom-client";
+
+const salesCounter = new promClient.Counter({
+  name: "sales_counter",
+  help: "El número total de ventas",
+});
+
+export const processSale = () => {
+  // ... lógica para procesar la venta ...
+  salesCounter.inc(); // Incrementa el contador de ventas
+  return { success: true };
+};
+
+export const getDashboardData = () => {
+  // ...
+  return { sales: salesCounter.value() }; // Ejemplo de como usar la metrica
+};
+
+export const hello = () => "hello world";
+```
+
+En este ejemplo:
+
+1. **`import promClient from "prom-client";`**: Importamos la librería `prom-client`.
+2. **`const salesCounter = new promClient.Counter(...)`**: Creamos un nuevo contador llamado `sales_counter` utilizando `promClient.Counter`. Definimos un nombre (`name`) y una descripción (`help`) para la métrica.
+3. **`salesCounter.inc();`**: En la función `processSale`, incrementamos el contador `salesCounter` cada vez que se procesa una venta.
+4. **`salesCounter.value()`**: En la función `getDashboardData`, mostramos como se puede acceder al valor actual de la métrica.
+
+Las métricas personalizadas que definas se registrarán automáticamente junto con las métricas predefinidas de Actioman y estarán disponibles en el endpoint `/metrics` en formato Prometheus.
+
+**Registro de Métricas:**
+
+Es importante tener en cuenta que `prom-client` utiliza un registro global por defecto. Esto significa que todas las métricas creadas con `prom-client` en tu proyecto Actioman se agregarán al mismo registro y se expondrán en el endpoint `/metrics`.
+
+**Explora la Documentación de `prom-client`:**
+
+Para obtener más información sobre cómo crear diferentes tipos de métricas (como gauges, histograms, summaries) y configurar opciones avanzadas, te recomendamos consultar la [documentación oficial de `prom-client`](https://github.com/siimon/prom-client).
+
+Con la integración de métricas de Actioman y la flexibilidad de `prom-client`, puedes obtener una visión completa y personalizada del rendimiento y comportamiento de tus servicios.
