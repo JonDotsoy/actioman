@@ -8,23 +8,33 @@ export const metrics = (): Integration => {
       "http:setup": (httpRouter) => {
         httpRouter.router.use("ALL", "/metrics", {
           fetch: () => {
-            let body = "";
+            const metrics = httpRouter.metrics.metrics();
 
-            for (const e of httpRouter.metrics) {
-              const metricText = new MetricTextEncoder().encode({
-                name: e.state.name,
-                labels: e.state.labels,
-                value: e.value,
-              });
+            return new Response(
+              new ReadableStream<Uint8Array>({
+                pull: (ctrl) => {
+                  const { done, value } = metrics.next();
 
-              body += `${metricText}\n`;
-            }
+                  if (done) return ctrl.close();
 
-            return new Response(body, {
-              headers: {
-                "Content-Type": "text/plain; version=0.0.4; charset=utf-8",
+                  const metricText = new MetricTextEncoder().encode({
+                    name: value.name,
+                    labels: value.labels,
+                    value: value.value,
+                    timestamp: value.timestamp,
+                    // help: value.help,
+                  });
+
+                  ctrl.enqueue(new TextEncoder().encode(metricText));
+                  ctrl.enqueue(new Uint8Array([10]));
+                },
+              }),
+              {
+                headers: {
+                  "Content-Type": "text/plain; version=0.0.4; charset=utf-8",
+                },
               },
-            });
+            );
           },
         });
       },
