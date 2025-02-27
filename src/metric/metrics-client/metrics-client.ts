@@ -62,19 +62,28 @@ export class MetricRef {
   }
 }
 
+export type MetricsClientOptions = {
+  labels?: Labels;
+};
+
 export class MetricsClient {
   private db = new Map<MetricRef, MetricState>();
 
-  constructor() {}
+  constructor(private options?: MetricsClientOptions) {}
 
   bind<A extends Aggregator>(aggregator: { new (): A }) {
     return (
       state: Pick<Metric, "name"> &
         Partial<Pick<Metric, Exclude<keyof Metric, "value" | "name">>>,
     ): A => {
+      const labels = {
+        ...this.options?.labels,
+        ...state.labels,
+      };
+
       const ref = MetricRef.from({
         name: state.name,
-        labels: state.labels ?? {},
+        labels,
       });
 
       const metricState = this.db.get(ref);
@@ -85,7 +94,7 @@ export class MetricsClient {
       }
       const newMetricState: MetricState = {
         name: state.name,
-        labels: state.labels ?? {},
+        labels,
         help: state.help,
         value: new aggregator(),
       };
