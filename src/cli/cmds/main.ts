@@ -11,8 +11,9 @@ import {
 import { serve } from "./serve.js";
 import { add } from "./add.js";
 import { install } from "./install.js";
+import type { CliContextDTO } from "../dto/cli-context.dto.js";
 
-export const main = async (args: string[]) => {
+export const main = async (args: string[], ctx: CliContextDTO) => {
   type Options = {
     help: boolean;
     serve: string[];
@@ -36,9 +37,9 @@ export const main = async (args: string[]) => {
   const options = flags(args, {}, rules);
 
   if (options.help) return console.log(makeHelpMessage("actioman", rules));
-  if (options.add) return await add(options.add);
-  if (options.serve) return await serve(options.serve);
-  if (options.install) return await install(options.install);
+  if (options.add) return await add(options.add, ctx);
+  if (options.serve) return await serve(options.serve, ctx);
+  if (options.install) return await install(options.install, ctx);
 
   return console.log(makeHelpMessage("actioman", rules));
 };

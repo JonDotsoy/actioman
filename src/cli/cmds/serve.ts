@@ -12,7 +12,9 @@ import {
 import * as net from "net";
 import { makeServerScript } from "../../scripts/make-server-script.js";
 import { getCWD } from "../utils/get-cwd.js";
-import { spawnSync } from "child_process";
+import { spawn, spawnSync } from "child_process";
+import { ACTIOMAN_VERSION } from "../../actioman-version.js";
+import type { CliContextDTO } from "../dto/cli-context.dto.js";
 
 const nextPort = async () => {
   let porposalPort = 30320;
@@ -36,7 +38,9 @@ const nextPort = async () => {
   }
 };
 
-export const serve = async (args: string[]) => {
+export const serve = async (args: string[], ctx: CliContextDTO) => {
+  ctx.pendingMessage.command = "serve";
+
   type Options = {
     help: boolean;
     http2: boolean;
@@ -92,7 +96,9 @@ export const serve = async (args: string[]) => {
     http2,
   );
 
-  spawnSync(process.argv0, [new URL(bootstrapLocation).pathname], {
+  ctx.pendingMessage.push();
+
+  spawn(process.argv0, [new URL(bootstrapLocation).pathname], {
     cwd: cwd.pathname,
     env: {
       ...process.env,

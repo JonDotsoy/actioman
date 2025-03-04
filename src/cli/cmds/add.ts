@@ -9,8 +9,11 @@ import {
   type Rule,
 } from "@jondotsoy/flags";
 import { importRemoteActions } from "../../scripts/import-remote-actions.js";
+import type { CliContextDTO } from "../dto/cli-context.dto.js";
 
-export const add = async (args: string[]) => {
+export const add = async (args: string[], ctx: CliContextDTO) => {
+  ctx.pendingMessage.command = "add";
+
   type Options = {
     help: boolean;
     cwd: string;
