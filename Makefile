@@ -33,3 +33,7 @@ test@docker: /tmp/.process.${CONTAINER_TEST_HASH}.actioman-test.json
 	$(eval CONTAINER_TEST_ID=$(shell cat /tmp/.process.${CONTAINER_TEST_HASH}.actioman-test.json | jq '.Name' -r))
 	docker exec ${CONTAINER_TEST_ID} bash -i -c "bun i"
 	docker exec ${CONTAINER_TEST_ID} bash -i -c "bun test ${TEST_ARG}"
+
+.PHONY: build_version_file
+build_version_file:
+	cat package.json | jq '.version | "export const ACTIOMAN_VERSION = " + (. | @json) + ";"' -r > src/actioman-version.ts
