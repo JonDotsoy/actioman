@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.6.0...actioman-v0.7.0) (2025-03-04)
+
+
+### Features
+
+* Improve release workflow condition ([7b9b018](https://github.com/JonDotsoy/actioman/commit/7b9b01816acb867707a2e36b23ceb5eb0c21ff6d))
+
 ## [0.6.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.5.0...actioman-v0.6.0) (2025-02-27)
 
 
