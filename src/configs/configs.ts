@@ -1,6 +1,11 @@
 import { get } from "@jondotsoy/utils-js/get";
 import type { Middleware } from "artur/http/router";
 import type { HTTPRouter } from "../http-router/http-router.js";
+import {
+  defaultTelemetryConfig,
+  type TelemetryConfig,
+} from "../telemetry/telemetry-config.js";
+import { Telemetry } from "../telemetry/telemetry.js";
 
 export type IntegrationModule = Integration;
 export type ServerConfigsModule = {
@@ -88,24 +93,6 @@ export class ServerConfigs implements ServerConfigsModule {
   }
 }
 
-const stringBooleanMap: Record<string, boolean | undefined> = {
-  true: true,
-  "1": true,
-  on: true,
-  yes: true,
-  false: false,
-  "0": false,
-  off: false,
-  no: false,
-};
-
-const getStringBoolean = (obj: unknown, ...path: string[]) => {
-  const value = get(obj, ...path);
-  if (typeof value === "boolean") return value;
-  if (typeof value === "string") return stringBooleanMap[value.toLowerCase()];
-  return undefined;
-};
-
 export type ConfigsModule = {
   server?: ServerConfigsModule;
   integrations?: IntegrationModule[];
@@ -114,6 +101,7 @@ export type ConfigsModule = {
 export class Configs {
   integrations?: Integration[] = [];
   server?: ServerConfigs;
+  telemetry?: TelemetryConfig;
 
   private constructor() {}
 
@@ -153,6 +141,7 @@ export class Configs {
 
     configs.integrations = integrations;
     configs.server = ServerConfigs.fromModule(get(module, "server"));
+    configs.telemetry = defaultTelemetryConfig();
 
     return configs;
   }
