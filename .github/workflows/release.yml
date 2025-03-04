@@ -18,7 +18,7 @@ jobs:
     needs:
       - release
     runs-on: ubuntu-latest
-    if: ${{ !needs.release.outputs.release_created }}
+    if: ${{ !needs.release.outputs.prs_created }}
     permissions:
       contents: write
       pull-requests: write
@@ -27,6 +27,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+          ref: ${{ fromJson(needs.release.outputs.pr).headBranchName }}
       - name: build version file
         run: |
           make build_version_file
@@ -41,4 +42,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          branch: ${{ fromJson(needs.release.outputs.pr).headBranchName }}
