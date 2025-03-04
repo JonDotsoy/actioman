@@ -13,6 +13,7 @@ import { getCWD } from "../utils/get-cwd.js";
 import { ActionmanLockFile } from "../../actioman-lock-file/actioman-lock-file.js";
 import { importRemoteAction } from "../../scripts/import-remote-actions.js";
 import { ActionsDocument } from "../../exporter-actions/exporter-actions.js";
+import type { CliContextDTO } from "../dto/cli-context.dto.js";
 
 async function installHandler(cwdUrl: URL) {
   const actiomanLockFileLocation = getActiomanLockFileLocation(cwdUrl);
@@ -35,7 +36,9 @@ async function installHandler(cwdUrl: URL) {
   }
 }
 
-export const install = async (args: string[]) => {
+export const install = async (args: string[], ctx: CliContextDTO) => {
+  ctx.pendingMessage.command = "install";
+
   type Options = {
     cwd: string;
     help: boolean;
