@@ -1,7 +1,9 @@
 name: Release
 
 on:
-  push: {}
+  push:
+    branches:
+      - develop
 
 jobs:
   release:
@@ -11,3 +13,32 @@ jobs:
       pull-requests: write
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  prepare:
+    needs:
+      - release
+    runs-on: ubuntu-latest
+    if: !needs.release.outputs.release_created
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: build version file
+        run: |
+          make build_version_file
+      - name: commit version change
+        continue-on-error: true
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add src/actioman-version.ts
+          git commit -m "chore: upgrade actioman-version.ts"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
