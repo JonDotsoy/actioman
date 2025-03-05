@@ -1,8 +1,8 @@
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect, spyOn } from "bun:test";
 import { defaultTelemetryConfig } from "./telemetry-config";
 
-describe("_", () => {
-  it("test 1", () => {
-    console.log(defaultTelemetryConfig());
+describe("TelemetryConfig", () => {
+  it("defaultTelemetryConfig", () => {
+    expect(defaultTelemetryConfig()).toMatchSnapshot();
   });
 });
