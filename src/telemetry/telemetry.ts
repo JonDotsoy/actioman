@@ -23,14 +23,22 @@ export class Telemetry {
 
   constructor(
     readonly configs: TelemetryConfig = defaultTelemetryConfig(),
-    readonly loggerVerbose = new Logger(configs.verbose),
-    readonly loggerDebug = new Logger(configs.verbose || configs.debug),
+    /** Logs to send no relevant information */
+    readonly loggerVerbose = new Logger("Telemetry: ", configs.verbose),
+    /** Logs to send error or important information */
+    readonly loggerDebug = new Logger(
+      "Telemetry: ",
+      configs.verbose || configs.debug,
+    ),
   ) {
+    loggerVerbose.log(
+      `started at ${new Date().toISOString()} configs: ${JSON.stringify(configs)}`,
+    );
     this.started.promise.then(() => this.processQueueLoop());
   }
 
   private async processQueueLoop() {
-    this.loggerVerbose.log(`Telemetry started at ${new Date().toISOString()}`);
+    this.loggerVerbose.log(`started at ${new Date().toISOString()}`);
     while (true) {
       for (const event of this.events) {
         await this.putMetric(event);
@@ -57,6 +65,12 @@ export class Telemetry {
   }
 
   async putMetric(message: MetricMessage) {
+    if (!this.configs.enabled) {
+      this.loggerVerbose.log(
+        `disabled. Skipping message: ${JSON.stringify(message)}`,
+      );
+      return;
+    }
     const body = new TextEncoder().encode(
       JSON.stringify({
         ...message,
@@ -65,7 +79,7 @@ export class Telemetry {
     );
 
     this.loggerVerbose.log(
-      `Telemetry send to ${this.configs.dsn.toString()} (${body.length} bytes)`,
+      `send to ${this.configs.dsn.toString()} (${body.length} bytes)`,
     );
     const [error, res] = await result(() =>
       fetch(this.configs.dsn, {
@@ -79,13 +93,11 @@ export class Telemetry {
     );
 
     if (!error)
-      this.loggerVerbose.log(
-        `Telemetry send success to ${this.configs.dsn.toString()}`,
-      );
+      this.loggerVerbose.log(`send success to ${this.configs.dsn.toString()}`);
 
     if (error) {
       this.loggerDebug.error(
-        `Telemetry send failed to ${this.configs.dsn.toString()}`,
+        `send failed to ${this.configs.dsn.toString()}`,
         error,
       );
     }
