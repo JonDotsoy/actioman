@@ -1,0 +1,11 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TelemetryConfig defaultTelemetryConfig 1`] = `
+{
+  "debug": false,
+  "dsn": URL {},
+  "enabled": false,
+  "timeout": 10000,
+  "verbose": false,
+}
+`;

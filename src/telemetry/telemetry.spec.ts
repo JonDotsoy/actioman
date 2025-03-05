@@ -27,7 +27,9 @@ describe("Telemetry", () => {
   });
 
   it("should send messages", async () => {
-    const telemetry = new Telemetry().start();
+    const telemetry = new Telemetry(
+      defaultTelemetryConfig({ enabled: true }),
+    ).start();
 
     await new Promise((r) => setTimeout(r, 20));
     telemetry.push({
@@ -62,6 +64,7 @@ describe("Telemetry", () => {
 
     const telemetry = new Telemetry(
       defaultTelemetryConfig({
+        enabled: true,
         debug: true,
         verbose: true,
       }),
