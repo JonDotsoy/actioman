@@ -23,7 +23,12 @@ Además, el envío de esta información está diseñado para ser **imperceptible
 
 **Desactivar la Telemetría:**
 
-La telemetría está **activada por defecto** para ayudarnos a mejorar Actioman. Sin embargo, entendemos que algunos usuarios prefieran desactivarla. Puedes desactivar la telemetría de las siguientes maneras:
+La telemetría está **activada por defecto** para ayudarnos a mejorar Actioman. Sin embargo, entendemos que algunos usuarios prefieran desactivarla. Además, para evitar la recopilación de telemetría en entornos automatizados, la telemetría se **desactiva automáticamente en los siguientes entornos:**
+
+- **Entornos de Integración Continua (CI):** Si se detecta la presencia de la variable de entorno `CI` con valor `'true'` o `GITHUB_ACTIONS` con valor `'true'`, la telemetría se desactiva automáticamente. Esto asegura que no se recopile información de builds automatizados.
+- **Entornos de Test:** Si la variable de entorno `NODE_ENV` está establecida a `'test'`, la telemetría también se desactiva automáticamente, evitando la recopilación de datos durante las pruebas unitarias o de integración.
+
+Si no te encuentras en uno de estos entornos o deseas desactivar la telemetría manualmente, puedes hacerlo de las siguientes maneras:
 
 - **Variable de Entorno:** Establece la variable de entorno `ACTIOMAN_TELEMETRY_DISABLED=1`. Cuando esta variable está presente, la telemetría se desactiva completamente.
 
