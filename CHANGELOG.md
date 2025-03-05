@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.7.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.6.0...actioman-v0.7.0) (2025-03-05)
+
+
+### Features
+
+* **cli:** add context to main commands ([bd9b879](https://github.com/JonDotsoy/actioman/commit/bd9b879f29a50a9d2ba6c4d57a2cbba4cfc4dc33))
+* Improve release workflow condition ([7b9b018](https://github.com/JonDotsoy/actioman/commit/7b9b01816acb867707a2e36b23ceb5eb0c21ff6d))
+* **telemetry-gateway:** Add default series register to http-router.spec.ts ([99cbfd6](https://github.com/JonDotsoy/actioman/commit/99cbfd62371cbac4cd20d41bb881dd8e655ee518))
+* **telemetry-gateway:** add HTTP router for collecting telemetry data ([5b4a4c9](https://github.com/JonDotsoy/actioman/commit/5b4a4c9001686461dbe0ddd163701e3292f6388d))
+* **telemetry-gateway:** add metrics endpoint and improve error handling ([e9f50a7](https://github.com/JonDotsoy/actioman/commit/e9f50a7b9fc821a5a672de21f2cae09e21fd57ec))
+* **telemetry:** add prefix to logger messages ([ffca9aa](https://github.com/JonDotsoy/actioman/commit/ffca9aa05e186a87e0dfbacde630c15e1b058e69))
+* **telemetry:** Add telemetry configuration and logging ([8b9c3ca](https://github.com/JonDotsoy/actioman/commit/8b9c3cadc7b0f660b10b0135626a735e7d93fb20))
+* **telemetry:** Implement telemetry system ([1023612](https://github.com/JonDotsoy/actioman/commit/10236120afba50f8077fb8443a1eae5074b5a9c9))
+* **telemetry:** improve telemetry configuration handling ([67c8957](https://github.com/JonDotsoy/actioman/commit/67c89571611bdc9df63f541bf9ad3ed247d90d41))
+* update telemetry configuration logic ([af4c9d8](https://github.com/JonDotsoy/actioman/commit/af4c9d8dc2fd17fc26711d34da7a1bbf6c2b1f2e))
+
+
+### Bug Fixes
+
+* **telemetry:** enable telemetry by default and add debug mode ([de3fa7c](https://github.com/JonDotsoy/actioman/commit/de3fa7c92f750ef014980df9dc5499a71ba2bb90))
+
 ## [0.6.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.5.0...actioman-v0.6.0) (2025-02-27)
 
 
