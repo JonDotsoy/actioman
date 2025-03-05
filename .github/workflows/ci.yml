@@ -24,6 +24,9 @@ jobs:
       - run: bun install
       - run: bun lint
       - run: bun test
+        env:
+          ACTIOMAN_TELEMETRY_DEBUG: 1
+          ACTIOMAN_TELEMETRY_VERBOSE: 1
       - uses: actions/upload-artifact@v4
         with:
           name: coverage
