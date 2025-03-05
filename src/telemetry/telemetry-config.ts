@@ -47,11 +47,10 @@ const disabledByCI = CI === true ? false : null;
 const disabledByGithubActions = GITHUB_ACTIONS === true ? false : null;
 const disabledByNodeEnvTest = NODE_ENV_IS_TEST === true ? false : null;
 
-const actiomanTelemetryDsnUrl = ACTIOMAN_TELEMETRY_DSN
-  ? URL.canParse(ACTIOMAN_TELEMETRY_DSN)
+const actiomanTelemetryDsnUrl =
+  ACTIOMAN_TELEMETRY_DSN && URL.canParse(ACTIOMAN_TELEMETRY_DSN)
     ? new URL(ACTIOMAN_TELEMETRY_DSN)
-    : null
-  : null;
+    : null;
 
 export type TelemetryConfig = {
   /** Whether telemetry is enabled or not */
