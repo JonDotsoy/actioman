@@ -23,9 +23,14 @@ export class Telemetry {
 
   constructor(
     readonly configs: TelemetryConfig = defaultTelemetryConfig(),
+    /** Logs to send no relevant information */
     readonly loggerVerbose = new Logger(configs.verbose),
+    /** Logs to send error or important information */
     readonly loggerDebug = new Logger(configs.verbose || configs.debug),
   ) {
+    loggerVerbose.log(
+      `Telemetry started at ${new Date().toISOString()} configs: ${JSON.stringify(configs)}`,
+    );
     this.started.promise.then(() => this.processQueueLoop());
   }
 
@@ -57,6 +62,12 @@ export class Telemetry {
   }
 
   async putMetric(message: MetricMessage) {
+    if (!this.configs.enabled) {
+      this.loggerVerbose.log(
+        `Telemetry disabled. Skipping message: ${JSON.stringify(message)}`,
+      );
+      return;
+    }
     const body = new TextEncoder().encode(
       JSON.stringify({
         ...message,
