@@ -8,6 +8,7 @@ import { actioman_command_errors_total } from "./metrics_control/metrics/actioma
 import { telemetryEventSchema } from "./schemas/telemetry_event_schema";
 import { defaultRegistry } from "./metrics_control/registers/default_serie_register";
 import client from "prom-client";
+import { addActiveUser } from "./metrics_control/metrics/actioman_active_users";
 
 export class HTTPRouter {
   constructor(
@@ -77,6 +78,9 @@ export class HTTPRouter {
             actioman_version: payload.actioman_version,
             error_code: payload.error_code,
           });
+
+        const requestIP = req.headers.get("X-Forwarded-For");
+        if (requestIP) addActiveUser(requestIP);
 
         return Response.json("Thanks ♥️!");
       },
