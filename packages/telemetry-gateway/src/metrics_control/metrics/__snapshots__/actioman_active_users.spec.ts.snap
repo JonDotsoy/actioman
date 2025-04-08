@@ -1,0 +1,12 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`actioman_active_users should return buckets 1`] = `
+{
+  "1741292450":   Set {},
+  "1741292455":   Set {},
+  "1741292460":   Set {},
+  "1741292465":   Set {},
+  "1741292470":   Set {},
+  "1741292475":   Set {},
+}
+`;
