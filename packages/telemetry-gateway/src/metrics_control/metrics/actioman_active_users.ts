@@ -10,7 +10,7 @@ import fs from "fs/promises";
 import { glob } from "fs/promises";
 import * as os from "os";
 
-class Interval {
+class IntervalProcess {
   #started = Promise.withResolvers<void>();
   #paused = Promise.withResolvers<void>();
   #loop = this.#started.promise.then(async () => {
@@ -219,6 +219,8 @@ export class UniqueCounter {
     let itemsProcessed = 0;
 
     for (const [serieTime, bucket] of Object.entries(this.buckets)) {
+      if (bucket.size === 0) continue;
+
       const serieTimeFilePath = this.getSerieTimeFilePath(serieTime);
       await fs.mkdir(new URL("./", serieTimeFilePath), { recursive: true });
 
@@ -288,12 +290,17 @@ export const actioman_active_users = new client.Gauge({
 });
 
 const metricsState = new UniqueCounter({
-  secondsPerBucket: 5,
+  secondsPerBucket: 60,
+  volumePath: process.env.METRICS_PATH
+    ? new URL(
+        "./actioman_active_users/",
+        new URL(process.env.METRICS_PATH, "file:///"),
+      )
+    : undefined,
 }).start();
 
-new Interval(async () => {
+new IntervalProcess(async () => {
   const metrics = await metricsState.metrics();
-  console.log("🚀 ~ newInterval ~ metrics:", metrics);
   actioman_active_users.set(metrics);
 }, 3000).start();
 
