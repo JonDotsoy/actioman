@@ -1,4 +1,4 @@
-IMAGE:=gcr.io/actioman/telemetry-gateway:0.0.2
+IMAGE:=gcr.io/actioman/telemetry-gateway:0.0.4
 SA:="actioman-telemetry-collector@actioman.iam.gserviceaccount.com"
 
 .PHONY: all
