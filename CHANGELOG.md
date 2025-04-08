@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.1](https://github.com/JonDotsoy/actioman/compare/actioman-v0.8.0...actioman-v0.8.1) (2025-04-08)
+
+
+### Bug Fixes
+
+* **config:** add new config DTO for Actioman ([15961ef](https://github.com/JonDotsoy/actioman/commit/15961ef46c692ba57ca2c8ca5a3b39925998c2c5))
+* **config:** add new config DTO for Actioman ([7f67ead](https://github.com/JonDotsoy/actioman/commit/7f67ead4ffc3b7d2525119a314a96e3f6e35af0d))
+
 ## [0.8.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.7.0...actioman-v0.8.0) (2025-04-08)
 
 
