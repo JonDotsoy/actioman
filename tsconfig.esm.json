@@ -13,6 +13,7 @@
     "**/constants/TEST_RUN_EXPERIMENTAL.*",
     "**/http-router/DEFAULT_KEY.*",
     "**/http-router/DEFAULT_CERT.*",
-    "**/__*__/**"
+    "**/__*__/**",
+    ".common-specs"
   ]
 }
