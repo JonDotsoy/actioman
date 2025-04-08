@@ -4,10 +4,11 @@ import { HTTP2Lister } from "./http2-listener.js";
 import * as http2 from "http2";
 import { DEFAULT_CERT } from "./DEFAULT_CERT.js";
 import { DEFAULT_KEY } from "./DEFAULT_KEY.js";
+import { specOptions } from "../.common-specs/options.js";
 
 let port = 8080;
 
-describe("async HTTP2Lister", () => {
+describe.if(specOptions.isExperimentalFeatureEnabled)("async HTTP2Lister", () => {
   it("should return 200 for /__actions", async () => {
     await using cleanupTasks = new CleanupTasks();
 
