@@ -31,6 +31,10 @@
       "import": "./lib/esm/actions/actions.js",
       "types": "./lib/esm/actions/actions.d.ts"
     },
+    "./config": {
+      "import": "./lib/esm/config-file/dtos/config.dto.js",
+      "types": "./lib/esm/config-file/dtos/config.dto.d.ts"
+    },
     "./integrations/metrics": {
       "import": "./lib/esm/integrations/metrics.js",
       "types": "./lib/esm/integrations/metrics.d.ts"
