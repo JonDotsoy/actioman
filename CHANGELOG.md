@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.7.0...actioman-v0.8.0) (2025-04-08)
+
+
+### Features
+
+* **actions-target:** add experimental http2 support ([f7bb784](https://github.com/JonDotsoy/actioman/commit/f7bb784d1dc562a6e5d870c8e515bcadf749c6e4))
+* **telemetry-gateway:** add support for tracking active users ([6fce98d](https://github.com/JonDotsoy/actioman/commit/6fce98d2f891a30e20302cea692f151086fe9a22))
+* **telemetry-gateway:** add support for X-Forwarded-For header ([0e03bf6](https://github.com/JonDotsoy/actioman/commit/0e03bf6a9575826b09200472ce3b63005d445912))
+* **telemetry-gateway:** bump image version to 0.0.2 ([edf16b3](https://github.com/JonDotsoy/actioman/commit/edf16b34d97e0b84a5dfc8f825234f393519b0c4))
+* **telemetry-gateway:** Implement UniqueCounter for tracking active users ([9aebf81](https://github.com/JonDotsoy/actioman/commit/9aebf816653438054f8fdffc889e356f933ed618))
+* **telemetry-gateway:** remove default instance ID label ([8db6f7e](https://github.com/JonDotsoy/actioman/commit/8db6f7e12ce9588b68cbaffaf8390a48bb46ea52))
+
 ## [0.7.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.6.0...actioman-v0.7.0) (2025-03-05)
 
 
