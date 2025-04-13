@@ -13,7 +13,7 @@ describe("actioman serve command", () => {
   });
 
   afterEach(async () => {
-    // await killContainer()
+    await killContainer()
   });
 
   it("should execute the serve command successfully", async () => {
@@ -83,7 +83,7 @@ describe("actioman serve command", () => {
     await prepareScript("test_5", "actioman.config.ts");
     await prepareScript("test_5", "app.ts");
 
-    const childProcess = await actioman("serve", "app.ts").verbose();
+    const childProcess = await actioman("serve", "app.ts");
 
     await childProcess.waitForLog("calling actioman.config.ts");
     await childProcess.waitForLog("Server running at");
@@ -95,7 +95,7 @@ describe("actioman serve command", () => {
     await prepareScript("test_6", ".actioman.config.ts");
     await prepareScript("test_6", "app.ts");
 
-    const childProcess = await actioman("serve", "app.ts").verbose();
+    const childProcess = await actioman("serve", "app.ts");
 
     await childProcess.waitForLog("calling .actioman.config.ts");
     await childProcess.waitForLog("Server running at");
@@ -107,7 +107,7 @@ describe("actioman serve command", () => {
     await prepareScript("test_7", ".actioman.config.js");
     await prepareScript("test_7", "app.ts");
 
-    const childProcess = await actioman("serve", "app.ts").verbose();
+    const childProcess = await actioman("serve", "app.ts");
 
     await childProcess.waitForLog("calling .actioman.config.js");
     await childProcess.waitForLog("Server running at");
@@ -119,7 +119,7 @@ describe("actioman serve command", () => {
     await prepareScript("test_8", "actioman.config.js");
     await prepareScript("test_8", "app.ts");
 
-    const childProcess = await actioman("serve", "app.ts").verbose();
+    const childProcess = await actioman("serve", "app.ts");
 
     await childProcess.waitForLog("calling actioman.config.js");
     await childProcess.waitForLog("Server running at");
