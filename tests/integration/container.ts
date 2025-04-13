@@ -132,14 +132,14 @@ export const docker = (...args: string[]): DockerProcess => {
   });
 
   childProcess.stdout?.on("data", (data: Uint8Array) => {
-    if (verbose) process.stdout.write(data);
+    if (verbose.current) process.stdout.write(data);
     stdoutReadableController?.enqueue(data);
     stdoutBuffer.push(data);
     stdoutSubscriber.notify(data);
   });
 
   childProcess.stderr?.on("data", (data: Uint8Array) => {
-    if (verbose) process.stderr.write(data);
+    if (verbose.current) process.stderr.write(data);
     stderrReadableController?.enqueue(data);
     stderrBuffer.push(data);
     stderrSubscriber.notify(data);
