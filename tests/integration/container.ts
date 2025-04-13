@@ -18,6 +18,24 @@ await fs.mkdir(scriptsLocalPath, { recursive: true });
 const IMAGE_NAME = "oven/bun:latest";
 const CONTAINER_TIMEOUT_SECONDS = /* 10 minutes */ 10 * 60;
 
+class Subscriber<T> {
+  subscribers: ((value: T) => void)[] = [];
+  subscribe(callback: (value: T) => void) {
+    this.subscribers.push(callback);
+    return () => {
+      this.unsubscribe(callback);
+    };
+  }
+  unsubscribe(callback: (value: T) => void) {
+    this.subscribers = this.subscribers.filter((cb) => cb !== callback);
+  }
+  notify(value: T) {
+    for (const callback of this.subscribers) {
+      callback(value);
+    }
+  }
+}
+
 export const concatUint8Array = (buffers: Uint8Array[]): Uint8Array => {
   // Calculate total length
   const totalLength = buffers.reduce((acc, buffer) => acc + buffer.length, 0);
@@ -47,9 +65,24 @@ class DockerProcess {
   constructor(
     public readonly stdout: ReadableStream<Uint8Array>,
     public readonly stderr: ReadableStream<Uint8Array>,
+    public readonly stdoutSubscriber: Subscriber<Uint8Array>,
+    public readonly stderrSubscriber: Subscriber<Uint8Array>,
     public readonly exited: Promise<ExitedDockerProcess>,
     private readonly verboseStatus: { current: boolean },
   ) {}
+
+  async waitForLog(match: string) {
+    await new Promise((resolve, reject) => {
+      const stdoutUnsubscriber = this.stdoutSubscriber.subscribe((data) => {
+        const text = new TextDecoder().decode(data);
+        if (text.includes(match)) {
+          resolve(true);
+          stdoutUnsubscriber();
+        }
+      });
+    });
+    return this;
+  }
 
   verbose(): this {
     this.verboseStatus.current = true;
@@ -71,6 +104,8 @@ export const docker = (...args: string[]): DockerProcess => {
   const stderrReadable = new ReadableStream<Uint8Array>({
     start: (c) => (stderrReadableController = c),
   });
+  const stdoutSubscriber = new Subscriber<Uint8Array>();
+  const stderrSubscriber = new Subscriber<Uint8Array>();
 
   // console.log(`[Docker Command]: docker ${args.join(" ")}`);
   const childProcess = spawn("docker", args, {
@@ -82,12 +117,14 @@ export const docker = (...args: string[]): DockerProcess => {
     if (verbose) process.stdout.write(data);
     stdoutReadableController?.enqueue(data);
     stdoutBuffer.push(data);
+    stdoutSubscriber.notify(data);
   });
 
   childProcess.stderr?.on("data", (data: Uint8Array) => {
     if (verbose) process.stderr.write(data);
     stderrReadableController?.enqueue(data);
     stderrBuffer.push(data);
+    stderrSubscriber.notify(data);
   });
 
   const exited = new Promise<ExitedDockerProcess>((resolve, reject) => {
@@ -104,7 +141,14 @@ export const docker = (...args: string[]): DockerProcess => {
     });
   });
 
-  return new DockerProcess(stdoutReadable, stderrReadable, exited, verbose);
+  return new DockerProcess(
+    stdoutReadable,
+    stderrReadable,
+    stdoutSubscriber,
+    stderrSubscriber,
+    exited,
+    verbose,
+  );
 };
 
 export const getStoredContainerPID = async () => {
@@ -240,15 +284,21 @@ export const initializeCliActioman = async () => {
     throw new Error("No container found to execute command.");
   }
 
+  const shell = (...args: string[]) => docker("exec", pid, ...args);
+
+  const actioman = (...args: string[]) =>
+    docker(
+      "exec",
+      pid,
+      "bun",
+      "run",
+      new URL("src/cli/actioman.ts", actiomanSourceContainerPath).pathname,
+      ...args,
+    );
+
   return {
-    docker: (...args: string[]) =>
-      docker(
-        "exec",
-        pid,
-        "bun",
-        "run",
-        new URL("src/cli/actioman.ts", actiomanSourceContainerPath).pathname,
-        ...args,
-      ),
+    pid,
+    shell,
+    actioman,
   };
 };
