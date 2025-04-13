@@ -60,7 +60,7 @@ export const serve = async (args: string[], ctx: CliContextDTO) => {
       description: "Host to listen on",
     }),
     rule(flag("--http2"), isBooleanAt("http2"), {
-      description: "Use HTTP2",
+      description: "Use HTTP2 (experimental)",
     }),
     rule(flag("-h", "--help"), isBooleanAt("help"), {
       description: "Show help",
