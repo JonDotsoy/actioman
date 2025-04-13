@@ -2,14 +2,14 @@
 
 exports[`makeServerScript generates bootstrap script 1`] = `
 "// @ts-nocheck
-import { HTTPLister } from "./../../../../../../../http-router/http-listener.js";
-import { factory } from "./../../../../../../../configs/modules/factory.js";
-import { Configs } from "./../../../../../../../configs/configs.js";
+import { HTTPLister } from "./../http-router/http-listener.js";
+import { factory } from "./../configs/modules/factory.js";
+import { Configs } from "./../configs/configs.js";
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;
 const bootstrap = async () => {
-    const configs = Configs.fromModule(await factory.findOn(new URL("./../../../", import.meta.url).toString(), "actioman"));
-    const httpLister = await HTTPLister.fromModule(await import("./../../../actions.js"), configs);
+    const configs = Configs.fromModule(await factory.findOn(new URL("./../scripts/__tests__/__workspaces__/make-server-script/", import.meta.url).toString(), "actioman"));
+    const httpLister = await HTTPLister.fromModule(await import("./../scripts/__tests__/__workspaces__/make-server-script/actions.js"), configs);
     const url = await httpLister.listen(PORT, HOST);
     console.log(\`Server running at \${url.toString()}\`);
 };
