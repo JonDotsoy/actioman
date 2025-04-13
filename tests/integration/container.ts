@@ -3,17 +3,17 @@ import fs from "fs/promises";
 import fsSync from "fs";
 
 const containerPidPath = new URL(".container_pid", import.meta.url);
-const projectPath = new URL("../../", import.meta.url);
-const cachePath = new URL(".cache/", import.meta.url);
-const cachePPath = new URL("p/", cachePath);
-const scriptsPath = new URL("scripts/", import.meta.url);
+const projectLocalPath = new URL("../../", import.meta.url);
+const cacheLocalPath = new URL(".cache/", import.meta.url);
+const cacheProjectLocalPath = new URL("project/", cacheLocalPath);
+const scriptsLocalPath = new URL("scripts/", import.meta.url);
 const actiomanSourceContainerPath = new URL("file:///usr/share/actioman/");
 const bunSourceContainerPath = new URL("file:///root/.bun/");
 const appSourceContainerPath = new URL("file:///app/");
 
-await fs.mkdir(cachePath, { recursive: true });
-await fs.mkdir(cachePPath, { recursive: true });
-await fs.mkdir(scriptsPath, { recursive: true });
+await fs.mkdir(cacheLocalPath, { recursive: true });
+await fs.mkdir(cacheProjectLocalPath, { recursive: true });
+await fs.mkdir(scriptsLocalPath, { recursive: true });
 
 const IMAGE_NAME = "oven/bun:latest";
 const CONTAINER_TIMEOUT_SECONDS = /* 10 minutes */ 10 * 60;
@@ -41,7 +41,7 @@ type ExitedDockerProcess = {
   stderr: Uint8Array;
   stdoutText: string;
   stderrText: string;
-}
+};
 
 class DockerProcess {
   constructor(
@@ -49,12 +49,12 @@ class DockerProcess {
     public readonly stderr: ReadableStream<Uint8Array>,
     public readonly exited: Promise<ExitedDockerProcess>,
     private readonly verboseStatus: { current: boolean },
-  ) { }
+  ) {}
 
   verbose(): this {
     this.verboseStatus.current = true;
-    return this
-  };
+    return this;
+  }
 }
 
 type DockerOptions = {
@@ -65,10 +65,16 @@ export const docker = (...args: string[]): DockerProcess => {
   let verbose = { current: false };
   const stdoutBuffer: Uint8Array[] = [];
   const stderrBuffer: Uint8Array[] = [];
-  let stdoutReadableController: null | ReadableStreamDefaultController<Uint8Array> = null;
-  let stderrReadableController: null | ReadableStreamDefaultController<Uint8Array> = null;
-  const stdoutReadable = new ReadableStream<Uint8Array>({ start: c => stdoutReadableController = c });
-  const stderrReadable = new ReadableStream<Uint8Array>({ start: c => stderrReadableController = c });
+  let stdoutReadableController: null | ReadableStreamDefaultController<Uint8Array> =
+    null;
+  let stderrReadableController: null | ReadableStreamDefaultController<Uint8Array> =
+    null;
+  const stdoutReadable = new ReadableStream<Uint8Array>({
+    start: (c) => (stdoutReadableController = c),
+  });
+  const stderrReadable = new ReadableStream<Uint8Array>({
+    start: (c) => (stderrReadableController = c),
+  });
 
   // console.log(`[Docker Command]: docker ${args.join(" ")}`);
   const childProcess = spawn("docker", args, {
@@ -102,12 +108,7 @@ export const docker = (...args: string[]): DockerProcess => {
     });
   });
 
-  return new DockerProcess(
-    stdoutReadable,
-    stderrReadable,
-    exited,
-    verbose,
-  )
+  return new DockerProcess(stdoutReadable, stderrReadable, exited, verbose);
 };
 
 export const getStoredContainerPID = async () => {
@@ -155,18 +156,18 @@ export const bootstrapContainer = async () => {
     ...["./src", "./package.json", "./bun.lock"]
       .map((sourcePath) => [
         "-v",
-        `${new URL(sourcePath, projectPath).pathname}:${new URL(sourcePath, actiomanSourceContainerPath).pathname}`,
+        `${new URL(sourcePath, projectLocalPath).pathname}:${new URL(sourcePath, actiomanSourceContainerPath).pathname}`,
       ])
       .flat(),
     // Cache
     ...["./node_modules"]
       .map((sourcePath) => [
         "-v",
-        `${new URL(sourcePath, cachePPath).pathname}:${new URL(sourcePath, actiomanSourceContainerPath).pathname}`,
+        `${new URL(sourcePath, cacheProjectLocalPath).pathname}:${new URL(sourcePath, actiomanSourceContainerPath).pathname}`,
       ])
       .flat(),
     "-v",
-    `${new URL("bun_cache/", cachePath).pathname}:${bunSourceContainerPath.pathname}`,
+    `${new URL("bun_cache/", cacheLocalPath).pathname}:${bunSourceContainerPath.pathname}`,
     IMAGE_NAME,
     "sleep",
     `${CONTAINER_TIMEOUT_SECONDS}`,
@@ -199,12 +200,18 @@ export const killContainer = async () => {
   }
 };
 
-export const prepareScript = async (projectName: string, relativePath: string) => {
+export const prepareScript = async (
+  projectName: string,
+  relativePath: string,
+) => {
   const containerID = await getStoredContainerPID();
   if (!containerID) {
     throw new Error("No container found to prepare script.");
   }
-  const scriptLocalPath = new URL(relativePath, new URL(`./${projectName}/`, scriptsPath));
+  const scriptLocalPath = new URL(
+    relativePath,
+    new URL(`./${projectName}/`, scriptsLocalPath),
+  );
   const scriptContainerPath = new URL(relativePath, appSourceContainerPath);
   await fs.mkdir(new URL("./", scriptLocalPath), { recursive: true });
   if (!fsSync.existsSync(scriptLocalPath)) {
