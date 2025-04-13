@@ -18,6 +18,22 @@ await fs.mkdir(scriptsLocalPath, { recursive: true });
 const IMAGE_NAME = "oven/bun:latest";
 const CONTAINER_TIMEOUT_SECONDS = /* 10 minutes */ 10 * 60;
 
+const invokeSafely = <T>(cb: () => Promise<T>) => {
+  try {
+    return cb();
+  } catch (error) {
+    return undefined;
+  }
+};
+
+invokeSafely.sync = <T>(cb: () => T) => {
+  try {
+    return cb();
+  } catch (error) {
+    return undefined;
+  }
+};
+
 class Subscriber<T> {
   subscribers: ((value: T) => void)[] = [];
   subscribe(callback: (value: T) => void) {
@@ -59,6 +75,8 @@ type ExitedDockerProcess = {
   stderr: Uint8Array;
   stdoutText: string;
   stderrText: string;
+  stdoutJson: any | undefined;
+  stderrJson: any | undefined;
 };
 
 class DockerProcess {
@@ -137,6 +155,12 @@ export const docker = (...args: string[]): DockerProcess => {
         stderr: concatUint8Array(stderrBuffer),
         stdoutText: new TextDecoder().decode(concatUint8Array(stdoutBuffer)),
         stderrText: new TextDecoder().decode(concatUint8Array(stderrBuffer)),
+        stdoutJson: invokeSafely.sync(() =>
+          JSON.parse(new TextDecoder().decode(concatUint8Array(stdoutBuffer))),
+        ),
+        stderrJson: invokeSafely.sync(() =>
+          JSON.parse(new TextDecoder().decode(concatUint8Array(stderrBuffer))),
+        ),
       });
     });
   });
@@ -228,7 +252,7 @@ export const bootstrapContainer = async () => {
     pid,
     "bun",
     "install",
-  ).verbose();
+  ).exited;
 
   await storeContainerPID(pid);
 
