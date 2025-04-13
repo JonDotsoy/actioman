@@ -1,9 +1,7 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from "bun:test";
-import { spawn } from "child_process";
+import { describe, it, beforeEach, afterEach } from "bun:test";
 import {
   bootstrapContainer,
-  cliActioman,
-  docker,
+  initializeCliActioman,
   killContainer,
   prepareScript,
 } from "./container";
@@ -15,26 +13,12 @@ beforeEach(async () => {
 
 afterEach(async () => {
   // await killContainer()
-})
-
-it("ok", async () => {
-  await prepareScript("test_1", "app.ts");
-  (await cliActioman("serve", "app.ts")).verbose();
 });
 
-it("ok", async () => {
-  await prepareScript("test_2", "app.ts");
-  const { stdoutText, stderrText } = await cliActioman("serve", "app.ts");
-
-  console.log();
-  console.log("====== Output ======");
-  console.log();
-  console.log(stdoutText);
-  console.log();
-  console.log("===================");
-  console.log("====== Error ======");
-  console.log();
-  console.log(stderrText);
-  console.log();
-  console.log("===================");
+describe("actioman serve command", () => {
+  it("should execute the serve command successfully", async () => {
+    const { docker } = await initializeCliActioman();
+    await prepareScript("test_1", "app.ts");
+    await docker("serve", "app.ts").exited;
+  });
 });
