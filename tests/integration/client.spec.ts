@@ -13,7 +13,7 @@ describe("actioman serve command", () => {
   });
 
   afterEach(async () => {
-    await killContainer()
+    await killContainer();
   });
 
   it("should execute the serve command successfully", async () => {
