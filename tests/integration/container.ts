@@ -347,6 +347,19 @@ export const killContainer = async (options?: killContainerOptions) => {
 
   const containerID = stdoutText.trim();
 
+  // verification stopped
+  const { stdout: verifyStdout } = await docker(
+    "inspect",
+    containerID,
+    "--format",
+    "{{.State.Status}}",
+  ).exited;
+  const verifyStateStatus = new TextDecoder().decode(verifyStdout).trim();
+  if (verifyStateStatus !== "exited") {
+    error("Container not stopped with PID:", pid);
+    throw new Error("Container not stopped");
+  }
+
   if (containerID) {
     info("Killing the container with PID:", pid); // console.log("Container killed with ID:", containerID);
     await fs.unlink(containerPidPath);
