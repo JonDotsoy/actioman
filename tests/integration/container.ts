@@ -18,6 +18,19 @@ await fs.mkdir(scriptsLocalPath, { recursive: true });
 const IMAGE_NAME = "oven/bun:latest";
 const CONTAINER_TIMEOUT_SECONDS = /* 10 minutes */ 10 * 60;
 
+const logger = (enable: boolean = true) => {
+  return {
+    info: (...args: any[]) => {
+      if (!enable) return;
+      console.log(...args);
+    },
+    error: (...args: any[]) => {
+      if (!enable) return;
+      console.error(...args);
+    },
+  };
+};
+
 const invokeSafely = <T>(cb: () => Promise<T>) => {
   try {
     return cb();
@@ -221,12 +234,15 @@ type bootstrapContainerOptions = {
 export const bootstrapContainer = async (
   options?: bootstrapContainerOptions,
 ) => {
+  const { info, error } = logger(options?.verbose);
   const storedPID = await getStoredContainerPID();
 
   if (storedPID) {
-    // console.log("Container already running with PID:", storedPID);
+    info("Container already running with PID:", storedPID);
     return storedPID;
   }
+
+  info("Starting the container...");
 
   const { stdout } = await docker(
     "run",
@@ -262,6 +278,8 @@ export const bootstrapContainer = async (
 
   const pid = new TextDecoder().decode(stdout).trim();
 
+  info("Container started with PID:", pid);
+
   await docker(
     "exec",
     "-w",
@@ -271,25 +289,33 @@ export const bootstrapContainer = async (
     "install",
   ).verbose(options?.verbose).exited;
 
+  info("Container initialized with PID:", pid);
+
   await storeContainerPID(pid);
 
   return pid;
 };
 
-export const killContainer = async () => {
+type killContainerOptions = {
+  verbose?: boolean;
+};
+
+export const killContainer = async (options?: killContainerOptions) => {
+  const { info, error } = logger(options?.verbose);
   const pid = await getStoredContainerPID();
 
   if (!pid) {
-    // console.log("No container found to kill.");
+    info("No container found to kill.");
     return;
   }
 
+  info("Killing the container with PID:", pid);
   const { stdoutText } = await docker("stop", pid, "--timeout", "0").exited;
 
   const containerID = stdoutText.trim();
 
   if (containerID) {
-    // console.log("Container killed with ID:", containerID);
+    info("Killing the container with PID:", pid); // console.log("Container killed with ID:", containerID);
     await fs.unlink(containerPidPath);
   }
 };

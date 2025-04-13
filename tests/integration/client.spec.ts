@@ -8,12 +8,12 @@ import {
 
 describe("actioman serve command", () => {
   beforeEach(async () => {
-    await killContainer();
+    await killContainer({ verbose: true });
     await bootstrapContainer({ verbose: true });
   });
 
   afterEach(async () => {
-    await killContainer();
+    await killContainer({ verbose: true });
   });
 
   it("should execute the serve command successfully", async () => {
