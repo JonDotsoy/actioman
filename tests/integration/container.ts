@@ -146,6 +146,12 @@ export const docker = (...args: string[]): DockerProcess => {
   });
 
   const exited = new Promise<ExitedDockerProcess>((resolve, reject) => {
+    childProcess.on("error", (error) => {
+      stderrReadableController?.close();
+      stdoutReadableController?.close();
+      reject(error);
+    });
+
     childProcess.on("close", (code) => {
       stderrReadableController?.close();
       stdoutReadableController?.close();
