@@ -57,10 +57,6 @@ class DockerProcess {
   }
 }
 
-type DockerOptions = {
-  args: string[];
-};
-
 export const docker = (...args: string[]): DockerProcess => {
   let verbose = { current: false };
   const stdoutBuffer: Uint8Array[] = [];
@@ -151,8 +147,11 @@ export const bootstrapContainer = async () => {
     "run",
     "-d",
     "--rm",
+    "-p",
+    "30321:30321",
     "--workdir",
     appSourceContainerPath.pathname,
+    // volumes
     ...["./src", "./package.json", "./bun.lock"]
       .map((sourcePath) => [
         "-v",
@@ -168,6 +167,7 @@ export const bootstrapContainer = async () => {
       .flat(),
     "-v",
     `${new URL("bun_cache/", cacheLocalPath).pathname}:${bunSourceContainerPath.pathname}`,
+    // ----
     IMAGE_NAME,
     "sleep",
     `${CONTAINER_TIMEOUT_SECONDS}`,
@@ -175,7 +175,14 @@ export const bootstrapContainer = async () => {
 
   const pid = new TextDecoder().decode(stdout).trim();
 
-  await docker("exec", pid, "bun", "install");
+  await docker(
+    "exec",
+    "-w",
+    actiomanSourceContainerPath.pathname,
+    pid,
+    "bun",
+    "install",
+  ).verbose();
 
   await storeContainerPID(pid);
 
@@ -226,19 +233,22 @@ export const prepareScript = async (
   return scriptLocalPath;
 };
 
-export const cliActioman = async (...args: string[]) => {
+export const initializeCliActioman = async () => {
   const pid = await getStoredContainerPID();
 
   if (!pid) {
     throw new Error("No container found to execute command.");
   }
 
-  return await docker(
-    "exec",
-    pid,
-    "bun",
-    "run",
-    new URL("src/cli/actioman.ts", actiomanSourceContainerPath).pathname,
-    ...args,
-  );
+  return {
+    docker: (...args: string[]) =>
+      docker(
+        "exec",
+        pid,
+        "bun",
+        "run",
+        new URL("src/cli/actioman.ts", actiomanSourceContainerPath).pathname,
+        ...args,
+      ),
+  };
 };
