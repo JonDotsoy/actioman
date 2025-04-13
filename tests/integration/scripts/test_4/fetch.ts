@@ -11,7 +11,7 @@ console.log(
     ok: res.ok,
     statusCode: res.status,
     headers: res.headers.toJSON(),
-    body: await res.json(),
+    // body: await res.json(),
     text: await res.text(),
   }),
 );
