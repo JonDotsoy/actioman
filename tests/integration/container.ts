@@ -320,7 +320,7 @@ export const killContainer = async (options?: killContainerOptions) => {
     return;
   }
 
-  info("Killing the container with PID:", pid);
+  info("Killing the container with PID:", pid, "(by killContainer)");
   await docker(
     "exec",
     pid,
