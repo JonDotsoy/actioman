@@ -189,6 +189,8 @@ export const bootstrapContainer = async () => {
 
   const { stdout } = await docker(
     "run",
+    "--network",
+    "host",
     "-d",
     "--rm",
     "-p",
