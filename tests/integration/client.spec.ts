@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, afterEach } from "bun:test";
+import { describe, it, beforeEach, afterEach, expect } from "bun:test";
 import {
   bootstrapContainer,
   initializeCliActioman,
@@ -17,8 +17,16 @@ afterEach(async () => {
 
 describe("actioman serve command", () => {
   it("should execute the serve command successfully", async () => {
-    const { docker } = await initializeCliActioman();
+    const { shell, actioman } = await initializeCliActioman();
+
     await prepareScript("test_1", "app.ts");
-    await docker("serve", "app.ts").exited;
+    await prepareScript("test_1", "fetch.ts");
+
+    await actioman("serve", "app.ts").waitForLog("Server running at");
+
+    const { stdoutJson } = await shell("bun", "fetch.ts").exited;
+
+    expect(stdoutJson.ok).toBe(true);
+    expect(stdoutJson.statusCode).toBe(200);
   });
 });
