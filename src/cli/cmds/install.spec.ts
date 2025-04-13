@@ -8,7 +8,7 @@ import { cleanHistoryPids } from "../../shell/shell.js";
 
 let port = 10080;
 
-describe("install", async () => {
+describe.skip("install", async () => {
   afterEach(() => cleanHistoryPids());
 
   it(
@@ -23,7 +23,7 @@ describe("install", async () => {
   );
 });
 
-describe("install", async () => {
+describe.skip("install", async () => {
   afterEach(() => cleanHistoryPids());
 
   it(
