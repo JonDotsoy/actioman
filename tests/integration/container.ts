@@ -107,8 +107,8 @@ class DockerProcess {
     return this;
   }
 
-  verbose(): this {
-    this.verboseStatus.current = true;
+  verbose(verbose: boolean = true): this {
+    this.verboseStatus.current = verbose;
     return this;
   }
 }
@@ -214,7 +214,13 @@ export const storeContainerPID = async (pid: string) => {
   await fs.writeFile(containerPidPath, pid);
 };
 
-export const bootstrapContainer = async () => {
+type bootstrapContainerOptions = {
+  verbose?: boolean;
+};
+
+export const bootstrapContainer = async (
+  options?: bootstrapContainerOptions,
+) => {
   const storedPID = await getStoredContainerPID();
 
   if (storedPID) {
@@ -252,7 +258,7 @@ export const bootstrapContainer = async () => {
     IMAGE_NAME,
     "sleep",
     `${CONTAINER_TIMEOUT_SECONDS}`,
-  ).exited;
+  ).verbose(options?.verbose).exited;
 
   const pid = new TextDecoder().decode(stdout).trim();
 
@@ -263,7 +269,7 @@ export const bootstrapContainer = async () => {
     pid,
     "bun",
     "install",
-  ).exited;
+  ).verbose(options?.verbose).exited;
 
   await storeContainerPID(pid);
 

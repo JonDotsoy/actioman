@@ -9,7 +9,7 @@ import {
 describe("actioman serve command", () => {
   beforeEach(async () => {
     await killContainer();
-    await bootstrapContainer();
+    await bootstrapContainer({ verbose: true });
   });
 
   afterEach(async () => {
