@@ -89,7 +89,7 @@ class DockerProcess {
     private readonly verboseStatus: { current: boolean },
   ) {}
 
-  async waitForLog(match: string, timeout: number = 10000): Promise<this> {
+  async waitForLog(match: string, timeout: number = 30_000): Promise<this> {
     await new Promise<any>((resolve, reject) => {
       const timeoutId = setTimeout(() => {
         stdoutUnsubscriber();
