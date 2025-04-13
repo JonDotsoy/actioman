@@ -6,16 +6,16 @@ import {
   prepareScript,
 } from "./container";
 
-beforeEach(async () => {
-  await killContainer();
-  await bootstrapContainer();
-});
-
-afterEach(async () => {
-  // await killContainer()
-});
-
 describe("actioman serve command", () => {
+  beforeEach(async () => {
+    await killContainer();
+    await bootstrapContainer();
+  });
+
+  afterEach(async () => {
+    // await killContainer()
+  });
+
   it("should execute the serve command successfully", async () => {
     const { shell, actioman } = await initializeCliActioman();
 
