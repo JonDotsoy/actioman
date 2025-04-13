@@ -7,6 +7,13 @@ const projectLocalPath = new URL("../../", import.meta.url);
 const cacheLocalPath = new URL(".cache/", import.meta.url);
 const cacheProjectLocalPath = new URL("project/", cacheLocalPath);
 const scriptsLocalPath = new URL("scripts/", import.meta.url);
+const containerScriptsLocalPath = new URL(
+  "./container_scripts/",
+  import.meta.url,
+);
+const containerScriptsContainerPath = new URL(
+  "file:///root/container_scripts/",
+);
 const actiomanSourceContainerPath = new URL("file:///usr/share/actioman/");
 const bunSourceContainerPath = new URL("file:///root/.bun/");
 const appSourceContainerPath = new URL("file:///app/");
@@ -270,9 +277,13 @@ export const bootstrapContainer = async (
       .flat(),
     "-v",
     `${new URL("bun_cache/", cacheLocalPath).pathname}:${bunSourceContainerPath.pathname}`,
+    "-v",
+    `${containerScriptsLocalPath.pathname}:${containerScriptsContainerPath.pathname}`,
     // ----
     IMAGE_NAME,
-    "sleep",
+    // "sleep",
+    "sh",
+    `${new URL("bootstrap.sh", containerScriptsContainerPath).pathname}`,
     `${CONTAINER_TIMEOUT_SECONDS}`,
   ).verbose(options?.verbose).exited;
 
@@ -306,6 +317,28 @@ export const killContainer = async (options?: killContainerOptions) => {
 
   if (!pid) {
     info("No container found to kill.");
+    return;
+  }
+
+  info("Killing the container with PID:", pid);
+  await docker(
+    "exec",
+    pid,
+    "sh",
+    `${new URL("kill.sh", containerScriptsContainerPath).pathname}`,
+  ).exited;
+
+  // get container status
+  const { stdout } = await docker(
+    "inspect",
+    pid,
+    "--format",
+    "{{.State.Status}}",
+  ).exited;
+  const stateStatus = new TextDecoder().decode(stdout).trim();
+  if (stateStatus !== "running") {
+    info("Container already stopped with PID:", pid);
+    await fs.unlink(containerPidPath);
     return;
   }
 

@@ -13,8 +13,10 @@ describe("actioman serve command", () => {
   });
 
   afterEach(async () => {
-    await killContainer({ verbose: true });
+    // await killContainer({ verbose: true });
   });
+
+  it("test bootstrap container", async () => {});
 
   it("should execute the serve command successfully", async () => {
     const { shell, actioman } = await initializeCliActioman();
