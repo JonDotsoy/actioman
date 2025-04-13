@@ -70,7 +70,7 @@ describe("actioman serve command", () => {
     });
 
     await childProcess.waitForLog("Server running at");
-    const { stdoutJson } = await shell("bun", "fetch.ts").exited;
+    const { stdoutJson } = await shell("bun", "fetch.ts").verbose().exited;
     console.log("🚀 ~ it ~ stdoutJson:", stdoutJson);
 
     expect(stdoutPartial).toContain("POST /__actions/hello");
