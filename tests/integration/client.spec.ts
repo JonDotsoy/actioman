@@ -45,4 +45,32 @@ describe("actioman serve command", () => {
     expect(stdoutJson.ok).toBe(true);
     expect(stdoutJson.statusCode).toBe(200);
   });
+
+  it("should display help information", async () => {
+    const { shell, actioman } = await initializeCliActioman();
+
+    await prepareScript("test_3", "app.ts");
+
+    const { stdoutText } = await actioman("serve", "app.ts", "--help").exited;
+
+    expect(stdoutText).toContain("Usage:");
+  });
+
+  it("should execute the serve command and log hello action", async () => {
+    const { shell, actioman } = await initializeCliActioman();
+
+    await prepareScript("test_4", "app.ts");
+    await prepareScript("test_4", "fetch.ts");
+
+    const childProcess = await actioman("serve", "app.ts").verbose();
+
+    let stdoutPartial: string = "";
+    childProcess.stdoutSubscriber.subscribe((line) => {
+      stdoutPartial += line;
+    });
+
+    await childProcess.waitForLog("Server running at");
+
+    expect(stdoutPartial).toContain("POST /__actions/hello");
+  });
 });
