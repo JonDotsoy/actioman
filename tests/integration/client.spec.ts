@@ -76,4 +76,52 @@ describe("actioman serve command", () => {
     expect(stdoutJson.ok).toBe(true);
     expect(stdoutJson.body).toBe("Hello from app.ts");
   });
+
+  it("should execute the serve command with actioman.config.ts", async () => {
+    const { shell, actioman } = await initializeCliActioman();
+
+    await prepareScript("test_5", "actioman.config.ts");
+    await prepareScript("test_5", "app.ts");
+
+    const childProcess = await actioman("serve", "app.ts").verbose();
+
+    await childProcess.waitForLog("calling actioman.config.ts");
+    await childProcess.waitForLog("Server running at");
+  });
+
+  it("should load configuration from .actioman.config.ts file", async () => {
+    const { shell, actioman } = await initializeCliActioman();
+
+    await prepareScript("test_6", ".actioman.config.ts");
+    await prepareScript("test_6", "app.ts");
+
+    const childProcess = await actioman("serve", "app.ts").verbose();
+
+    await childProcess.waitForLog("calling .actioman.config.ts");
+    await childProcess.waitForLog("Server running at");
+  });
+
+  it("should load configuration from .actioman.config.js file", async () => {
+    const { shell, actioman } = await initializeCliActioman();
+
+    await prepareScript("test_7", ".actioman.config.js");
+    await prepareScript("test_7", "app.ts");
+
+    const childProcess = await actioman("serve", "app.ts").verbose();
+
+    await childProcess.waitForLog("calling .actioman.config.js");
+    await childProcess.waitForLog("Server running at");
+  });
+
+  it("should load configuration from actioman.config.js file", async () => {
+    const { shell, actioman } = await initializeCliActioman();
+
+    await prepareScript("test_8", "actioman.config.js");
+    await prepareScript("test_8", "app.ts");
+
+    const childProcess = await actioman("serve", "app.ts").verbose();
+
+    await childProcess.waitForLog("calling actioman.config.js");
+    await childProcess.waitForLog("Server running at");
+  });
 });
