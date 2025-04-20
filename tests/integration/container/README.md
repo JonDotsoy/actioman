@@ -11,7 +11,10 @@ These scripts are part of the core service logic for integration testing and sho
 
 ```ts
 import { describe, it, beforeAll, afterEach } from "bun:test";
-import { setupContainer, cleanupContainer } from "./container/src/setup_container";
+import {
+  setupContainer,
+  cleanupContainer,
+} from "./container/src/setup_container";
 
 beforeAll(async () => {
   await setupContainer();
@@ -147,11 +150,13 @@ Allows you to run and control background processes (such as sleep or arbitrary c
 ## Usage examples
 
 - Keep the container running for 5 minutes:
+
   ```sh
   ./entrypoint.sh sleep --sleep-time 300
   ```
 
 - Run a Node.js server in the background and then kill it:
+
   ```sh
   ./entrypoint.sh exec node server.js
   # ...when you want to stop it:
@@ -159,6 +164,7 @@ Allows you to run and control background processes (such as sleep or arbitrary c
   ```
 
 - Clean the application directory:
+
   ```sh
   ./entrypoint.sh clear-app-source
   ```
