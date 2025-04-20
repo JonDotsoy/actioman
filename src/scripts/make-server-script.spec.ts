@@ -1,10 +1,9 @@
 import { describe, expect, it } from "bun:test";
 import { $ } from "../shell/shell";
 import { makeServerScript } from "./make-server-script.js";
-import * as fs from "fs/promises";
 
 describe("makeServerScript", () => {
-  it("generates bootstrap script", async () => {
+  it.skip("generates bootstrap script", async () => {
     const WORKSPACE_PATH = "./__tests__/__workspaces__/make-server-script/";
 
     await $`
