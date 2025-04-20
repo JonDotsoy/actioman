@@ -9,35 +9,11 @@ import {
   rule,
   type Rule,
 } from "@jondotsoy/flags";
-import * as net from "net";
 import { makeServerScript } from "../../scripts/make-server-script.js";
 import { getCWD } from "../utils/get-cwd.js";
-import { spawn, spawnSync } from "child_process";
-import { ACTIOMAN_VERSION } from "../../actioman-version.js";
+import { spawn } from "child_process";
 import type { CliContextDTO } from "../dto/cli-context.dto.js";
 
-/** @deprecated Use nextAvailablePort instead. */
-const nextPort = async () => {
-  let porposalPort = 30320;
-  while (true) {
-    porposalPort++;
-    const port = await new Promise<number | null>((resolve) => {
-      const connectiong = net.connect({
-        host: "localhost",
-        port: porposalPort,
-      });
-
-      connectiong.addListener("connect", () => {
-        resolve(null);
-        connectiong.destroy();
-      });
-      connectiong.addListener("error", (err) => {
-        if ("code" in err && err.code === "ECONNREFUSED") resolve(porposalPort);
-      });
-    });
-    if (typeof port === "number") return port;
-  }
-};
 
 export const serve = async (args: string[], ctx: CliContextDTO) => {
   ctx.pendingMessage.command = "serve";
@@ -52,22 +28,22 @@ export const serve = async (args: string[], ctx: CliContextDTO) => {
   };
   const rules: Rule<Options>[] = [
     rule(flag("--cwd"), isStringAt("cwd"), {
-      description: "Current working directory",
+      description: "Set the current working directory for the server process",
     }),
     rule(flag("-p", "--port"), isNumberAt("port"), {
-      description: "Port to listen on",
+      description: "Specify the port for the server to listen on (default: 30321)",
     }),
     rule(flag("-h", "--host"), isStringAt("host"), {
-      description: "Host to listen on",
+      description: "Specify the host address for the server (default: localhost)",
     }),
     rule(flag("--http2"), isBooleanAt("http2"), {
-      description: "Use HTTP2 (experimental)",
+      description: "Enable HTTP2 support (experimental feature)",
     }),
     rule(flag("-h", "--help"), isBooleanAt("help"), {
-      description: "Show help",
+      description: "Display help information for the 'serve' command",
     }),
     rule(argument(), isStringAt("actionFile"), {
-      description: "Actions file",
+      description: "Path to the actions file to be served",
       category: "argument",
       names: ["action file"],
     }),

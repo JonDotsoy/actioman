@@ -32,6 +32,14 @@
       "import": "./lib/esm/actions/actions.js",
       "types": "./lib/esm/actions/actions.d.ts"
     },
+    "./http-listener": {
+      "import": "./lib/esm/src/http-router/http-listener.js",
+      "types": "./lib/esm/src/http-router/http-listener.d.ts"
+    },
+    "./http-router": {
+      "import": "./lib/esm/src/http-router/http-router.js",
+      "types": "./lib/esm/src/http-router/http-router.d.ts"
+    },
     "./config": {
       "import": "./lib/esm/config-file/dtos/config.dto.js",
       "types": "./lib/esm/config-file/dtos/config.dto.d.ts"
