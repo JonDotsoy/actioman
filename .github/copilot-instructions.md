@@ -13,6 +13,7 @@ Use the following format for your commit messages:
 ```
 
 ## Allowed types
+
 - feat: A new feature
 - fix: A bug fix
 - docs: Documentation changes
