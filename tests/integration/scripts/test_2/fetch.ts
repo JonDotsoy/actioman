@@ -1,4 +1,4 @@
-const res = await fetch("http://localhost:40322/__actions");
+const res = await fetch("http://localhost:30333/__actions");
 
 console.log(
   JSON.stringify({

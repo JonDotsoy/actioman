@@ -10,7 +10,7 @@ import type { initializeCliActiomanOptions } from "./initialize_cli_actioman_opt
  * Provides helpers for running shell, entrypoint, exec, killExec, and actioman commands in the container.
  *
  * @param {initializeCliActiomanOptions} [options] - Optional initialization options.
- * @returns {Promise<{ pid: string, shell: Function, actioman: Function, entrypoint: Function, exec: Function, killExec: Function }>} CLI helpers and container PID.
+ * @returns {Promise<{ pid: string, shell: Function, actioman: Function, entrypoint: Function, exec: Function, killExec: Function, clearAppSource: Function }>} CLI helpers and container PID.
  */
 export const initializeActiomanCli = async (
   options?: initializeCliActiomanOptions,
@@ -34,6 +34,7 @@ export const initializeActiomanCli = async (
 
   const exec = (...args: string[]) => entrypoint("exec", ...args);
   const killExec = (...args: string[]) => entrypoint("kill-exec", ...args);
+  
 
   const actioman = (...args: string[]) =>
     exec(
@@ -43,6 +44,8 @@ export const initializeActiomanCli = async (
       ...args,
     );
 
+  const clearAppSource = (...args: string[]) => entrypoint("clear-app-source", ...args);
+
   return {
     pid,
     shell,
@@ -50,5 +53,6 @@ export const initializeActiomanCli = async (
     entrypoint,
     exec,
     killExec,
+    clearAppSource,
   };
 };

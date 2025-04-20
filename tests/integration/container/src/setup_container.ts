@@ -21,6 +21,7 @@ export const setupContainer = async () => {
 };
 
 export const cleanupContainer = async () => {
-  const { killExec } = await initializeActiomanCli({});
+  const { killExec, clearAppSource } = await initializeActiomanCli({});
   await killExec().exited;
+  await clearAppSource().exited;
 };

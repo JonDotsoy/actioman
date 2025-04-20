@@ -7,7 +7,7 @@ set -u  # Treat unset variables as an error
 # Global variable for the PID file path
 SLEEP_PID_FILE="/tmp/sleep_pid.tmp"
 COMMAND_PIDS_FILE="/tmp/command_pid.tmp"
-
+APP_SOURCE_DIR="/app"
 
 sleep_and_wait() {
   # Check if a sleep process is already running
@@ -126,8 +126,19 @@ kill_all_exec_commands() {
   done < "$COMMAND_PIDS_FILE"
 }
 
+clear_app_source_dir() {
+  # Remove all files and directories inside $APP_SOURCE_DIR, but not the directory itself
+  if [ -d "$APP_SOURCE_DIR" ]; then
+    rm -rf "$APP_SOURCE_DIR"/* "$APP_SOURCE_DIR"/.[!.]* "$APP_SOURCE_DIR"/..?* 2>/dev/null || true
+    echo "All files in $APP_SOURCE_DIR have been deleted."
+  else
+    echo "$APP_SOURCE_DIR does not exist."
+    return 1
+  fi
+}
+
 if [ -z "${1:-}" ]; then
-  echo "Error: No command provided. Available commands are: sleep, kill, kill-bun."
+  echo "Error: No command provided. Available commands are: sleep, kill, kill-bun, exec, kill-exec, clear-app-source."
   exit 1
 fi
 
@@ -152,8 +163,12 @@ case "$1" in
     shift
     kill_all_exec_commands "$@"
     ;;
+  clear-app-source)
+    shift
+    clear_app_source_dir "$@"
+    ;;
   *)
-    echo "Invalid command. Available commands are: sleep, kill, kill-bun, exec, kill-exec."
+    echo "Invalid command. Available commands are: sleep, kill, kill-bun, exec, kill-exec, clear-app-source."
     exit 1
     ;;
 esac

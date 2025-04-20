@@ -1,4 +1,4 @@
-import { describe, it, beforeAll, afterAll, expect, afterEach } from "bun:test";
+import { describe, it, beforeAll, afterAll, expect, afterEach, beforeEach } from "bun:test";
 import {
   cleanupContainer,
   setupContainer,
@@ -10,11 +10,12 @@ beforeAll(async () => {
   await setupContainer();
 });
 
-afterAll(async () => {
-  await cleanupContainer();
-});
 
 describe("actioman serve command", () => {
+  beforeEach(async () => {
+    await cleanupContainer();
+  });
+
   it("should execute the serve command successfully", async () => {
     const { shell, actioman } = await initializeActiomanCli();
 
@@ -33,9 +34,9 @@ describe("actioman serve command", () => {
     const { shell, actioman } = await initializeActiomanCli();
 
     await prepareScript("test_2", "app.ts");
-    await prepareScript("test_2", "fetch.ts");
+  await prepareScript("test_2", "fetch.ts");
 
-    await actioman("serve", "app.ts", "--port", "40322").waitForLog(
+    await actioman("serve", "app.ts", "--port", "30333").waitForLog(
       "Server running at",
     );
 
@@ -69,12 +70,12 @@ describe("actioman serve command", () => {
     });
 
     await childProcess.waitForLog("Server running at");
-    const { stdoutJson } = await shell("bun", "fetch.ts").verbose().exited;
-    console.log("🚀 ~ it ~ stdoutJson:", stdoutJson);
+
+    const { stdoutJson } = await shell("bun", "fetch.ts").exited;
 
     expect(stdoutPartial).toContain("POST /__actions/hello");
     expect(stdoutJson.ok).toBe(true);
-    expect(stdoutJson.body).toBe("Hello from app.ts");
+    expect(stdoutJson.text).toBe(JSON.stringify("Hello from app.ts"));
   });
 
   it("should execute the serve command with actioman.config.ts", async () => {
