@@ -16,6 +16,7 @@ import { storeContainerPID } from "./store_container_pid";
 import { PROJECT_SOURCE_PATHS } from "./constants/project_source_paths";
 import { PROJECT_CACHE_PATHS } from "./project_cache_paths";
 import { DEFAULT_VERBOSE } from "./constants/default_verbose";
+import { ACTIOMAN_CONTAINER_PORTS } from "./constants/container_ports";
 
 /**
  * Boots up a Docker container for integration testing, installs dependencies, and stores its PID.
@@ -28,8 +29,12 @@ import { DEFAULT_VERBOSE } from "./constants/default_verbose";
  * @returns {Promise<string>} The PID of the started container.
  */
 export const bootstrapContainer = async (
-  options: bootstrapContainerOptions = { verbose: DEFAULT_VERBOSE },
+  options: bootstrapContainerOptions = {},
 ) => {
+  const verbose = options?.verbose ?? DEFAULT_VERBOSE;
+  const containerTimeoutSeconds =
+    options?.timeoutSeconds ?? CONTAINER_TIMEOUT_SECONDS;
+
   const { info, error } = logger(options?.verbose);
   const storedPID = await getStoredContainerPID();
 
@@ -49,7 +54,7 @@ export const bootstrapContainer = async (
   /*
    * Docker arguments for container ports
    */
-  for (const port of Object.values(CONTAINER_TIMEOUT_SECONDS)) {
+  for (const port of Object.values(ACTIOMAN_CONTAINER_PORTS)) {
     dockerArgs.push("-p", `${port}:${port}`);
   }
 
@@ -95,7 +100,7 @@ export const bootstrapContainer = async (
     `${new URL("entrypoint.sh", containerScriptsContainerPath).pathname}`,
     "sleep",
     "--sleep-time",
-    `${CONTAINER_TIMEOUT_SECONDS}`,
+    `${containerTimeoutSeconds}`,
   ).verbose(options?.verbose).exited;
 
   const containerPid = new TextDecoder().decode(stdout).trim();
