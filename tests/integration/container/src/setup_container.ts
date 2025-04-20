@@ -18,6 +18,8 @@ export const setupContainer = async () => {
   await fs.mkdir(scriptsLocalPath, { recursive: true });
 
   await bootstrapContainer();
+  const { actiomanSourceContainerShell } = await initializeActiomanCli({});
+  await actiomanSourceContainerShell("npm", "pack").verbose().exited;
 };
 
 export const cleanupContainer = async () => {
