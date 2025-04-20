@@ -14,9 +14,7 @@ afterAll(async () => {
   await cleanupContainer();
 });
 
-describe.skip("actioman serve command", () => {
-  it("test bootstrap container", async () => {});
-
+describe("actioman serve command", () => {
   it("should execute the serve command successfully", async () => {
     const { shell, actioman } = await initializeActiomanCli();
 

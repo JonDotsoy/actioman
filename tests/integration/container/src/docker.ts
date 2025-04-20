@@ -4,7 +4,7 @@ import { Subscriber } from "./utils/subscriber";
 import type { ExitedDockerProcess } from "./dtos/exited_docker_process";
 import { concatUint8Array } from "./utils/concat_uint8_array";
 import { invokeSafely } from "./utils/invoke_safely";
-import { DEFAULT_VERBOSE } from "../../../../src/constants/DEFAULT_VERBOSE";
+import { DEFAULT_VERBOSE } from "./constants/default_verbose";
 
 /**
  * Spawns a Docker process and provides access to its output streams and exit status.

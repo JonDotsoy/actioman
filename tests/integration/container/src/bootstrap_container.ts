@@ -15,6 +15,7 @@ import { logger } from "./utils/logger";
 import { storeContainerPID } from "./store_container_pid";
 import { PROJECT_SOURCE_PATHS } from "./constants/project_source_paths";
 import { PROJECT_CACHE_PATHS } from "./project_cache_paths";
+import { DEFAULT_VERBOSE } from "./constants/default_verbose";
 
 /**
  * Boots up a Docker container for integration testing, installs dependencies, and stores its PID.
@@ -27,7 +28,7 @@ import { PROJECT_CACHE_PATHS } from "./project_cache_paths";
  * @returns {Promise<string>} The PID of the started container.
  */
 export const bootstrapContainer = async (
-  options?: bootstrapContainerOptions,
+  options: bootstrapContainerOptions = { verbose: DEFAULT_VERBOSE },
 ) => {
   const { info, error } = logger(options?.verbose);
   const storedPID = await getStoredContainerPID();
