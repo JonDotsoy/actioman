@@ -1,7 +1,6 @@
 import { HTTPRouter } from "./http-router.js";
 import type { ConfigsModule } from "../configs/configs.js";
 import { sanitizeHostname } from "./utils/sanitize-hostname.js";
-import { findNextPort } from "./utils/find-next-port.js";
 import * as http2 from "http2";
 import { requestHttp2ToRequest } from "./utils/request-http2-to-request.js";
 
@@ -99,7 +98,7 @@ export class HTTP2Lister {
     };
 
     const portToListen =
-      port ?? this.configs?.server?.port ?? (await findNextPort());
+      port ?? this.configs?.server?.port ?? 30321;
     const hostnameToListen = hostname ?? this.configs?.server?.host ?? "::";
 
     const url = await new Promise<URL>((resolve) => {

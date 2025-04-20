@@ -3,7 +3,6 @@ import * as https from "https";
 import { HTTPRouter } from "./http-router.js";
 import type { ConfigsModule } from "../configs/configs.js";
 import { sanitizeHostname } from "./utils/sanitize-hostname.js";
-import { findNextPort } from "./utils/find-next-port.js";
 
 type ListenOptions = {
   silent: boolean;
@@ -65,7 +64,7 @@ export class HTTPLister {
       console.log(message);
     };
 
-    const portToListen = port ?? (await findNextPort());
+    const portToListen = port ?? 30321;
     const hostnameToListen = hostname ?? "::";
 
     const url = await new Promise<URL>((resolve) => {

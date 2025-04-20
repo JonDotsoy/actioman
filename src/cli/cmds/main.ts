@@ -22,16 +22,16 @@ export const main = async (args: string[], ctx: CliContextDTO) => {
   };
   const rules: Rule<Options>[] = [
     rule(command("serve"), restArgumentsAt("serve"), {
-      description: "Start server",
+      description: "Run the Actioman server to handle actions and APIs",
     }),
     rule(command("add"), restArgumentsAt("add"), {
-      description: "Start server",
+      description: "Add a new action or integration to your project",
     }),
     rule(command("install"), restArgumentsAt("install"), {
-      description: "Prepare remotes for use",
+      description: "Install and prepare remote dependencies for use",
     }),
     rule(flag("-h", "--help"), isBooleanAt("help"), {
-      description: "Show help",
+      description: "Display help information for available commands",
     }),
   ];
   const options = flags(args, {}, rules);
