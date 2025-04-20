@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.9.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.8.1...actioman-v0.9.0) (2025-04-20)
+
+
+### Features
+
+* add build/prepare_workflow branch to release trigger ([54f2074](https://github.com/JonDotsoy/actioman/commit/54f2074b0a2d40831ffb2fb44d42bebdf6429b58))
+
+
+### Bug Fixes
+
+* ensure conditional check for PR creation is explicitly true ([4ab9200](https://github.com/JonDotsoy/actioman/commit/4ab9200720bb9e80a2ec55cfcfaf5e85c17f6d9e))
+* update workflow reference to use local bun-release-package.yml ([4494272](https://github.com/JonDotsoy/actioman/commit/4494272af5ab0694a3d70aba8db9b818b1427bea))
+
 ## [0.8.1](https://github.com/JonDotsoy/actioman/compare/actioman-v0.8.0...actioman-v0.8.1) (2025-04-08)
 
 
