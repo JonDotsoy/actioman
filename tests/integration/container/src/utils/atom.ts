@@ -35,7 +35,7 @@ export class Atom<T> {
     this.subscribers.add(fn);
     return () => {
       this.unsubscribe(fn);
-    }
+    };
   }
 
   subscribe(fn: () => any) {
@@ -43,7 +43,7 @@ export class Atom<T> {
     fn();
     return () => {
       this.unsubscribe(fn);
-    }
+    };
   }
   unsubscribe(fn: () => any) {
     this.subscribers.delete(fn);
@@ -73,4 +73,4 @@ export class Atom<T> {
  */
 export const atom = <T>(init: T) => {
   return new Atom(init);
-}
+};

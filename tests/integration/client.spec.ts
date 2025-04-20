@@ -1,4 +1,12 @@
-import { describe, it, beforeAll, afterAll, expect, afterEach, beforeEach } from "bun:test";
+import {
+  describe,
+  it,
+  beforeAll,
+  afterAll,
+  expect,
+  afterEach,
+  beforeEach,
+} from "bun:test";
 import {
   cleanupContainer,
   setupContainer,
@@ -9,7 +17,6 @@ import { initializeActiomanCli } from "./container/src/initialize_actioman_cli";
 beforeAll(async () => {
   await setupContainer();
 });
-
 
 describe("actioman serve command", () => {
   beforeEach(async () => {
@@ -34,7 +41,7 @@ describe("actioman serve command", () => {
     const { shell, actioman } = await initializeActiomanCli();
 
     await prepareScript("test_2", "app.ts");
-  await prepareScript("test_2", "fetch.ts");
+    await prepareScript("test_2", "fetch.ts");
 
     await actioman("serve", "app.ts", "--port", "30333").waitForLog(
       "Server running at",

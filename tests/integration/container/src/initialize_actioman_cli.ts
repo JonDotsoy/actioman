@@ -34,7 +34,6 @@ export const initializeActiomanCli = async (
 
   const exec = (...args: string[]) => entrypoint("exec", ...args);
   const killExec = (...args: string[]) => entrypoint("kill-exec", ...args);
-  
 
   const actioman = (...args: string[]) =>
     exec(
@@ -44,7 +43,8 @@ export const initializeActiomanCli = async (
       ...args,
     );
 
-  const clearAppSource = (...args: string[]) => entrypoint("clear-app-source", ...args);
+  const clearAppSource = (...args: string[]) =>
+    entrypoint("clear-app-source", ...args);
 
   return {
     pid,
