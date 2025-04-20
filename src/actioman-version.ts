@@ -1,1 +1,1 @@
-export const ACTIOMAN_VERSION = "0.8.3";
+export const ACTIOMAN_VERSION = "0.8.4";
