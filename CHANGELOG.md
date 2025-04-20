@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.2](https://github.com/JonDotsoy/actioman/compare/actioman-v0.8.1...actioman-v0.8.2) (2025-04-20)
+
+
+### Bug Fixes
+
+* ensure conditional check for PR creation is explicitly true ([#90](https://github.com/JonDotsoy/actioman/issues/90)) ([b11b64c](https://github.com/JonDotsoy/actioman/commit/b11b64cb410afa33758d2779077452af1cd1550b))
+
 ## [0.8.1](https://github.com/JonDotsoy/actioman/compare/actioman-v0.8.0...actioman-v0.8.1) (2025-04-08)
 
 
