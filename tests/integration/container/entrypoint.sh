@@ -9,6 +9,22 @@ SLEEP_PID_FILE="/tmp/sleep_pid.tmp"
 COMMAND_PIDS_FILE="/tmp/command_pid.tmp"
 APP_SOURCE_DIR="/app"
 
+check_pid_status() {
+  if [ $# -eq 0 ]; then
+    echo "Error: No PID provided."
+    return 1
+  fi
+
+  PID="$1"
+  if kill -0 "$PID" 2>/dev/null; then
+    echo "Process $PID is running."
+    return 0
+  else
+    echo "Process $PID is not running."
+    return 1
+  fi
+}
+
 sleep_and_wait() {
   # Check if a sleep process is already running
   if [ -f "$SLEEP_PID_FILE" ]; then
@@ -51,7 +67,9 @@ sleep_and_wait() {
   wait $!
 }
 
+# Deprecated: Use check_pid_status or other process management functions instead.
 kill_process_by_pid_file() {
+  echo "Warning: kill_process_by_pid_file is deprecated. Use check_pid_status or other process management functions instead."
   # Check if the PID file exists
   PID_FILE="$SLEEP_PID_FILE"
 
@@ -120,7 +138,7 @@ kill_all_exec_commands() {
   while IFS= read -r PID; do
     if [ -n "$PID" ]; then
       if kill -0 "$PID" 2>/dev/null; then
-        kill "$PID" && echo "Process $PID has been killed."
+        kill -9 "$PID" && echo "Process $PID has been killed."
       fi
     fi
   done < "$COMMAND_PIDS_FILE"

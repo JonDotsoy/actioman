@@ -19,7 +19,7 @@ beforeAll(async () => {
 });
 
 describe("actioman serve command", () => {
-  beforeEach(async () => {
+  afterEach(async () => {
     await cleanupContainer();
   });
 
