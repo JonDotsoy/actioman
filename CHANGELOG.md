@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.3](https://github.com/JonDotsoy/actioman/compare/actioman-v0.8.2...actioman-v0.8.3) (2025-04-20)
+
+
+### Bug Fixes
+
+* streamline server port handling and enhance command descriptions ([#95](https://github.com/JonDotsoy/actioman/issues/95)) ([b0bd75c](https://github.com/JonDotsoy/actioman/commit/b0bd75c88d9e7a17ce6d438b3a22367ccb6850c4))
+
 ## [0.8.2](https://github.com/JonDotsoy/actioman/compare/actioman-v0.8.1...actioman-v0.8.2) (2025-04-20)
 
 
