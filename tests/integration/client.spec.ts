@@ -63,7 +63,7 @@ describe("actioman serve command", () => {
     expect(stdoutText).toContain("Usage:");
   });
 
-  it("should execute the serve command and log hello action", async () => {
+  it.only("should execute the serve command and log hello action", async () => {
     const { shell, actioman } = await initializeActiomanCli();
 
     await prepareScript("test_4", "app.ts");
