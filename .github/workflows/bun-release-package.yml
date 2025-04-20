@@ -1,0 +1,58 @@
+name: Bun Release Package
+
+on:
+  workflow_call:
+    outputs:
+      release_created:
+        description: Release created by release-please
+        value: ${{ jobs.release-please.outputs.release_created }}
+      prs_created:
+        value: ${{ jobs.release-please.outputs.prs_created }}
+      pr:
+        value: ${{ jobs.release-please.outputs.pr }}
+    secrets:
+      NPM_TOKEN:
+        required: true
+        description: NPM Token to publish package
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release-please.outputs.release_created }}
+      prs_created: ${{ steps.release-please.outputs.prs_created }}
+      pr: ${{ steps.release-please.outputs.pr }}
+    steps:
+      - name: release
+        id: release-please
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target-branch: build/prepare_workflow
+
+  delivery-npm:
+    runs-on: ubuntu-latest
+    if: needs.release-please.outputs.release_created
+    needs:
+      - release-please
+    environment:
+      name: npm
+      url: ${{ steps.generate_page_url.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          registry-url: "https://registry.npmjs.org"
+      - run: bun install
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - id: generate_page_url
+        run: |
+          pkg_name=$(cat package.json | jq '.name' -r)
+          pkg_version=$(cat package.json | jq '.version' -r)
+          echo "page_url=https://www.npmjs.com/package/${pkg_name}/v/${pkg_version}" > "$GITHUB_OUTPUT"

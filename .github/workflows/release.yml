@@ -8,7 +8,7 @@ on:
 
 jobs:
   release:
-    uses: jondotsoy/jondotsoy/.github/workflows/bun-release-package.yml@v1
+    uses: ./.github/workflows/bun-release-package.yml
     permissions:
       contents: write
       pull-requests: write
