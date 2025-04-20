@@ -69,7 +69,7 @@ describe("actioman serve command", () => {
     await prepareScript("test_4", "app.ts");
     await prepareScript("test_4", "fetch.ts");
 
-    const childProcess = await actioman("serve", "app.ts");
+    const childProcess = await actioman("serve", "app.ts").verbose();
 
     let stdoutPartial: string = "";
     childProcess.stdoutSubscriber.subscribe((line) => {
@@ -78,7 +78,7 @@ describe("actioman serve command", () => {
 
     await childProcess.waitForLog("Server running at");
 
-    const { stdoutJson } = await shell("bun", "fetch.ts").exited;
+    const { stdoutJson } = await shell("bun", "fetch.ts").verbose().exited;
 
     expect(stdoutPartial).toContain("POST /__actions/hello");
     expect(stdoutJson.ok).toBe(true);
