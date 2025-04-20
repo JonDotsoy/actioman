@@ -4,11 +4,10 @@ on:
   push:
     branches:
       - develop
-      - build/prepare_workflow
 
 jobs:
   release:
-    uses: ./.github/workflows/bun-release-package.yml
+    uses: jondotsoy/jondotsoy/.github/workflows/bun-release-package.yml@v1
     permissions:
       contents: write
       pull-requests: write
