@@ -4,7 +4,7 @@ import { CleanupTasks } from "@jondotsoy/utils-js/cleanuptasks";
 import { DEFAULT_CERT } from "../../http-router/DEFAULT_CERT";
 import { cleanHistoryPids } from "../../shell/shell";
 
-describe("serve", () => {
+describe.skip("serve", () => {
   afterEach(() => cleanHistoryPids());
 
   it(

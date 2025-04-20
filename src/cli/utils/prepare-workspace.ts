@@ -61,6 +61,7 @@ class CacheDir {
   }
 }
 
+/** @deprecated */
 export class PrepareWorkspace {
   cacheDir = new URL(
     "__prepare-workspace/caches/",

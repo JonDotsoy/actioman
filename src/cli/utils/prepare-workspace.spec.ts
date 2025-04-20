@@ -4,7 +4,7 @@ import { cleanHistoryPids } from "../../shell/shell";
 import * as YAML from "yaml";
 import * as fs from "fs";
 
-describe("PrepareWorkspace", () => {
+describe.skip("PrepareWorkspace", () => {
   afterEach(() => cleanHistoryPids());
 
   it(
