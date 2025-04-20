@@ -1,1 +1,1 @@
-export * from "./src/container.js";
+export { cleanupContainer, setupContainer } from "./src/setup_container";
