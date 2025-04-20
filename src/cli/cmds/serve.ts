@@ -16,6 +16,7 @@ import { spawn, spawnSync } from "child_process";
 import { ACTIOMAN_VERSION } from "../../actioman-version.js";
 import type { CliContextDTO } from "../dto/cli-context.dto.js";
 
+/** @deprecated Use nextAvailablePort instead. */
 const nextPort = async () => {
   let porposalPort = 30320;
   while (true) {
@@ -74,7 +75,7 @@ export const serve = async (args: string[], ctx: CliContextDTO) => {
   const options = flags(args, {}, rules);
 
   const actionFile = options.actionFile;
-  const port = options.port ?? (await nextPort());
+  const port = options.port ?? 30321;
   const host = options.host ?? "localhost";
   const cwd = getCWD(options.cwd);
   const http2 = options.http2 ?? false;
