@@ -25,6 +25,23 @@ check_pid_status() {
   fi
 }
 
+# Mata todos los procesos numéricos en /proc excepto el PID 1 y el PID guardado en SLEEP_PID_FILE
+kill_all_pids_excluding_1() {
+  # Leer el PID del archivo SLEEP_PID_FILE si existe
+  SLEEP_PID=""
+  if [ -f "$SLEEP_PID_FILE" ]; then
+    SLEEP_PID=$(cat "$SLEEP_PID_FILE" 2>/dev/null || echo "")
+  fi
+  for pid in $(ls /proc | grep '^[0-9]\+$' | grep -v '^1$'); do
+    # Evitar el PID guardado en SLEEP_PID_FILE
+    if [ -n "$SLEEP_PID" ] && [ "$pid" = "$SLEEP_PID" ]; then
+      echo "Skipping sleep PID $pid"
+      continue
+    fi
+    kill -9 "$pid" 2>/dev/null && echo "Killed PID $pid" || echo "Failed to kill PID $pid"
+  done
+}
+
 sleep_and_wait() {
   # Check if a sleep process is already running
   if [ -f "$SLEEP_PID_FILE" ]; then
@@ -134,14 +151,7 @@ kill_all_exec_commands() {
     return 1
   fi
 
-  # Read the PIDs from the file
-  while IFS= read -r PID; do
-    if [ -n "$PID" ]; then
-      if kill -0 "$PID" 2>/dev/null; then
-        kill -9 "$PID" && echo "Process $PID has been killed."
-      fi
-    fi
-  done < "$COMMAND_PIDS_FILE"
+  kill_all_pids_excluding_1
 }
 
 clear_app_source_dir() {
