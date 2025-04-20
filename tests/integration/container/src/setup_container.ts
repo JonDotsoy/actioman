@@ -17,10 +17,10 @@ export const setupContainer = async () => {
   await fs.mkdir(cacheProjectLocalPath, { recursive: true });
   await fs.mkdir(scriptsLocalPath, { recursive: true });
 
-  await bootstrapContainer({ verbose: true });
+  await bootstrapContainer();
 };
 
 export const cleanupContainer = async () => {
   const { killExec } = await initializeActiomanCli({});
-  await killExec().verbose().exited;
+  await killExec().exited;
 };
