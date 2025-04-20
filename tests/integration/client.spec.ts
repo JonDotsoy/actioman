@@ -1,25 +1,24 @@
-import { describe, it, beforeEach, afterEach, expect } from "bun:test";
+import { describe, it, beforeAll, afterAll, expect, afterEach } from "bun:test";
 import {
-  bootstrapContainer,
-  initializeCliActioman,
-  killContainer,
-  prepareScript,
-} from "./container";
+  cleanupContainer,
+  setupContainer,
+} from "./container/src/setup_container";
+import { prepareScript } from "./container/src/prepare_script";
+import { initializeActiomanCli } from "./container/src/initialize_actioman_cli";
+
+beforeAll(async () => {
+  await setupContainer();
+});
+
+afterAll(async () => {
+  await cleanupContainer();
+});
 
 describe("actioman serve command", () => {
-  beforeEach(async () => {
-    await killContainer({ verbose: true });
-    await bootstrapContainer({ verbose: true });
-  });
-
-  afterEach(async () => {
-    // await killContainer({ verbose: true });
-  });
-
   it("test bootstrap container", async () => {});
 
   it("should execute the serve command successfully", async () => {
-    const { shell, actioman } = await initializeCliActioman();
+    const { shell, actioman } = await initializeActiomanCli();
 
     await prepareScript("test_1", "app.ts");
     await prepareScript("test_1", "fetch.ts");
@@ -33,7 +32,7 @@ describe("actioman serve command", () => {
   });
 
   it("should execute the serve command with --port option", async () => {
-    const { shell, actioman } = await initializeCliActioman();
+    const { shell, actioman } = await initializeActiomanCli();
 
     await prepareScript("test_2", "app.ts");
     await prepareScript("test_2", "fetch.ts");
@@ -49,7 +48,7 @@ describe("actioman serve command", () => {
   });
 
   it("should display help information", async () => {
-    const { shell, actioman } = await initializeCliActioman();
+    const { shell, actioman } = await initializeActiomanCli();
 
     await prepareScript("test_3", "app.ts");
 
@@ -59,7 +58,7 @@ describe("actioman serve command", () => {
   });
 
   it("should execute the serve command and log hello action", async () => {
-    const { shell, actioman } = await initializeCliActioman();
+    const { shell, actioman } = await initializeActiomanCli();
 
     await prepareScript("test_4", "app.ts");
     await prepareScript("test_4", "fetch.ts");
@@ -81,7 +80,7 @@ describe("actioman serve command", () => {
   });
 
   it("should execute the serve command with actioman.config.ts", async () => {
-    const { shell, actioman } = await initializeCliActioman();
+    const { shell, actioman } = await initializeActiomanCli();
 
     await prepareScript("test_5", "actioman.config.ts");
     await prepareScript("test_5", "app.ts");
@@ -93,7 +92,7 @@ describe("actioman serve command", () => {
   });
 
   it("should load configuration from .actioman.config.ts file", async () => {
-    const { shell, actioman } = await initializeCliActioman();
+    const { shell, actioman } = await initializeActiomanCli();
 
     await prepareScript("test_6", ".actioman.config.ts");
     await prepareScript("test_6", "app.ts");
@@ -105,7 +104,7 @@ describe("actioman serve command", () => {
   });
 
   it("should load configuration from .actioman.config.js file", async () => {
-    const { shell, actioman } = await initializeCliActioman();
+    const { shell, actioman } = await initializeActiomanCli();
 
     await prepareScript("test_7", ".actioman.config.js");
     await prepareScript("test_7", "app.ts");
@@ -117,7 +116,7 @@ describe("actioman serve command", () => {
   });
 
   it("should load configuration from actioman.config.js file", async () => {
-    const { shell, actioman } = await initializeCliActioman();
+    const { shell, actioman } = await initializeActiomanCli();
 
     await prepareScript("test_8", "actioman.config.js");
     await prepareScript("test_8", "app.ts");

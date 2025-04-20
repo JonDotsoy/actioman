@@ -1,0 +1,159 @@
+#!/bin/sh
+
+# Enable error handling: exit on error, unset variables, and pipe failures
+set -e  # Exit immediately if a command exits with a non-zero status
+set -u  # Treat unset variables as an error
+
+# Global variable for the PID file path
+SLEEP_PID_FILE="/tmp/sleep_pid.tmp"
+COMMAND_PIDS_FILE="/tmp/command_pid.tmp"
+
+
+sleep_and_wait() {
+  # Check if a sleep process is already running
+  if [ -f "$SLEEP_PID_FILE" ]; then
+    echo "A sleep process is already running. PID file exists at $SLEEP_PID_FILE"
+    echo "Use the 'kill' command first if you want to start a new sleep process."
+    return 1
+  fi
+
+  # Set a default value for sleep_time if not provided
+  sleep_time=60
+
+  # Parse the --sleep-time flag if provided
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --sleep-time)
+        sleep_time=$2
+        shift 2
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+
+  if [ "$sleep_time" -gt 60 ]; then
+    minutes=$((sleep_time / 60))
+    seconds=$((sleep_time % 60))
+    if [ "$seconds" -eq 0 ]; then
+      echo "Sleeping for $minutes minutes..."
+    else
+      echo "Sleeping for $minutes minutes and $seconds seconds..."
+    fi
+  else
+    echo "Sleeping for $sleep_time seconds..."
+  fi
+  # Sleep for the number of seconds passed as the first argument
+  sleep $sleep_time &
+  echo $! > $SLEEP_PID_FILE
+  # Wait for the sleep process to finish
+  wait $!
+}
+
+kill_process_by_pid_file() {
+  # Check if the PID file exists
+  PID_FILE="$SLEEP_PID_FILE"
+
+  if [ -f "$PID_FILE" ]; then
+    # Read the PID from the file
+    PID=$(cat "$PID_FILE")
+    
+    # Check if the process is running and kill it
+    if kill -0 "$PID" 2>/dev/null; then
+      kill "$PID" && echo "Process $PID has been killed."
+    else
+      echo "No process found with PID $PID."
+    fi
+    
+    # Remove the PID file
+    rm -f "$PID_FILE"
+  else
+    echo "PID file does not exist."
+  fi
+}
+
+# Deprecated function
+kill_bun_processes() {
+  echo "Searching for bun processes..."
+  # Find all processes containing 'bun' in their command line
+  pids=$(ps aux | grep bun | grep -v grep | awk '{print $1}')
+  
+  if [ -z "$pids" ]; then
+    echo "No bun processes found."
+    return 0
+  fi
+  
+  # Kill each process found
+  for pid in $pids; do
+    echo "Killing bun process with PID: $pid"
+    kill -9 "$pid" 2>/dev/null || echo "Failed to kill process $pid"
+  done
+  
+  echo "All bun processes have been terminated."
+}
+
+exec_command() {
+  # Check if a command is provided
+  if [ $# -eq 0 ]; then
+    echo "Error: No command provided to execute."
+    return 1
+  fi
+
+  # Execute the command in the background
+  "$@" &
+  PID=$!
+  echo $PID >> "$COMMAND_PIDS_FILE"
+  echo "Command '$*' is running with PID $PID."
+  # Wait for the command to finish
+  wait $PID
+}
+
+kill_all_exec_commands() {
+  # Check if the PID file exists
+  if [ ! -f "$COMMAND_PIDS_FILE" ]; then
+    echo "No exec command PID file found."
+    return 1
+  fi
+
+  # Read the PIDs from the file
+  while IFS= read -r PID; do
+    if [ -n "$PID" ]; then
+      if kill -0 "$PID" 2>/dev/null; then
+        kill "$PID" && echo "Process $PID has been killed."
+      fi
+    fi
+  done < "$COMMAND_PIDS_FILE"
+}
+
+if [ -z "${1:-}" ]; then
+  echo "Error: No command provided. Available commands are: sleep, kill, kill-bun."
+  exit 1
+fi
+
+case "$1" in
+  sleep)
+    shift
+    sleep_and_wait "$@"
+    ;;
+  kill)
+    shift
+    kill_process_by_pid_file "$@"
+    ;;
+  kill-bun)
+    shift
+    kill_bun_processes "$@"
+    ;;
+  exec)
+    shift
+    exec_command "$@"
+    ;;
+  kill-exec)
+    shift
+    kill_all_exec_commands "$@"
+    ;;
+  *)
+    echo "Invalid command. Available commands are: sleep, kill, kill-bun, exec, kill-exec."
+    exit 1
+    ;;
+esac
