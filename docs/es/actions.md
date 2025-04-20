@@ -1,4 +1,4 @@
-## 📜 Archivo de Acciones: Definiendo tus Servicios Actioman
+## Archivo de Acciones: Definiendo tus Servicios Actioman
 
 El archivo de acciones es el corazón de tu servicio Actioman. Por convención, a menudo se nombra `actions.js`, pero **puedes elegir el nombre de archivo que prefieras**. Este archivo Javascript contiene todas las **acciones** o **servicios** que quieres exponer a través de tu API. Actioman escanea este archivo y automáticamente convierte cada función exportada en un endpoint web accesible.
 

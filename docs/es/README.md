@@ -41,14 +41,14 @@ Para empezar a usar actioman, sigue estos sencillos pasos:
    ```
    Route GET /__actions
    Route POST /__actions/hello
-   Listening on http://localhost:30320/
+   Listening on http://localhost:30321/
    ```
 
    Este mensaje indica:
 
    - `Route GET /__actions`: Se ha creado una ruta GET en `/__actions`. Esta ruta expone los contratos de todos los servicios definidos en `actions.js` en formato JSON. Puedes usarla para inspeccionar la estructura de tus servicios.
    - `Route POST /__actions/hello`: Se ha creado una ruta POST en `/__actions/hello`. Esta ruta corresponde a la función `hello` que definiste en `actions.js`. Para invocar este servicio, deberás hacer una petición POST a esta URL.
-   - `Listening on http://localhost:30320/`: El servidor actioman está corriendo y escuchando peticiones en la URL `http://localhost:30320/`. El puerto `30320` puede variar.
+   - `Listening on http://localhost:30321/`: El servidor actioman está corriendo y escuchando peticiones en la URL `http://localhost:30321/`. El puerto por defecto es `30321`, pero puede ser modificado usando el argumento `--port` al iniciar el servidor.
 
 ## Agregando servicios Actioman a tu proyecto
 
