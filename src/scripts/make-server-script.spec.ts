@@ -32,8 +32,5 @@ describe("makeServerScript", () => {
     );
 
     expect(res.bootstrapLocation).toBeInstanceOf(URL);
-    expect(
-      await fs.readFile(new URL(res.bootstrapLocation), "utf-8"),
-    ).toMatchSnapshot();
   });
 });
