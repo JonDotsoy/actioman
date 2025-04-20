@@ -5,6 +5,8 @@ import type { ExitedDockerProcess } from "./dtos/exited_docker_process";
 import { concatUint8Array } from "./utils/concat_uint8_array";
 import { invokeSafely } from "./utils/invoke_safely";
 import { DEFAULT_VERBOSE } from "./constants/default_verbose";
+import { logger } from "./utils/logger";
+import { atom } from "./utils/atom";
 
 /**
  * Spawns a Docker process and provides access to its output streams and exit status.
@@ -13,7 +15,8 @@ import { DEFAULT_VERBOSE } from "./constants/default_verbose";
  * @returns {DockerProcess} An object for interacting with the running Docker process.
  */
 export const docker = (...args: string[]): DockerProcess => {
-  let verbose = { current: DEFAULT_VERBOSE };
+  let verbose = atom(DEFAULT_VERBOSE);
+  const { error, info } = logger(verbose);
   const stdoutBuffer: Uint8Array[] = [];
   const stderrBuffer: Uint8Array[] = [];
   let stdoutReadableController: null | ReadableStreamDefaultController<Uint8Array> =
@@ -29,21 +32,21 @@ export const docker = (...args: string[]): DockerProcess => {
   const stdoutSubscriber = new Subscriber<Uint8Array>();
   const stderrSubscriber = new Subscriber<Uint8Array>();
 
-  console.log(`[Docker Command]: docker ${args.join(" ")}`);
+  info(`[Docker Command]: docker ${args.join(" ")}`);
   const childProcess = spawn("docker", args, {
     stdio: "pipe",
     shell: true,
   });
 
   childProcess.stdout?.on("data", (data: Uint8Array) => {
-    if (verbose.current) process.stdout.write(data);
+    if (verbose.get()) process.stdout.write(data);
     stdoutReadableController?.enqueue(data);
     stdoutBuffer.push(data);
     stdoutSubscriber.notify(data);
   });
 
   childProcess.stderr?.on("data", (data: Uint8Array) => {
-    if (verbose.current) process.stderr.write(data);
+    if (verbose.get()) process.stderr.write(data);
     stderrReadableController?.enqueue(data);
     stderrBuffer.push(data);
     stderrSubscriber.notify(data);
