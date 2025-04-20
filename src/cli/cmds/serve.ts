@@ -14,7 +14,6 @@ import { getCWD } from "../utils/get-cwd.js";
 import { spawn } from "child_process";
 import type { CliContextDTO } from "../dto/cli-context.dto.js";
 
-
 export const serve = async (args: string[], ctx: CliContextDTO) => {
   ctx.pendingMessage.command = "serve";
 
@@ -31,10 +30,12 @@ export const serve = async (args: string[], ctx: CliContextDTO) => {
       description: "Set the current working directory for the server process",
     }),
     rule(flag("-p", "--port"), isNumberAt("port"), {
-      description: "Specify the port for the server to listen on (default: 30321)",
+      description:
+        "Specify the port for the server to listen on (default: 30321)",
     }),
     rule(flag("-h", "--host"), isStringAt("host"), {
-      description: "Specify the host address for the server (default: localhost)",
+      description:
+        "Specify the host address for the server (default: localhost)",
     }),
     rule(flag("--http2"), isBooleanAt("http2"), {
       description: "Enable HTTP2 support (experimental feature)",

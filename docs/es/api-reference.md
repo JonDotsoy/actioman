@@ -5,6 +5,7 @@ Esta sección describe cómo crear y controlar un servidor Actioman directamente
 ## Crear un servidor Actioman manualmente
 
 Puedes iniciar un servidor Actioman desde tu propio código, lo que te permite:
+
 - Iniciar y detener el servidor bajo demanda.
 - Integrar lógica personalizada antes o después de cada acción.
 - Integrar Actioman en aplicaciones más grandes o flujos personalizados.
@@ -43,7 +44,7 @@ O desde Javascript usando fetch:
 const res = await fetch("http://localhost:30320/__actions/sumar", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ a: 5, b: 3 })
+  body: JSON.stringify({ a: 5, b: 3 }),
 });
 const result = await res.json();
 console.log(result); // 8
