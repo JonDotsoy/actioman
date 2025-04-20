@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.4](https://github.com/JonDotsoy/actioman/compare/actioman-v0.8.3...actioman-v0.8.4) (2025-04-20)
+
+
+### Bug Fixes
+
+* improve code formatting and consistency in API reference and ser… ([#97](https://github.com/JonDotsoy/actioman/issues/97)) ([3b2f3f6](https://github.com/JonDotsoy/actioman/commit/3b2f3f6bb0a44d320b612b857a42c6c034035302))
+
 ## [0.8.3](https://github.com/JonDotsoy/actioman/compare/actioman-v0.8.2...actioman-v0.8.3) (2025-04-20)
 
 
