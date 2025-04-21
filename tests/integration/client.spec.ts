@@ -153,6 +153,7 @@ describe("actioman version command", () => {
     const { stdoutText } = await actioman("version", "--help").exited;
 
     expect(stdoutText).toContain("Usage:");
+    expect(stdoutText).toMatchSnapshot();
   });
 
   // $ actioman version -h
