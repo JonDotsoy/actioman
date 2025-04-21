@@ -195,3 +195,29 @@ describe("actioman version command", () => {
     expect(stdoutText).toContain("Actioman version:");
   });
 });
+
+describe("actioman add command", () => {
+  afterEach(async () => {
+    await cleanupContainer();
+  });
+
+  // file: app.ts
+  // $ actioman serve app.ts
+  // $ actioman add first-service http://localhost:30321/
+  it("should add a new endpoint", async () => {
+    const { actioman, shell } = await initializeActiomanCli();
+
+    await prepareScript("test_9", "app.ts");
+
+    await actioman("serve", "app.ts").waitForLog("Server running at");
+    await shell("bun", "init").exited;
+    await shell("bun", "add", "/usr/share/actioman/").exited;
+    const { stdoutText } = await actioman(
+      "add",
+      "first-service",
+      "http://localhost:30321/",
+    ).exited;
+
+    console.log("🚀 ~ it ~ stdoutText:", stdoutText);
+  });
+});
