@@ -1,0 +1,12 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`actioman version command should display help information 1`] = `
+"Usage: actioman version                                                         
+
+flag:
+   -j, --json   Output in JSON format                                           
+   -z           End output with a NUL (\x00) character instead of a newline.       
+   -h, --help   Show help information for the version command.                  
+
+"
+`;
