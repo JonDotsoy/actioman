@@ -6,8 +6,9 @@ import {
   rule,
   type Rule,
 } from "@jondotsoy/flags";
+import type { CliContextDTO } from "../dto/cli-context.dto";
 
-export const template = async (args: string[]) => {
+export const template = async (args: string[], ctx: CliContextDTO) => {
   type Options = { help: boolean };
   const rules: Rule<Options>[] = [
     rule(flag("-h", "--help"), isBooleanAt("help"), {
