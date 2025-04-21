@@ -11,6 +11,7 @@ import {
 import { serve } from "./serve.js";
 import { add } from "./add.js";
 import { install } from "./install.js";
+import { version } from "./version.js";
 import type { CliContextDTO } from "../dto/cli-context.dto.js";
 
 export const main = async (args: string[], ctx: CliContextDTO) => {
@@ -19,6 +20,7 @@ export const main = async (args: string[], ctx: CliContextDTO) => {
     serve: string[];
     install: string[];
     add: string[];
+    version: string[];
   };
   const rules: Rule<Options>[] = [
     rule(command("serve"), restArgumentsAt("serve"), {
@@ -30,6 +32,9 @@ export const main = async (args: string[], ctx: CliContextDTO) => {
     rule(command("install"), restArgumentsAt("install"), {
       description: "Install and prepare remote dependencies for use",
     }),
+    rule(command("version"), restArgumentsAt("version"), {
+      description: "Display the current version of the Actioman CLI",
+    }),
     rule(flag("-h", "--help"), isBooleanAt("help"), {
       description: "Display help information for available commands",
     }),
@@ -40,6 +45,7 @@ export const main = async (args: string[], ctx: CliContextDTO) => {
   if (options.add) return await add(options.add, ctx);
   if (options.serve) return await serve(options.serve, ctx);
   if (options.install) return await install(options.install, ctx);
+  if (options.version) return await version(options.version, ctx);
 
   return console.log(makeHelpMessage("actioman", rules));
 };
