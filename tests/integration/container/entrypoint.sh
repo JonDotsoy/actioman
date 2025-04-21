@@ -225,7 +225,7 @@ exec_command() {
   "$@" &
   PID=$!
   echo $PID >> "$COMMAND_PIDS_FILE"
-  echo "Command '$*' is running with PID $PID."
+  # echo "Command '$*' is running with PID $PID."
   # Wait for the command to finish
   wait $PID
 }
