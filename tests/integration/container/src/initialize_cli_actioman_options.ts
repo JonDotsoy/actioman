@@ -1,7 +1,9 @@
 /**
  * Options for initializing the CLI Actioman process in integration tests.
- * @property {number} [timeout] - Optional timeout in milliseconds for CLI operations.
+ *
+ * @typedef {Object} initializeCliActiomanOptions
+ * @property {string} [workspace] - Optional path to the workspace directory to use for the CLI process.
  */
 export type initializeCliActiomanOptions = {
-  timeout?: number;
+  workspace?: string;
 };

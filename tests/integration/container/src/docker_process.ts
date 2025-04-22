@@ -37,9 +37,24 @@ export class DockerProcess {
     public readonly stdoutSubscriber: Subscriber<Uint8Array>,
     public readonly stderrSubscriber: Subscriber<Uint8Array>,
     public readonly exited: Promise<ExitedDockerProcess>,
-    private readonly verboseStatus: Atom<boolean>,
+    private readonly verboseState: Atom<boolean>,
+    private readonly nothrowState: Atom<boolean>,
   ) {}
 
+  /**
+   * Waits for a specific log message to appear in the container's stdout.
+   *
+   * This method subscribes to the container's stdout stream and resolves
+   * when a log message containing the specified `match` string is detected.
+   * If the log message does not appear within the specified `timeout` period,
+   * the promise is rejected with a timeout error.
+   *
+   * @param match - The string to search for in the log messages.
+   * @param timeout - The maximum time to wait for the log message, in milliseconds.
+   *                   Defaults to 60,000 ms (1 minute).
+   * @returns A promise that resolves with the current instance (`this`) when the log message is found.
+   * @throws An error if the log message is not found within the timeout period.
+   */
   async waitForLog(match: string, timeout: number = 60000): Promise<this> {
     await new Promise<any>((resolve, reject) => {
       const timeoutId = setTimeout(() => {
@@ -58,8 +73,26 @@ export class DockerProcess {
     return this;
   }
 
+  /**
+   * Sets the verbosity state for the current instance.
+   *
+   * @param verbose - A boolean value indicating whether verbose mode should be enabled (default is `true`).
+   * @returns The current instance for method chaining.
+   */
   verbose(verbose: boolean = true): this {
-    this.verboseStatus.set(verbose);
+    this.verboseState.set(verbose);
+    return this;
+  }
+
+  /**
+   * Sets the `nothrow` state for the current instance.
+   *
+   * @param nothrow - A boolean value indicating whether to enable or disable the "no-throw" behavior.
+   *                  Defaults to `true`.
+   * @returns The current instance for method chaining.
+   */
+  nothrow(nothrow: boolean = true): this {
+    this.nothrowState.set(nothrow);
     return this;
   }
 }

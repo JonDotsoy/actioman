@@ -15,7 +15,25 @@ import { atom } from "./utils/atom";
  * @returns {DockerProcess} An object for interacting with the running Docker process.
  */
 export const docker = (...args: string[]): DockerProcess => {
-  let verbose = atom(DEFAULT_VERBOSE);
+  /**
+   * Represents a reactive state for controlling verbosity in the application.
+   * The `verbose` atom is initialized with a default value and can be used
+   * to toggle or check the verbosity level dynamically.
+   *
+   * @constant
+   */
+  const verbose = atom(DEFAULT_VERBOSE);
+  /**
+   * A state atom that holds a boolean value indicating whether exceptions
+   * should be suppressed (`true`) or not (`false`).
+   *
+   * @remarks
+   * This atom is likely used to control error-handling behavior in the application.
+   *
+   * @defaultValue `false`
+   */
+  const nothrow = atom(false);
+
   const { error, info } = logger(verbose);
   const stdoutBuffer: Uint8Array[] = [];
   const stderrBuffer: Uint8Array[] = [];
@@ -32,7 +50,9 @@ export const docker = (...args: string[]): DockerProcess => {
   const stdoutSubscriber = new Subscriber<Uint8Array>();
   const stderrSubscriber = new Subscriber<Uint8Array>();
 
-  info(`[Docker Command]: docker ${args.join(" ")}`);
+  const dockerCommand = `docker ${args.join(" ")}`;
+
+  info(`[Docker Command]: ${dockerCommand}`);
   const childProcess = spawn("docker", args, {
     stdio: "pipe",
     shell: true,
@@ -52,7 +72,7 @@ export const docker = (...args: string[]): DockerProcess => {
     stderrSubscriber.notify(data);
   });
 
-  const exited = new Promise<ExitedDockerProcess>((resolve, reject) => {
+  const closeProcess = new Promise<ExitedDockerProcess>((resolve, reject) => {
     childProcess.on("error", (error) => {
       stderrReadableController?.close();
       stdoutReadableController?.close();
@@ -78,6 +98,33 @@ export const docker = (...args: string[]): DockerProcess => {
     });
   });
 
+  const exited = closeProcess
+    .then((exited) => {
+      info(`Exited with code: ${exited.exitCode}`);
+
+      if (exited.exitCode === 0) return exited;
+
+      if (nothrow.get()) {
+        info(
+          `Docker command ${dockerCommand} exited with code ${exited.exitCode}`,
+        );
+        return exited;
+      }
+
+      if (exited.exitCode === 137) {
+        info(`Docker command ${dockerCommand} was killed`);
+        return exited;
+      }
+
+      throw new Error(
+        `[Docker Error] ${dockerCommand} exited with code ${exited.exitCode}: ${exited.stderrText}`,
+      );
+    })
+    .catch((err) => {
+      error(`Error: ${err}`);
+      throw err;
+    });
+
   return new DockerProcess(
     stdoutReadable,
     stderrReadable,
@@ -85,5 +132,6 @@ export const docker = (...args: string[]): DockerProcess => {
     stderrSubscriber,
     exited,
     verbose,
+    nothrow,
   );
 };
