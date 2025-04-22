@@ -48,3 +48,7 @@ BREAKING CHANGE: the --debug option has been replaced by --verbose
 - Limit the description to 72 characters.
 - If the commit introduces a breaking change, add a footnote with `BREAKING CHANGE:`.
 - If the commit closes an issue, reference the number in the body or footnote.
+
+## Documentation Rule
+
+If you are asked to document any script, the documentation must be written in English and use JSDoc syntax.
