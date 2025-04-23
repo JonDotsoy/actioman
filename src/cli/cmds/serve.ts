@@ -11,8 +11,8 @@ import {
 } from "@jondotsoy/flags";
 import { makeServerScript } from "../../scripts/make-server-script.js";
 import { getCWD } from "../utils/get-cwd.js";
-import { spawn } from "child_process";
 import type { CliContextDTO } from "../dto/cli-context.dto.js";
+import { runSync } from "../utils/run-sync.js";
 
 export const serve = async (args: string[], ctx: CliContextDTO) => {
   ctx.pendingMessage.command = "serve";
@@ -76,7 +76,7 @@ export const serve = async (args: string[], ctx: CliContextDTO) => {
 
   ctx.pendingMessage.push();
 
-  spawn(process.argv0, [new URL(bootstrapLocation).pathname], {
+  const p = runSync(process.argv0, [new URL(bootstrapLocation).pathname], {
     cwd: cwd.pathname,
     env: {
       ...process.env,
@@ -85,4 +85,16 @@ export const serve = async (args: string[], ctx: CliContextDTO) => {
     },
     stdio: "inherit",
   });
+
+  const exitCodeToError = (code: number | null) => {
+    if (code === null) return new Error("Process terminated by signal");
+    if (code === 0) return null;
+    return new Error(`Process exited with code ${code}`);
+  };
+
+  if (p.error) throw p.error;
+
+  const error = exitCodeToError(p.status);
+
+  if (error) throw error;
 };
