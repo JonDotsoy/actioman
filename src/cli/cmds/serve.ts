@@ -92,6 +92,8 @@ export const serve = async (args: string[], ctx: CliContextDTO) => {
     return new Error(`Process exited with code ${code}`);
   };
 
+  if (p.error) throw p.error;
+
   const error = exitCodeToError(p.status);
 
   if (error) throw error;
