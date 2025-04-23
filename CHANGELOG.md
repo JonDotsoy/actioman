@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.0](https://github.com/JonDotsoy/actioman/compare/actioman-v0.8.4...actioman-v0.9.0) (2025-04-23)
+
+
+### Features
+
+* **cli:** add command `actioman version` ([#100](https://github.com/JonDotsoy/actioman/issues/100)) ([af8a73b](https://github.com/JonDotsoy/actioman/commit/af8a73bd6d6c977fc31ea85f486ad877bcaeab55))
+
+
+### Bug Fixes
+
+* **cli:** implement synchronous command execution with runSync utility ([#103](https://github.com/JonDotsoy/actioman/issues/103)) ([76ec9c0](https://github.com/JonDotsoy/actioman/commit/76ec9c05fb0fdfe2c359da1014a7e24d14c178ed))
+
 ## [0.8.4](https://github.com/JonDotsoy/actioman/compare/actioman-v0.8.3...actioman-v0.8.4) (2025-04-20)
 
 
