@@ -13,6 +13,8 @@
 #   exec_command: Executes a command in the background and stores its PID.
 #   kill_all_exec_commands: Kills all commands started by exec_command.
 #   clear_app_source_dir: Removes all files and directories inside the application source directory.
+#   compile_actioman_package: Compiles the Actioman source directory and moves the generated package to the target location.
+#   install_actioman_package: Installs the Actioman package using Bun.
 #
 # Usage:
 #   ./entrypoint.sh <command> [options]
@@ -24,12 +26,23 @@
 #   exec <command>                  Execute a command in the background
 #   kill-exec                       Kill all exec'd commands
 #   clear-app-source                Remove all files in the app source directory
+#   compile-actioman                Compile the Actioman package
+#   install-actioman                Install the Actioman package
 #
 # Example:
 #   ./entrypoint.sh sleep --sleep-time 120
 #   ./entrypoint.sh exec ls -la
+#   ./entrypoint.sh compile-actioman
+#   ./entrypoint.sh install-actioman
 #
 # Note: This script is intended for use in containerized integration test environments.
+
+# Set ACTIOMAN_SHARE_DIR if not already set
+if [ -z "${ACTIOMAN_SHARE_DIR:-}" ]; then
+  export ACTIOMAN_SHARE_DIR="/usr/share/actioman"
+fi
+
+ACTIOMAN_PACKAGE="/root/pkgs/actioman.tgz"
 
 # Enable error handling: exit on error, unset variables, and pipe failures
 set -e  # Exit immediately if a command exits with a non-zero status
@@ -215,6 +228,8 @@ kill_bun_processes() {
 #   - Useful for tracking and managing multiple background processes in integration tests.
 # ---------------------------------------------
 exec_command() {
+  COMMAND="$*"
+
   # Check if a command is provided
   if [ $# -eq 0 ]; then
     echo "Error: No command provided to execute."
@@ -228,6 +243,17 @@ exec_command() {
   # echo "Command '$*' is running with PID $PID."
   # Wait for the command to finish
   wait $PID
+
+  EXIT_CODE=$?
+
+  # if killing with SIGKILL is in progress, return 0
+  if [ "$EXIT_CODE" -eq 137 ]; then
+    echo "Command '$COMMAND' with PID $PID was killed with SIGKILL."
+    return 0
+  fi
+
+  # return the same exit code as the command
+  return $EXIT_CODE
 }
 
 # ---------------------------------------------
@@ -272,8 +298,76 @@ clear_app_source_dir() {
   fi
 }
 
+# ---------------------------------------------
+# compile_actioman_package
+# Compiles the Actioman source directory and moves the generated package to the target location.
+# Arguments:
+#   None.
+# Behavior:
+#   - Generates a hash of all files in the src directory and saves it to /tmp/actioman-source.hash.
+#   - Runs `bunx npm pack` in the directory specified by $ACTIOMAN_SHARE_DIR.
+#   - Moves the resulting `actioman-*.tgz` file to the path specified by $ACTIOMAN_PACKAGE.
+#   - Creates the parent directory of $ACTIOMAN_PACKAGE if it does not exist.
+# ---------------------------------------------
+compile_actioman_package() {
+  # Check if the ACTIOMAN_SHARE_DIR exists
+  if [ ! -d "$ACTIOMAN_SHARE_DIR" ]; then
+    echo "Error: ACTIOMAN_SHARE_DIR does not exist: $ACTIOMAN_SHARE_DIR"
+    return 1
+  fi
+
+  ACTIOMAN_SRC_HASH=""
+  HASH_FILE="/tmp/actioman-source.hash"
+  OLD_ACTIOMAN_SRC_HASH=""
+
+  # Generate a hash of all files in the src directory and save it to a variable
+  if [ -d "$ACTIOMAN_SHARE_DIR/src" ]; then
+    ACTIOMAN_SRC_HASH=$(find "$ACTIOMAN_SHARE_DIR/src" -type f -not -name '*.spec.*' -not -path '*/__tests__/*' -exec sha256sum {} + | sort | sha256sum | awk '{print $1}')
+  fi
+    
+  if [ -f "$HASH_FILE" ]; then
+    OLD_ACTIOMAN_SRC_HASH=$(cat "$HASH_FILE")
+  fi
+
+  echo "Current source hash: $ACTIOMAN_SRC_HASH"
+  echo "Previous source hash: $OLD_ACTIOMAN_SRC_HASH"
+
+  if [ "$ACTIOMAN_SRC_HASH" = "$OLD_ACTIOMAN_SRC_HASH" ]; then
+    echo "The source files have not changed. No need to recompile."
+    return 0
+  fi
+
+  # Run npm pack in the source directory
+  (cd "$ACTIOMAN_SHARE_DIR" && bunx npm pack)
+
+  # Find the generated .tgz file
+  local tgz_file
+  tgz_file=$(ls "$ACTIOMAN_SHARE_DIR"/actioman-*.tgz | head -n 1)
+
+  # Create the parent directory for the package if it does not exist
+  mkdir -p "$(dirname "$ACTIOMAN_PACKAGE")"
+
+  # Move the .tgz file to the target location
+  mv "$tgz_file" "$ACTIOMAN_PACKAGE"
+
+  echo "$ACTIOMAN_SRC_HASH" > "$HASH_FILE"
+}
+
+# ---------------------------------------------
+# install_actioman_package
+# Installs the Actioman package using Bun.
+# Arguments:
+#   None.
+# Behavior:
+#   - Runs `bun add` with the path specified by $ACTIOMAN_PACKAGE.
+#   - Installs the Actioman package into the current working directory.
+# ---------------------------------------------
+install_actioman_package() {
+  bun add "$ACTIOMAN_PACKAGE"
+}
+
 if [ -z "${1:-}" ]; then
-  echo "Error: No command provided. Available commands are: sleep, kill, kill-bun, exec, kill-exec, clear-app-source."
+  echo "Error: No command provided. Available commands are: sleep, kill, kill-bun, exec, kill-exec, clear-app-source, compile-actioman, install-actioman."
   exit 1
 fi
 
@@ -302,8 +396,16 @@ case "$1" in
     shift
     clear_app_source_dir "$@"
     ;;
+  compile-actioman)
+    shift
+    compile_actioman_package "$@"
+    ;;
+  install-actioman)
+    shift
+    install_actioman_package "$@"
+    ;;
   *)
-    echo "Invalid command. Available commands are: sleep, kill, kill-bun, exec, kill-exec, clear-app-source."
+    echo "Invalid command. Available commands are: sleep, kill, kill-bun, exec, kill-exec, clear-app-source, compile-actioman, install-actioman."
     exit 1
     ;;
 esac

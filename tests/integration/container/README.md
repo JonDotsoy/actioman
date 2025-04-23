@@ -41,7 +41,7 @@ This script is an entrypoint for integration containers, written in shell (sh). 
 
 ## General purpose
 
-Allows you to run and control background processes (such as sleep or arbitrary commands), as well as terminate Bun-related processes, making it easier to manage automated tests in containers.
+Allows you to run and control background processes (such as sleep or arbitrary commands), as well as terminate Bun-related processes, compile and install the Actioman package, and manage application state for automated tests in containers.
 
 ## Initial setup
 
@@ -53,6 +53,8 @@ Allows you to run and control background processes (such as sleep or arbitrary c
 - `SLEEP_PID_FILE`: Path to the temporary file where the sleep process PID is stored.
 - `COMMAND_PIDS_FILE`: Path to the temporary file where the PIDs of commands executed with `exec` are stored (can be multiple).
 - `APP_SOURCE_DIR`: Path to the application directory that can be cleaned with the `clear-app-source` command.
+- `ACTIOMAN_SHARE_DIR`: Directory containing the Actioman source code to be packaged.
+- `ACTIOMAN_PACKAGE`: Path to the generated Actioman package file.
 
 ## Functions
 
@@ -99,7 +101,6 @@ Allows you to run and control background processes (such as sleep or arbitrary c
 
 - Reads all PIDs stored in `COMMAND_PIDS_FILE`.
 - Kills all listed processes, except PID 1 and the sleep process.
-- Removes the PID file.
 - If the file does not exist, shows a message.
 
 ### clear_app_source_dir
@@ -107,10 +108,23 @@ Allows you to run and control background processes (such as sleep or arbitrary c
 - Deletes all files and folders inside `APP_SOURCE_DIR`, but not the directory itself.
 - Useful for resetting the application state during integration tests.
 
+### compile_actioman_package
+
+- Compiles the Actioman source directory using `bunx npm pack`.
+- Moves the generated package (`actioman-*.tgz`) to the path specified by `ACTIOMAN_PACKAGE`.
+- Creates the parent directory for the package if it does not exist.
+- Useful for preparing the Actioman package for installation in tests.
+
+### install_actioman_package
+
+- Installs the Actioman package using Bun (`bun add`).
+- Uses the path specified by `ACTIOMAN_PACKAGE`.
+- Useful for testing the package installation process in integration environments.
+
 ## Main logic
 
 - If no argument is provided, shows an error and exits.
-- Depending on the first argument (`sleep`, `kill`, `kill-bun`, `exec`, `kill-exec`, `clear-app-source`), executes the corresponding function.
+- Depending on the first argument (`sleep`, `kill`, `kill-bun`, `exec`, `kill-exec`, `clear-app-source`, `compile-actioman`, `install-actioman`), executes the corresponding function.
 - If the command is not valid, shows the available commands and exits with an error.
 
 ---
@@ -123,6 +137,8 @@ Allows you to run and control background processes (such as sleep or arbitrary c
 - `exec <command>`: Executes an arbitrary command in the background.
 - `kill-exec`: Terminates all commands executed with `exec`.
 - `clear-app-source`: Cleans the application directory specified in `APP_SOURCE_DIR`.
+- `compile-actioman`: Compiles the Actioman package from the source directory.
+- `install-actioman`: Installs the Actioman package.
 
 ---
 
@@ -144,6 +160,8 @@ Allows you to run and control background processes (such as sleep or arbitrary c
 - To terminate the command: `./entrypoint.sh kill-exec`
 - To clean up Bun processes: `./entrypoint.sh kill-bun`
 - To clean the application state: `./entrypoint.sh clear-app-source`
+- To compile the Actioman package: `./entrypoint.sh compile-actioman`
+- To install the Actioman package: `./entrypoint.sh install-actioman`
 
 ---
 
@@ -167,6 +185,18 @@ Allows you to run and control background processes (such as sleep or arbitrary c
 
   ```sh
   ./entrypoint.sh clear-app-source
+  ```
+
+- Compile the Actioman package:
+
+  ```sh
+  ./entrypoint.sh compile-actioman
+  ```
+
+- Install the Actioman package:
+
+  ```sh
+  ./entrypoint.sh install-actioman
   ```
 
 - Terminate all Bun-related processes (deprecated):

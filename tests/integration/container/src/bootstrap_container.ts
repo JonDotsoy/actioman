@@ -1,32 +1,47 @@
 import { actiomanSourceContainerPath } from "./constants/actioman_source_container_path";
-import { appSourceContainerPath } from "./constants/app_source_container_path";
 import type { bootstrapContainerOptions } from "./dtos/bootstrap_container_options";
-import { bunSourceContainerPath } from "./constants/bun_source_container_path";
-import { cacheLocalPath } from "./constants/cache_local_path";
-import { cacheProjectLocalPath } from "./constants/cache_project_local_path";
 import { CONTAINER_TIMEOUT_SECONDS } from "./constants/container_timeout_seconds";
-import { containerScriptsContainerPath } from "./container_scripts_container_path";
-import { containerScriptsLocalPath } from "./container_scripts_local_path";
 import { docker } from "./docker";
 import { getStoredContainerPID } from "./get_stored_container_pid";
-import { IMAGE_NAME } from "./constants/image_name";
-import { projectLocalPath } from "./constants/project_local_path";
 import { logger } from "./utils/logger";
 import { storeContainerPID } from "./store_container_pid";
-import { PROJECT_SOURCE_PATHS } from "./constants/project_source_paths";
-import { PROJECT_CACHE_PATHS } from "./project_cache_paths";
 import { DEFAULT_VERBOSE } from "./constants/default_verbose";
+import { dockerRun } from "./docker_run";
 import { ACTIOMAN_CONTAINER_PORTS } from "./constants/container_ports";
+import { appSourceContainerPath } from "./constants/app_source_container_path";
+import { IMAGE_NAME } from "./constants/image_name";
+import { containerScriptsContainerPath } from "./container_scripts_container_path";
+import { PROJECT_SOURCE_PATHS } from "./constants/project_source_paths";
+import { projectLocalPath } from "./constants/project_local_path";
+import { PROJECT_CACHE_PATHS } from "./project_cache_paths";
+import { cacheProjectLocalPath } from "./constants/cache_project_local_path";
+import { bunSourceContainerPath } from "./constants/bun_source_container_path";
+import { cacheLocalPath } from "./constants/cache_local_path";
+import { containerScriptsLocalPath } from "./container_scripts_local_path";
+import { initializeContainerCliHelpers } from "./initialize_container_cli_helpers";
 
 /**
- * Boots up a Docker container for integration testing, installs dependencies, and stores its PID.
+ * Boots up and prepares a Docker container for integration testing.
  *
- * - Starts the container if not already running.
- * - Installs dependencies inside the container.
- * - Stores the container PID for later use.
+ * This function ensures a container is running and ready for integration tests by:
+ * - Checking if a container is already running (by stored PID).
+ * - If not running, starting a new container with the required configuration, mounting source and cache directories, and exposing necessary ports.
+ * - Running the entrypoint script in sleep mode to keep the container alive for the specified timeout.
+ * - Installing dependencies inside the container using Bun.
+ * - Storing the container PID for later use and logging progress.
  *
- * @param {bootstrapContainerOptions} [options] - Options for container startup and verbosity.
- * @returns {Promise<string>} The PID of the started container.
+ * Typical usage is as part of test setup to guarantee a clean, ready-to-use containerized environment.
+ *
+ * @param {bootstrapContainerOptions} [options] - Optional configuration for container startup:
+ *   @param {boolean} [options.verbose] - Enable verbose logging (default: repository setting).
+ *   @param {number} [options.timeoutSeconds] - Timeout in seconds for the container to stay alive (default: 2 hours).
+ * @returns {Promise<string>} Resolves with the PID of the started (or already running) container.
+ *
+ * @example
+ *   // In test setup:
+ *   await bootstrapContainer({ verbose: true, timeoutSeconds: 600 });
+ *
+ * The container will be started if not already running, dependencies installed, and PID stored for later cleanup.
  */
 export const bootstrapContainer = async (
   options: bootstrapContainerOptions = {},
@@ -45,81 +60,50 @@ export const bootstrapContainer = async (
 
   info("Starting the container...");
 
-  /**
-   * An array of strings representing the arguments to be passed to the Docker command.
-   * This can be used to customize the behavior of Docker containers during execution.
-   */
-  const dockerArgs: string[] = [];
-
-  /*
-   * Docker arguments for container ports
-   */
-  for (const port of Object.values(ACTIOMAN_CONTAINER_PORTS)) {
-    dockerArgs.push("-p", `${port}:${port}`);
-  }
-
-  for (const sourcePath of PROJECT_SOURCE_PATHS) {
-    dockerArgs.push(
-      "-v",
-      `${new URL(sourcePath, projectLocalPath).pathname}:${new URL(sourcePath, actiomanSourceContainerPath).pathname}`,
-    );
-  }
-
-  for (const cachePath of PROJECT_CACHE_PATHS) {
-    dockerArgs.push(
-      "-v",
-      `${new URL(cachePath, cacheProjectLocalPath).pathname}:${new URL(cachePath, actiomanSourceContainerPath).pathname}`,
-    );
-  }
-
-  dockerArgs.push(
-    "-v",
-    `${new URL("bun_cache/", cacheLocalPath).pathname}:${bunSourceContainerPath.pathname}`,
-  );
-
-  dockerArgs.push(
-    "-v",
-    `${containerScriptsLocalPath.pathname}:${containerScriptsContainerPath.pathname}`,
-  );
-
-  const { stdout } = await docker(
-    "run",
-    "--network",
-    "host",
-    "-d", // run in detached mode
-    "--rm", // remove the container when it exits
-
-    "--workdir",
-    appSourceContainerPath.pathname,
-
-    ...dockerArgs,
-
-    // ----
-    IMAGE_NAME,
-    "sh",
-    `${new URL("entrypoint.sh", containerScriptsContainerPath).pathname}`,
-    "sleep",
-    "--sleep-time",
-    `${containerTimeoutSeconds}`,
-  ).verbose(options?.verbose).exited;
+  const { stdout } = await dockerRun({
+    containerTimeoutSeconds,
+    publishPorts: Object.values(ACTIOMAN_CONTAINER_PORTS),
+    detached: true,
+    rm: true,
+    workdir: appSourceContainerPath.pathname,
+    volumes: {
+      ...Object.fromEntries(
+        PROJECT_SOURCE_PATHS.map((path) => [
+          new URL(path, actiomanSourceContainerPath).pathname,
+          new URL(path, projectLocalPath),
+        ]),
+      ),
+      ...Object.fromEntries(
+        PROJECT_CACHE_PATHS.map((path) => [
+          new URL(path, actiomanSourceContainerPath).pathname,
+          new URL(path, cacheProjectLocalPath),
+        ]),
+      ),
+      [bunSourceContainerPath.pathname]: new URL("bun_cache/", cacheLocalPath),
+      [containerScriptsContainerPath.pathname]: containerScriptsLocalPath,
+    },
+    command: [
+      IMAGE_NAME,
+      "sh",
+      `${new URL("entrypoint.sh", containerScriptsContainerPath).pathname}`,
+      "sleep",
+      "--sleep-time",
+      `${containerTimeoutSeconds}`,
+    ],
+  }).verbose(verbose).exited;
 
   const containerPid = new TextDecoder().decode(stdout).trim();
 
+  await storeContainerPID(containerPid);
+
   info("Container started with PID:", containerPid);
 
-  // Install dependencies inside the container
-  await docker(
-    "exec",
-    "-w",
-    actiomanSourceContainerPath.pathname,
-    containerPid,
-    "bun",
-    "install",
-  ).verbose(options?.verbose).exited;
+  const { actiomanSourceContainerShell } =
+    await initializeContainerCliHelpers();
+
+  await actiomanSourceContainerShell("bun", "install").exited;
 
   info("Container initialized with PID:", containerPid);
-
-  await storeContainerPID(containerPid);
 
   return containerPid;
 };
