@@ -17,8 +17,10 @@ export type MetricMessage = {
 };
 
 export class Telemetry {
-  private started = Promise.withResolvers<true>();
-  private continuePromise = Promise.withResolvers<true>();
+  private started: Promise<true>;
+  private continuePromise: Promise<true>;
+  private startedResolve!: (value: true) => void;
+  private continueResolve!: (value: true) => void;
   private events = new Set<MetricMessage>();
 
   constructor(
@@ -31,10 +33,18 @@ export class Telemetry {
       configs.verbose || configs.debug,
     ),
   ) {
+    // Initialize promises manually since Promise.withResolvers is not available in Node.js 20
+    this.started = new Promise<true>((resolve) => {
+      this.startedResolve = resolve;
+    });
+    this.continuePromise = new Promise<true>((resolve) => {
+      this.continueResolve = resolve;
+    });
+    
     loggerVerbose.log(
       `started at ${new Date().toISOString()} configs: ${JSON.stringify(configs)}`,
     );
-    this.started.promise.then(() => this.processQueueLoop());
+    this.started.then(() => this.processQueueLoop());
   }
 
   private async processQueueLoop() {
@@ -44,19 +54,22 @@ export class Telemetry {
         await this.putMetric(event);
         this.events.delete(event);
       }
-      this.continuePromise = Promise.withResolvers<true>();
-      await this.continuePromise.promise;
+      // Create new promise for next iteration
+      this.continuePromise = new Promise<true>((resolve) => {
+        this.continueResolve = resolve;
+      });
+      await this.continuePromise;
     }
   }
 
   start() {
     this.continue();
-    this.started.resolve(true);
+    this.startedResolve(true);
     return this;
   }
 
   continue() {
-    this.continuePromise.resolve(true);
+    this.continueResolve(true);
   }
 
   push(event: MetricMessage) {

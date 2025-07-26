@@ -40,13 +40,11 @@ La sección `server` dentro de `actioman.config.js` te brinda un objeto dedicado
 **Opciones de configuración para `server`:**
 
 - **`port`**: Define el puerto en el que el servidor HTTP(S) escuchará las peticiones entrantes.
-
   - **Tipo:** `number`
   - **Valores permitidos:** Un número entero válido que represente un puerto TCP (generalmente entre 1 y 65535, evitando puertos reservados y puertos ya en uso por otros servicios). Puertos comunes para desarrollo son `3000`, `3001`, `5000`, `8080`, etc. El puerto por defecto, si no se especifica, podría ser un puerto dinámico asignado por el sistema operativo o un valor predeterminado de actioman (revisar la documentación principal para el valor por defecto).
   - **Ejemplo:** `port: 5000`
 
 - **`host` o `hostname`**: Define el nombre de host o la dirección IP en la que el servidor escuchará.
-
   - **Tipo:** `string`
   - **Valores permitidos:**
     - `"localhost"` o `"127.0.0.1"`: Escucha solo en la interfaz de loopback local. Solo accesible desde la misma máquina.
@@ -59,7 +57,6 @@ La sección `server` dentro de `actioman.config.js` te brinda un objeto dedicado
     - `hostname: "localhost"` (solo acceso local)
 
 - **`headers`**: Permite definir encabezados HTTP personalizados que se incluirán en _todas_ las respuestas del servidor.
-
   - **Tipo:** `object`
   - **Valores permitidos:** Un objeto donde cada clave es el nombre del encabezado (string) y el valor es el valor del encabezado (string).
   - **Casos de uso:** Añadir encabezados de seguridad (ej., `X-Frame-Options`, `X-Content-Type-Options`), encabezados personalizados para identificar el servidor, o encabezados relacionados con CORS (aunque para CORS, middleware específico suele ser más adecuado).
@@ -72,10 +69,8 @@ La sección `server` dentro de `actioman.config.js` te brinda un objeto dedicado
     ```
 
 - **`ssl`**: Configura el soporte para HTTPS (conexiones seguras) utilizando SSL/TLS.
-
   - **Tipo:** `object` o `undefined` (si se omite, se usa HTTP sin SSL).
   - **Opciones dentro de `ssl`:**
-
     - **`key`**: **Requerido para habilitar SSL.** Define la clave privada SSL.
       - **Tipo:** `string`
       - **Valores permitidos:**

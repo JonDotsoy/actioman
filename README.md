@@ -47,7 +47,6 @@ To start using actioman, follow these simple steps:
    ```
 
    This message indicates:
-
    - `Route GET /__actions`: A GET route has been created at `/__actions`. This route exposes the contracts of all services defined in `actions.js` in JSON format. You can use it to inspect the structure of your services.
    - `Route POST /__actions/hello`: A POST route has been created at `/__actions/hello`. This route corresponds to the `hello` function you defined in `actions.js`. To invoke this service, you will need to make a POST request to this URL.
    - `Listening on http://localhost:30320/`: The actioman server is running and listening for requests at the URL `http://localhost:30320/`. The port `30320` may vary.
@@ -89,7 +88,6 @@ Once your actioman service is running, you can consume it from another Javascrip
    ```
 
    In this code:
-
    - `import { actions } from "actioman"`: Imports the `actions` object from the `actioman` library.
    - `const myservice = actions.myservice()`: Creates an instance of the `myservice` service that you configured previously. `actions.myservice()` generates a type-safe client to interact with your remote service.
    - `await myservice.hello()`: Calls the `hello` function of the `myservice` service. This call translates into an HTTP request to the actioman server. Since service calls are asynchronous, we use `await` to wait for the response.

@@ -40,7 +40,6 @@ Sigue estos pasos para configurar y ejecutar tu servidor actioman utilizando Bun
    ```
 
    **Observa los cambios importantes:**
-
    - **Importaciones:** Hemos importado `defineAction` desde `actioman` y `z` desde `zod`.
    - **`defineAction`:** Ambas funciones (`hello` y `suma`) ahora se definen usando `defineAction`.
    - **`input` y `z.object`:** La función `suma` ahora tiene una propiedad `input` que define un esquema de validación con `z.object`. Esto asegura que la función `suma` solo se ejecute si recibe un objeto con propiedades `a` y `b`, ambas de tipo número. `hello` no requiere input, por lo que se omite la propiedad `input`.
