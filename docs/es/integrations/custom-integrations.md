@@ -50,7 +50,6 @@ interface Integration {
 - **`name` (string, obligatorio):** Un nombre descriptivo para la integración. Es **obligatorio** proporcionar un nombre para facilitar la identificación y gestión de las integraciones.
 
   Es importante que cada integración tenga un `name` definido porque:
-
   - **Identificación:** Permite identificar de forma única cada integración que se está utilizando en la configuración de `actioman`. Aunque actualmente Actioman no utiliza directamente el `name` para una funcionalidad específica, en el futuro podría usarse para gestión, logs o configuraciones más avanzadas de las integraciones.
   - **Claridad y Mantenibilidad:** Al ser un campo obligatorio, asegura que cada integración tenga un nombre descriptivo, lo que mejora la legibilidad y mantenibilidad del archivo `actioman.config.js`. Ayuda a entender rápidamente qué integraciones están activas en el servicio.
   - **Consistencia:** Mantener el `name` como obligatorio asegura una estructura consistente para todas las integraciones, facilitando el desarrollo y la comprensión de nuevas integraciones en el futuro.
@@ -62,7 +61,6 @@ interface Integration {
 Actualmente, Actioman ofrece los siguientes hooks para las integraciones:
 
 - **`"http:setup"`:**
-
   - **Momento de invocación:** Este hook se invoca justo después de que Actioman instancia el `HTTPRouter`, que es el componente encargado de manejar las rutas HTTP del servicio.
   - **Parámetros:** Recibe como argumento `httpRouter`, que es la instancia del `HTTPRouter` de Actioman.
   - **Utilidad:** Este hook es útil cuando deseas **agregar rutas personalizadas** a tu servicio Actioman. Por ejemplo, la integración de `metrics` utiliza este hook para agregar la ruta `/metrics`. Puedes utilizar `httpRouter.get()`, `httpRouter.post()`, etc., dentro de este hook para definir nuevas rutas y sus manejadores.

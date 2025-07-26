@@ -25,7 +25,6 @@ La siguiente propuesta describe una característica potencial y su cronograma es
 La iniciativa de mejora de la documentación tiene como objetivo mejorar significativamente la experiencia del desarrollador y la adopción de Actioman al proporcionar documentación completa, bien estructurada y características de tipado sólido.
 
 1. Definiciones de tipos para `actionman.json.ts`
-
    - Añadir definiciones de tipos para habilitar soporte de tipado fuerte en IDEs.
    - Implementar validación con `zod` para garantizar la seguridad de tipos en tiempo de ejecución y la corrección de la configuración.
    - Exportar tipos para autocompletado en IDEs y mejorar la productividad del desarrollador.
@@ -49,7 +48,6 @@ La iniciativa de mejora de la documentación tiene como objetivo mejorar signifi
 Esta iniciativa se centra en mejorar el flujo de trabajo de desarrollo y la experiencia de depuración para hacer que Actioman sea más amigable y eficiente para los desarrolladores.
 
 1. Manejo Mejorado de Errores en la CLI
-
    - Implementar mensajes de error contextuales que expliquen tanto el problema como su causa.
    - Proveer sugerencias de solución para escenarios de error comunes.
    - Incluir enlaces a documentación relacionada en los mensajes de error.

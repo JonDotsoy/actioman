@@ -39,7 +39,6 @@ Si no te encuentras en uno de estos entornos o deseas desactivar la telemetría 
   ```
 
 - **Comando `actioman telemetry`:** Actioman proporciona un comando dedicado para gestionar la telemetría:
-
   - **Desactivar la telemetría:**
 
     ```bash

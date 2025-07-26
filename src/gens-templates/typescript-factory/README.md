@@ -230,7 +230,6 @@ Here's a breakdown of the available factory functions, categorized for better un
 - **`$(...props: $propertyProps): ts.Expression`**
 
   Creates a `PropertyAccessExpression` (e.g., `object.property`) or an `Identifier`.
-
   - If called with a single string argument, it creates an `Identifier`.
   - If called with multiple arguments (strings or Expressions), it chains them to create property access expressions.
 
